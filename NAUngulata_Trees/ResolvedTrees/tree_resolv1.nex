@@ -1,0 +1,1776 @@
+#NEXUS
+[R-package APE, Mon Jan 30 00:42:52 2017]
+
+BEGIN TAXA;
+	DIMENSIONS NTAX = 882;
+	TAXLABELS
+		Schizotheriodes_parvus
+		Systemodon_tapirinus
+		Cardiolophus_semihians
+		Cardiolophus_radinskyi
+		Homogalax_aureus
+		Homogalax_protapirinus
+		Isectolophus_annectens
+		Isectolophus_latidens
+		Isectolophus_radinskyi
+		Desmatotherium_intermedius
+		Fouchia_elyensis
+		Selenaletes_scopaeus
+		Helaletes_nanus
+		Thuliadanta_mayri
+		Dilophodon_destitutus
+		Dilophodon_minusculus
+		Nexuotapirus_marslandensis
+		Nexuotapirus_robustus
+		Colodon_cingulatus
+		Colodon_kayi
+		Colodon_occidentalis
+		Colodon_stovalli
+		Colodon_woodi
+		Heteraletes_leotanus
+		Plesiocolopirus_hancocki
+		Protapirus_obliquidens
+		Protapirus_simplex
+		Miotapirus_harrisonensis
+		Tapiravus_rarus
+		Tapiravus_validus
+		Tapirus_bairdii
+		Tapirus_californicus
+		Tapirus_haysii
+		Tapirus_johnsoni
+		Tapirus_lundeliusi
+		Tapirus_merriami
+		Tapirus_mesopotamicus
+		Tapirus_polkensis
+		Tapirus_simpsoni
+		Tapirus_terrestris
+		Tapirus_veroensis
+		Toxotherium_hunteri
+		Hyrachyus_affinis
+		Hyrachyus_douglassi
+		Hyrachyus_eximius
+		Hyrachyus_modestus
+		Amynodon_advenus
+		Amynodon_reedi
+		Amynodon_sinensis
+		Amynodontopsis_bodei
+		Megalamynodon_regalis
+		Metamynodon_chadronensis
+		Metamynodon_mckinneyi
+		Metamynodon_planifrons
+		Triplopides_rieli
+		Triplopus_cubitalis
+		Triplopus_implicatus
+		Triplopus_obliquidens
+		Triplopus_rhinocerinus
+		Triplopus_woodi
+		Prohyracodon_orientale
+		Epitriplopus_uintensis
+		Subhyracodon_copei
+		Subhyracodon_gidleyi
+		Hyracodon_leidyanus
+		Hyracodon_medius
+		Hyracodon_nebraskensis
+		Hyracodon_petersoni
+		Hyracodon_priscidens
+		Gulfoceras_westfalli
+		Uintaceras_radinskyi
+		Epiaphelops_virgasectus
+		Teletaceras_mortivallis
+		Teletaceras_radinskyi
+		Penetrigonias_dakotensis
+		Penetrigonias_hudsoni
+		Penetrigonias_sagittatus
+		Amphicaenopus_platycephalus
+		Trigonias_osborni
+		Trigonias_wellsi
+		Trigonias_yoderensis
+		Subhyracodon_mitis
+		Subhyracodon_occidentalis
+		Subhyracodon_trigonodus
+		Subhyracodon_woodi
+		Diceratherium_annectens
+		Diceratherium_armatum
+		Diceratherium_gregorii
+		Diceratherium_niobrarense
+		Diceratherium_tridactylum
+		Menoceras_arikarense
+		Menoceras_barbouri
+		Floridaceras_whitei
+		Aphelops_malacorhinus
+		Aphelops_megalodus
+		Aphelops_mutilus
+		Peraceras_hessei
+		Peraceras_profectum
+		Peraceras_superciliosum
+		Brachypotherium_americanum
+		Teleoceras_fossiger
+		Teleoceras_guymonense
+		Teleoceras_hicksi
+		Teleoceras_major
+		Teleoceras_medicornutum
+		Teleoceras_meridianum
+		Teleoceras_minor
+		Teleoceras_proterum
+		Hyracotherium_vasacciense
+		Minippus_index
+		Sifrhippus_grangeri
+		Sifrhippus_sandrae
+		Sifrhippus_aemulor
+		Xenicohippus_craspedotum
+		Xenicohippus_grangeri
+		Xenicohippus_osborni
+		Eohippus_angustidens
+		Protohippus_montanum
+		Protorohippus_venticolum
+		Haplohippus_texanus
+		Orohippus_major
+		Orohippus_agilis
+		Orohippus_progressus
+		Orohippus_proteros
+		Orohippus_pumilus
+		Orohippus_sylvaticus
+		Epihippus_gracilis
+		Epihippus_intermedius
+		Epihippus_uintensis
+		Mesohippus_bairdi
+		Mesohippus_exoletus
+		Mesohippus_montanensis
+		Mesohippus_portentus
+		Mesohippus_propinquus
+		Mesohippus_texanus
+		Mesohippus_westoni
+		Miohippus_acutidens
+		Miohippus_anceps
+		Miohippus_annectens
+		Miohippus_assiniboiensis
+		Miohippus_condoni
+		Miohippus_equiceps
+		Miohippus_equinanus
+		Miohippus_gemmarosae
+		Miohippus_gidleyi
+		Miohippus_grandis
+		Miohippus_intermedius
+		Miohippus_obliquidens
+		Miohippus_primus
+		Anchitherium_australis
+		Anchitherium_clarencei
+		Anchitherium_navasotae
+		Kalobatippus_agatensis
+		Kalobatippus_avus
+		Kalobatippus_praestans
+		Megahippus_matthewi
+		Megahippus_mckennai
+		Hypohippus_affinis
+		Hypohippus_chico
+		Hypohippus_equinus
+		Hypohippus_nevadensis
+		Hypohippus_osborni
+		Hypohippus_pertinax
+		Archaeohippus_blackbergi
+		Archaeohippus_mannulus
+		Archaeohippus_mourningi
+		Archaeohippus_penultimus
+		Archaeohippus_stenolophus
+		Archaeohippus_ultimus
+		Desmatippus_avus
+		Desmatippus_integer
+		Desmatippus_texanus
+		Parahippus_atavus
+		Parahippus_cognatus
+		Parahippus_coloradensis
+		Parahippus_maxsoni
+		Parahippus_nebrascensis
+		Parahippus_pawniensis
+		Parahippus_pristinus
+		Parahippus_tyleri
+		Parahippus_wyomingensis
+		Parahippus_leonensis
+		Acritohippus_stylodontus
+		Acritohippus_tertius
+		Acritohippus_isonesus
+		Acritohippus_quinni
+		Parapliohippus_carrizoensis
+		Pliohippus_coalingensis
+		Pliohippus_spectans
+		Pliohippus_francescana
+		Pliohippus_mirabilis
+		Pliohippus_fossulatus
+		Pliohippus_tantalus
+		Pliohippus_nobilis
+		Pliohippus_pernix
+		Heteropliohippus_hulberti
+		Pliohippus_tehonensis
+		Astrohippus_ansae
+		Astrohippus_stockii
+		Dinohippus_leardi
+		Boreohippidion_galushai
+		Dinohippus_interpolatus
+		Dinohippus_leidyanus
+		Dinohippus_mexicanus
+		Equus_kiang
+		Equus_simplicidens
+		Equus_excelsus
+		Equus_caballus
+		Equus_cf_caballus
+		Equus_niobrarensis
+		Equus_scotti
+		Equus_alaskae
+		Equus_complicatus
+		Equus_conversidens
+		Equus_crenidens
+		Equus_enormis
+		Equus_francisci
+		Equus_fraternus
+		Equus_fromanius
+		Equus_giganteus
+		Equus_holmesi
+		Equus_idahoensis
+		Equus_leidyi
+		Equus_mexicanus
+		Equus_nobisi
+		Equus_pacificus
+		Equus_parastylidens
+		Equus_pectinatus
+		Equus_pseudaltidens
+		Equus_semiplicatus
+		Equus_verae
+		Equus_curvidens
+		Merychippus_brevidontus
+		Merychippus_calamarius
+		Merychippus_californicus
+		Merychippus_coloradense
+		Merychippus_goorisi
+		Merychippus_insignis
+		Merychippus_quintus
+		Merychippus_relictus
+		Merychippus_republicanus
+		Merychippus_sejunctus
+		Merychippus_seversus
+		Merychippus_stevensi
+		Merychippus_gunteri
+		Merychippus_primus
+		Scaphohippus_intermontanus
+		Scaphohippus_sumani
+		Protohippus_vetus
+		Protohippus_perditus
+		Protohippus_gidleyi
+		Protohippus_supremus
+		Calippus_large
+		Calippus_elachistus
+		Calippus_regulus
+		Calippus_placidus
+		Calippus_proplacidus
+		Calippus_circulus
+		Calippus_martini
+		Calippus_cerasinus
+		Calippus_hondurensis
+		Calippus_maccartyi
+		Hipparion_condoni
+		Hipparion_platystyle
+		Hipparion_mohavense
+		Hippotherium_occidentale
+		Hippotherium_quinni
+		Hippotherium_plicatile
+		Hippotherium_emsliei
+		Cormohipparion_sphenodus
+		Cormohipparion_ingenuum
+		Neohipparion_affine
+		Neohipparion_trampasense
+		Neohipparion_leptode
+		Neohipparion_eurystyle
+		Neohipparion_gidleyi
+		Pseudhipparion_retrusum
+		Pseudhipparion_curtivallum
+		Pseudhipparion_hessei
+		Pseudhipparion_gratum
+		Pseudhipparion_simpsoni
+		Pseudhipparion_skinneri
+		Hipparion_shirleyae
+		Hipparion_forcei
+		Hipparion_tehonense
+		Nannippus_montezumae
+		Nannippus_parvulus
+		Nannippus_morgani
+		Nannippus_westoni
+		Nannippus_lenticularis
+		Nannippus_aztecus
+		Nannippus_beckensis
+		Nannippus_peninsulatus
+		Malaquiferus_tourteloti
+		Merycobunodon_littoralis
+		Montanatylopus_matthewi
+		Oromeryx_plicatus
+		Eotylopus_reedi
+		Protylopus_annectens
+		Protylopus_pearsonensis
+		Protylopus_petersoni
+		Protylopus_robustus
+		Protylopus_stocki
+		Poebrodon_californicus
+		Poebrodon_kayi
+		Poebrotherium_chadronense
+		Poebrotherium_eximium
+		Poebrotherium_franki
+		Poebrotherium_wilsoni
+		Paratylopus_labiatus
+		Paratylopus_primaevus
+		Paralabis_cedrensis
+		Pseudolabis_dakotensis
+		Miotylopus_gibbi
+		Miotylopus_leonardi
+		Miotylopus_taylori
+		Rakomylus_raki
+		Wyomylus_whitei
+		Blickomylus_moroni
+		Blickomylus_galushai
+		Stenomylus_crassipes
+		Stenomylus_gracilis
+		Stenomylus_hitchcocki
+		Stenomylus_keelinensis
+		Stenomylus_taylori
+		Aguascalientia_wilsoni
+		Floridatragulus_dolichanthereus
+		Floridatragulus_hesperus
+		Floridatragulus_nanus
+		Floridatragulus_texanus
+		Gentilicamelus_sternbergi
+		Delahomeryx_browni
+		Nothokemas_floridanus
+		Nothokemas_hidalgensis
+		Nothokemas_waldropi
+		Tanymykter_brachyodontus
+		Michenia_agatensis
+		Michenia_deschutensis
+		Michenia_exilis
+		Michenia_mudhillsensis
+		Protolabis_barstowensis
+		Protolabis_yavapaiensis
+		Protolabis_coartatus
+		Protolabis_gracilis
+		Protolabis_heterodontus
+		Protolabis_saxeus
+		Cuyamacamelus_jamesi
+		Capricamelus_gettyi
+		Nothotylopus_camptognathus
+		Paramiolabis_minutus
+		Paramiolabis_singularis
+		Paramiolabis_taylori
+		Paramiolabis_tenuis
+		Miolabis_californicus
+		Miolabis_fissidens
+		Miolabis_fricki
+		Miolabis_longiceps
+		Miolabis_transmontanus
+		Oxydactylus_benedentatus
+		Oxydactylus_cameloides
+		Oxydactylus_campestris
+		Oxydactylus_lacota
+		Oxydactylus_longipes
+		Oxydactylus_longirostris
+		Oxydactylus_lulli
+		Oxydactylus_wyomingensis
+		Australocamelus_orarius
+		Priscocamelus_wilsoni
+		Hesperocamelus_stylodon
+		Procamelus_altus
+		Procamelus_coconinensis
+		Procamelus_grandis
+		Procamelus_leptocolon
+		Procamelus_leptognathus
+		Procamelus_occidentalis
+		Palauchenia_mexicana
+		Gigantocamelus_spatulus
+		Megacamelus_merriami
+		Titanotylopus_nebraskensis
+		Megatylopus_cochrani
+		Megatylopus_gigas
+		Megatylopus_matthewi
+		Megatylopus_primaevus
+		Blancocamelus_meadei
+		Pliauchenia_magnifontis
+		Tanupolama_parvus
+		Aepycamelus_alexandrae
+		Aepycamelus_bradyi
+		Aepycamelus_giraffinus
+		Aepycamelus_major
+		Aepycamelus_procerus
+		Aepycamelus_robustus
+		Aepycamelus_stocki
+		Hemiauchenia_blancoensis
+		Palaeolama_mirifica
+		Alforjas_taylori
+		Hemiauchenia_gracilis
+		Hemiauchenia_guanajuatensis
+		Hemiauchenia_macrocephala
+		Hemiauchenia_minima
+		Hemiauchenia_vera
+		Megalomeryx_niobrarensis
+		Camelops_aransas
+		Camelops_hesternus
+		Camelops_huerfanensis
+		Camelops_kansanus
+		Camelops_minidokae
+		Camelops_nitidus
+		Camelops_sulcatus
+		Camelops_traviswhitei
+		Simojovelhyus_pocitosense
+		Thinohyus_lentus
+		Thinohyus_rostratus
+		Perchoerus_probus
+		Perchoerus_minor
+		Perchoerus_nanus
+		Lucashyus_coombsae
+		Marshochoerus_sociale
+		Floridachoerus_olseni
+		Stuckyhyus_siouxensis
+		Desmathyus_pinensis
+		Hesperhys_vagrans
+		Wrightohyus_yatkolai
+		Cynorca_occidentale
+		Dyseohyus_fricki
+		Prosthennops_xiphodonticus
+		Prosthennops_niobrarensis
+		Macrogenis_crassigenis
+		Woodburnehyus_grenaderae
+		Skinnerhyus_shermerorum
+		Pecari_tajacu
+		Catagonus_brachydontus
+		Catagonus_stenocephalus
+		Tayassu_edensis
+		Prosthennops_kernensis
+		Prosthennops_serus
+		Mylohyus_elmorei
+		Mylohyus_floridanus
+		Mylohyus_fossilis
+		Mylohyus_longirostris
+		Platygonus_bicalcaratus
+		Platygonus_brachirostris
+		Platygonus_compressus
+		Platygonus_marplatensis
+		Platygonus_oregonensis
+		Platygonus_pearcei
+		Platygonus_pollenae
+		Platygonus_scagliae
+		Platygonus_vetus
+		Platygonus_cumberlandensis
+		Parvitragulus_priscus
+		Simimeryx_hudsoni
+		Simimeryx_minutus
+		Nanotragulus_loomisi
+		Nanotragulus_ordinatus
+		Hypisodus_alacer
+		Hypertragulus_planiceps
+		Hypisodus_ironsi
+		Hypisodus_minimus
+		Hypisodus_paululus
+		Hypisodus_retallacki
+		Hypertragulus_calcaratus
+		Hypertragulus_chadronensis
+		Hypertragulus_crawfordensis
+		Hypertragulus_dakotensis
+		Hypertragulus_heikeni
+		Hypertragulus_hesperius
+		Hypertragulus_minor
+		Hypertragulus_minutus
+		Hypertragulus_quadratus
+		Hypertragulus_sequens
+		Pronodens_silberlingi
+		Pronodens_transmontanus
+		Hendryomeryx_defordi
+		Hendryomeryx_esulcatus
+		Hendryomeryx_wilsoni
+		Pseudoparablastomeryx_francescita
+		Pseudoparablastomeryx_scotti
+		Leptomeryx_antecedens
+		Leptomeryx_blacki
+		Leptomeryx_elissae
+		Leptomeryx_evansi
+		Leptomeryx_exilis
+		Leptomeryx_mammifer
+		Leptomeryx_obliquidens
+		Leptomeryx_speciosus
+		Leptomeryx_yoderi
+		Pseudoceras_skinneri
+		Floridameryx_floridanus
+		Floridameryx_klausi
+		Submeryceros_minimus
+		Submeryceros_minor
+		Paracosoryx_alticornis
+		Paracosoryx_dawesensis
+		Paracosoryx_furlongi
+		Paracosoryx_loxocerus
+		Paracosoryx_nevadensis
+		Paracosoryx_wilsoni
+		Merriamoceros_coronatus
+		Ramoceros_brevicornis
+		Ramoceros_marthae
+		Ramoceros_osborni
+		Ramoceros_ramosus
+		Merycodus_crucensis
+		Merycodus_hookwayi
+		Merycodus_joraki
+		Merycodus_major
+		Merycodus_necatus
+		Merycodus_prodromus
+		Merycodus_sabulonis
+		Merycodus_warreni
+		Cosoryx_cerroensis
+		Cosoryx_furcatus
+		Cosoryx_ilfonsensis
+		Osbornoceros_osborni
+		Proantilocapra_platycornea
+		Ceratomeryx_prenticei
+		Ottoceros_peacevalleyensis
+		Plioceros_blicki
+		Plioceros_dehlini
+		Plioceros_floblairi
+		Ilingoceros_alexandrae
+		Ilingoceros_schizoceros
+		Sphenophalos_garciae
+		Sphenophalos_middleswarti
+		Sphenophalos_nevadanus
+		Antilocapra_americana
+		Texoceros_altidens
+		Texoceros_edensis
+		Texoceros_guymonensis
+		Texoceros_minorei
+		Texoceros_vaughani
+		Hayoceros_barbouri
+		Hayoceros_falkenbachi
+		Hexameryx_simpsoni
+		Hexobelomeryx_fricki
+		Stockoceros_conklingi
+		Stockoceros_onusrosagris
+		Tetrameryx_irvingtonensis
+		Tetrameryx_knoxensis
+		Tetrameryx_mooseri
+		Tetrameryx_shuleri
+		Tetrameryx_tacubayensis
+		Capromeryx_arizonensis
+		Capromeryx_furcifer
+		Capromeryx_gidleyi
+		Capromeryx_minor
+		Capromeryx_tauntonensis
+		Boreameryx_braskerudi
+		Cervus_brevitrabalis
+		Cervus_elaphus
+		Alces_alces
+		Bretzia_pseudalces
+		Cervalces_latifrons
+		Cervalces_scotti
+		Sangamona_fugitivus
+		Rangifer_tarandus
+		Navahoceros_fricki
+		Navahoceros_lascrucensis
+		Odocoileus_hemionus
+		Odocoileus_sellardsiae
+		Odocoileus_virginianus
+		Problastomeryx_primus
+		Pseudoblastomeryx_advena
+		Machaeromeryx_gilchristensis
+		Machaeromeryx_tragulus
+		Longirostromeryx_clarendonensis
+		Longirostromeryx_novomexicanus
+		Longirostromeryx_wellsi
+		Parablastomeryx_floridanus
+		Parablastomeryx_galushi
+		Parablastomeryx_gregorii
+		Blastomeryx_cursor
+		Blastomeryx_gemmifer
+		Blastomeryx_pristinus
+		Blastomeryx_vigoratus
+		Bos_taurus
+		Bison_bison
+		Bison_alaskensis
+		Bison_antiquus
+		Bison_latifrons
+		Bison_priscus
+		Saiga_tatarica
+		Neotragocerus_improvisus
+		Neotragocerus_lindgreni
+		Sinocapra_willdownsi
+		Ovis_canadensis
+		Ovis_dalli
+		Oreamnos_americanus
+		Oreamnos_harringtoni
+		Bootherium_bombifrons
+		Euceratherium_collinum
+		Soergelia_mayfieldi
+		Ovibos_moschatus
+		Diabolocornis_simonsi
+		Sinclairomeryx_riparius
+		Aletomeryx_gracilis
+		Aletomeryx_marslandensis
+		Aletomeryx_occidentalis
+		Drepanomeryx_falciformis
+		Dromomeryx_borealis
+		Subdromomeryx_antilopinus
+		Rakomeryx_raki
+		Rakomeryx_sinclairi
+		Barbouromeryx_trigonocorneus
+		Bouromeryx_americanus
+		Bouromeryx_submilleri
+		Procranioceras_skinneri
+		Cranioceras_clarendonensis
+		Cranioceras_teres
+		Cranioceras_unicornis
+		Pediomeryx_hemphillensis
+		Yumaceras_figginsi
+		Yumaceras_hamiltoni
+		Yumaceras_ruminalis
+		Heptodon_calciculus
+		Heptodon_posticus
+		Parvicornus_occidentalis
+		Notiotitanops_mississippiensis
+		Protitanops_curryi
+		Menodus_proutii
+		Eotitanotherium_osborni
+		Pseudodiplacodon_progressum
+		Brontops_bicornutus
+		Brontops_brachycephalus
+		Brontops_dispar
+		Brontops_robustus
+		Brontops_tyleri
+		Menops_bakeri
+		Menops_heloceras
+		Menops_marshi
+		Menops_serotinus
+		Menops_walcotti
+		Lambdotherium_popoagicum
+		Eotitanops_minimus
+		Palaeosyops_borealis
+		Palaeosyops_fontinalis
+		Palaeosyops_laevidens
+		Palaeosyops_laticeps
+		Palaeosyops_paludosus
+		Palaeosyops_robustus
+		Mesatirhinus_megarhinus
+		Sphenocoelus_hyognathus
+		Sphenocoelus_intermedius
+		Sphenocoelus_uintensis
+		Metarhinus_diploconus
+		Metarhinus_fluviatilis
+		Heterotitanops_parvus
+		Metarhinus_pater
+		Sthenodectes_australis
+		Sthenodectes_incisivum
+		Sthenodectes_priscus
+		Protitanotherium_superbum
+		Eubrontotherium_clarnoensis
+		Duchesneodus_primitivum
+		Duchesneodus_uintensis
+		Megacerops_curtus
+		Megacerops_hatcheri
+		Megacerops_kuwagatarhinus
+		Megacerops_osborni
+		Megacerops_riggsi
+		Metatelmatherium_ultimum
+		Telmatherium_altidens
+		Telmatherium_cultridens
+		Telmatherium_manteoceras
+		Telmatherium_validum
+		Telmatherium_accola
+		Telmatherium_advocata
+		Telmatherium_foris
+		Telmatherium_pratensis
+		Eomoropus_amarorum
+		Eomoropus_anarsius
+		Tylocephalonyx_skinneri
+		Moropus_elatus
+		Moropus_hollandi
+		Moropus_merriami
+		Moropus_oregonensis
+		Diplobunops_crassus
+		Diplobunops_matthewi
+		Agriochoerus_antiquus
+		Agriochoerus_gaudryi
+		Agriochoerus_guyotianus
+		Agriochoerus_maximus
+		Protoreodon_minimus
+		Protoreodon_minor
+		Protoreodon_pacificus
+		Protoreodon_parvus
+		Protoreodon_pearcei
+		Protoreodon_petersoni
+		Protoreodon_pumilus
+		Protoreodon_transmontanus
+		Protoreodon_walshi
+		Aclistomycter_middletoni
+		Oreonetes_douglassi
+		Bathygenys_alpha
+		Bathygenys_hedlundae
+		Bathygenys_reevesi
+		Miniochoerus_affinis
+		Miniochoerus_chadronensis
+		Miniochoerus_forsythae
+		Miniochoerus_gracilis
+		Miniochoerus_starkensis
+		Limnenetes_platyceps
+		Sespia_californica
+		Sespia_nitida
+		Leptauchenia_decora
+		Leptauchenia_loganensis
+		Leptauchenia_major
+		Merycoidodon_bullatus
+		Merycoidodon_culbertsoni
+		Merycoidodon_dunagani
+		Merycoidodon_major
+		Merycoidodon_presidioensis
+		Mesoreodon_chelonyx
+		Mesoreodon_floridensis
+		Mesoreodon_minor
+		Promerycochoerus_superbus
+		Desmatochoerus_hesperus
+		Desmatochoerus_megalodon
+		Hypsiops_bannackensis
+		Hypsiops_breviceps
+		Merycochoerus_carrikeri
+		Merycochoerus_chelydra
+		Merycochoerus_compressidens
+		Merycochoerus_elrodi
+		Merycochoerus_madisonius
+		Merycochoerus_magnus
+		Merycochoerus_matthewi
+		Merycochoerus_proprius
+		Merycochoerus_superbus
+		Merycochoerus_vantasselensis
+		Ustatochoerus_leptoscelos
+		Mediochoerus_blicki
+		Mediochoerus_mohavensis
+		Brachycrus_buwaldi
+		Brachycrus_laticeps
+		Brachycrus_rusticus
+		Brachycrus_siouense
+		Brachycrus_sweetwaterensis
+		Brachycrus_vaughani
+		Paroreodon_parvus
+		Phenacocoelus_typus
+		Ticholeptus_zygomaticus
+		Eporeodon_occidentalis
+		Merycoides_harrisonensis
+		Merycoides_longiceps
+		Merycoides_pariogonus
+		Merycoides_relictus
+		Oreodontoides_oregonensis
+		Merychyus_arenarum
+		Merychyus_crabilli
+		Merychyus_elegans
+		Merychyus_major
+		Merychyus_medius
+		Merychyus_minimus
+		Merychyus_novomexicanus
+		Merychyus_profectus
+		Merychyus_relictus
+		Merychyus_smithi
+		Leptotragulus_clarki
+		Leptotragulus_medius
+		Leptotragulus_proavus
+		Leptotragulus_ultimus
+		Heteromeryx_dispar
+		Toromeryx_marginensis
+		Poabromylus_golzi
+		Poabromylus_kayi
+		Poabromylus_robustus
+		Leptoreodon_edwardsi
+		Leptoreodon_leptolophus
+		Leptoreodon_major
+		Leptoreodon_marshi
+		Leptoreodon_pusillus
+		Leptoreodon_stocki
+		Paratoceras_macadamsi
+		Paratoceras_tedfordi
+		Paratoceras_wardi
+		Protoceras_celer
+		Protoceras_neatodelpha
+		Protoceras_skinneri
+		Pseudoprotoceras_longinaris
+		Pseudoprotoceras_minor
+		Pseudoprotoceras_semicinctus
+		Pseudoprotoceras_taylori
+		Trigenicus_profectus
+		Kyptoceras_amatorum
+		Syndyoceras_cooki
+		Synthetoceras_davisorum
+		Synthetoceras_tricornatus
+		Lambdoceras_hessei
+		Lambdoceras_siouxensis
+		Lambdoceras_trinitiensis
+		Prosynthetoceras_francisi
+		Prosynthetoceras_orthrionanus
+		Prosynthetoceras_texanus
+		Boochoerus_angustus
+		Choerodon_caninus
+		Dinohyus_hollandi
+		Entelodon_calkinsi
+		Brachyhyops_viensis
+		Brachyhyops_wyomingensis
+		Megachoerus_latidens
+		Megachoerus_zygomaticus
+		Archaeotherium_altidens
+		Archaeotherium_coarctatum
+		Archaeotherium_lemleyi
+		Archaeotherium_marshi
+		Archaeotherium_minimus
+		Archaeotherium_mortoni
+		Archaeotherium_palustris
+		Archaeotherium_ramosus
+		Archaeotherium_trippensis
+		Heptacodon_curtus
+		Heptacodon_gibbiceps
+		Heptacodon_occidentale
+		Heptacodon_pellionis
+		Heptacodon_yeguaensis
+		Kukusepasutanka_schultzi
+		Aepinacodon_americanus
+		Aepinacodon_deflectus
+		Bothriodon_advena
+		Bothriodon_rostratus
+		Elomeryx_armatus
+		Elomeryx_garbanii
+		Arretotherium_acridens
+		Arretotherium_fricki
+		Arretotherium_leptodus
+		Parahyus_vagus
+		Achaenodon_fremdi
+		Achaenodon_insolens
+		Achaenodon_robustus
+		Achaenodon_uintensis
+		Leptochoeridae_gen_et_sp_indet
+		Laredochoerus_edwardsi
+		Leptochoerus_elegans
+		Leptochoerus_emilyae
+		Leptochoerus_spectabilis
+		Leptochoerus_supremus
+		Ibarus_ignotus
+		Stibarus_montanus
+		Stibarus_obtusilobus
+		Stibarus_quadricuspis
+		Stibarus_yoderensis
+		Apriculus_praeteritus
+		Helohyus_lentus
+		Helohyus_milleri
+		Helohyus_plicodon
+		Bunomeryx_montanus
+		Mytonomeryx_scotti
+		Mesomeryx_grangeri
+		Homacodon_vagans
+		Microsus_cuspidatus
+		Texodon_meridianus
+		Pentacemylus_leotensis
+		Pentacemylus_progressus
+		Hylomeryx_annectens
+		Hylomeryx_quadricuspis
+		Auxontodon_pattersoni
+		Auxontodon_processus
+		Antiacodon_pygmaeus
+		Antiacodon_vanvaleni
+		Antiacodon_venustus
+		Hexacodus_pelodes
+		Hexacodus_uintensis
+		Neodiacodexis_emryi
+		Simpsonodus_chacensis
+		Tapochoerus_egressus
+		Tapochoerus_mcmillini
+		Bunophorus_etsagicus
+		Bunophorus_grangeri
+		Bunophorus_macropternus
+		Bunophorus_pattersoni
+		Bunophorus_robustus
+		Bunophorus_sinclairi
+		Diacodexis_gracilis
+		Diacodexis_ilicis
+		Diacodexis_kelleyi
+		Diacodexis_metsiacus
+		Diacodexis_minutus
+		Diacodexis_primus
+		Diacodexis_secans
+		Diacodexis_woltonensis
+	;
+END;
+BEGIN TREES;
+	TRANSLATE
+		1	Schizotheriodes_parvus,
+		2	Systemodon_tapirinus,
+		3	Cardiolophus_semihians,
+		4	Cardiolophus_radinskyi,
+		5	Homogalax_aureus,
+		6	Homogalax_protapirinus,
+		7	Isectolophus_annectens,
+		8	Isectolophus_latidens,
+		9	Isectolophus_radinskyi,
+		10	Desmatotherium_intermedius,
+		11	Fouchia_elyensis,
+		12	Selenaletes_scopaeus,
+		13	Helaletes_nanus,
+		14	Thuliadanta_mayri,
+		15	Dilophodon_destitutus,
+		16	Dilophodon_minusculus,
+		17	Nexuotapirus_marslandensis,
+		18	Nexuotapirus_robustus,
+		19	Colodon_cingulatus,
+		20	Colodon_kayi,
+		21	Colodon_occidentalis,
+		22	Colodon_stovalli,
+		23	Colodon_woodi,
+		24	Heteraletes_leotanus,
+		25	Plesiocolopirus_hancocki,
+		26	Protapirus_obliquidens,
+		27	Protapirus_simplex,
+		28	Miotapirus_harrisonensis,
+		29	Tapiravus_rarus,
+		30	Tapiravus_validus,
+		31	Tapirus_bairdii,
+		32	Tapirus_californicus,
+		33	Tapirus_haysii,
+		34	Tapirus_johnsoni,
+		35	Tapirus_lundeliusi,
+		36	Tapirus_merriami,
+		37	Tapirus_mesopotamicus,
+		38	Tapirus_polkensis,
+		39	Tapirus_simpsoni,
+		40	Tapirus_terrestris,
+		41	Tapirus_veroensis,
+		42	Toxotherium_hunteri,
+		43	Hyrachyus_affinis,
+		44	Hyrachyus_douglassi,
+		45	Hyrachyus_eximius,
+		46	Hyrachyus_modestus,
+		47	Amynodon_advenus,
+		48	Amynodon_reedi,
+		49	Amynodon_sinensis,
+		50	Amynodontopsis_bodei,
+		51	Megalamynodon_regalis,
+		52	Metamynodon_chadronensis,
+		53	Metamynodon_mckinneyi,
+		54	Metamynodon_planifrons,
+		55	Triplopides_rieli,
+		56	Triplopus_cubitalis,
+		57	Triplopus_implicatus,
+		58	Triplopus_obliquidens,
+		59	Triplopus_rhinocerinus,
+		60	Triplopus_woodi,
+		61	Prohyracodon_orientale,
+		62	Epitriplopus_uintensis,
+		63	Subhyracodon_copei,
+		64	Subhyracodon_gidleyi,
+		65	Hyracodon_leidyanus,
+		66	Hyracodon_medius,
+		67	Hyracodon_nebraskensis,
+		68	Hyracodon_petersoni,
+		69	Hyracodon_priscidens,
+		70	Gulfoceras_westfalli,
+		71	Uintaceras_radinskyi,
+		72	Epiaphelops_virgasectus,
+		73	Teletaceras_mortivallis,
+		74	Teletaceras_radinskyi,
+		75	Penetrigonias_dakotensis,
+		76	Penetrigonias_hudsoni,
+		77	Penetrigonias_sagittatus,
+		78	Amphicaenopus_platycephalus,
+		79	Trigonias_osborni,
+		80	Trigonias_wellsi,
+		81	Trigonias_yoderensis,
+		82	Subhyracodon_mitis,
+		83	Subhyracodon_occidentalis,
+		84	Subhyracodon_trigonodus,
+		85	Subhyracodon_woodi,
+		86	Diceratherium_annectens,
+		87	Diceratherium_armatum,
+		88	Diceratherium_gregorii,
+		89	Diceratherium_niobrarense,
+		90	Diceratherium_tridactylum,
+		91	Menoceras_arikarense,
+		92	Menoceras_barbouri,
+		93	Floridaceras_whitei,
+		94	Aphelops_malacorhinus,
+		95	Aphelops_megalodus,
+		96	Aphelops_mutilus,
+		97	Peraceras_hessei,
+		98	Peraceras_profectum,
+		99	Peraceras_superciliosum,
+		100	Brachypotherium_americanum,
+		101	Teleoceras_fossiger,
+		102	Teleoceras_guymonense,
+		103	Teleoceras_hicksi,
+		104	Teleoceras_major,
+		105	Teleoceras_medicornutum,
+		106	Teleoceras_meridianum,
+		107	Teleoceras_minor,
+		108	Teleoceras_proterum,
+		109	Hyracotherium_vasacciense,
+		110	Minippus_index,
+		111	Sifrhippus_grangeri,
+		112	Sifrhippus_sandrae,
+		113	Sifrhippus_aemulor,
+		114	Xenicohippus_craspedotum,
+		115	Xenicohippus_grangeri,
+		116	Xenicohippus_osborni,
+		117	Eohippus_angustidens,
+		118	Protohippus_montanum,
+		119	Protorohippus_venticolum,
+		120	Haplohippus_texanus,
+		121	Orohippus_major,
+		122	Orohippus_agilis,
+		123	Orohippus_progressus,
+		124	Orohippus_proteros,
+		125	Orohippus_pumilus,
+		126	Orohippus_sylvaticus,
+		127	Epihippus_gracilis,
+		128	Epihippus_intermedius,
+		129	Epihippus_uintensis,
+		130	Mesohippus_bairdi,
+		131	Mesohippus_exoletus,
+		132	Mesohippus_montanensis,
+		133	Mesohippus_portentus,
+		134	Mesohippus_propinquus,
+		135	Mesohippus_texanus,
+		136	Mesohippus_westoni,
+		137	Miohippus_acutidens,
+		138	Miohippus_anceps,
+		139	Miohippus_annectens,
+		140	Miohippus_assiniboiensis,
+		141	Miohippus_condoni,
+		142	Miohippus_equiceps,
+		143	Miohippus_equinanus,
+		144	Miohippus_gemmarosae,
+		145	Miohippus_gidleyi,
+		146	Miohippus_grandis,
+		147	Miohippus_intermedius,
+		148	Miohippus_obliquidens,
+		149	Miohippus_primus,
+		150	Anchitherium_australis,
+		151	Anchitherium_clarencei,
+		152	Anchitherium_navasotae,
+		153	Kalobatippus_agatensis,
+		154	Kalobatippus_avus,
+		155	Kalobatippus_praestans,
+		156	Megahippus_matthewi,
+		157	Megahippus_mckennai,
+		158	Hypohippus_affinis,
+		159	Hypohippus_chico,
+		160	Hypohippus_equinus,
+		161	Hypohippus_nevadensis,
+		162	Hypohippus_osborni,
+		163	Hypohippus_pertinax,
+		164	Archaeohippus_blackbergi,
+		165	Archaeohippus_mannulus,
+		166	Archaeohippus_mourningi,
+		167	Archaeohippus_penultimus,
+		168	Archaeohippus_stenolophus,
+		169	Archaeohippus_ultimus,
+		170	Desmatippus_avus,
+		171	Desmatippus_integer,
+		172	Desmatippus_texanus,
+		173	Parahippus_atavus,
+		174	Parahippus_cognatus,
+		175	Parahippus_coloradensis,
+		176	Parahippus_maxsoni,
+		177	Parahippus_nebrascensis,
+		178	Parahippus_pawniensis,
+		179	Parahippus_pristinus,
+		180	Parahippus_tyleri,
+		181	Parahippus_wyomingensis,
+		182	Parahippus_leonensis,
+		183	Acritohippus_stylodontus,
+		184	Acritohippus_tertius,
+		185	Acritohippus_isonesus,
+		186	Acritohippus_quinni,
+		187	Parapliohippus_carrizoensis,
+		188	Pliohippus_coalingensis,
+		189	Pliohippus_spectans,
+		190	Pliohippus_francescana,
+		191	Pliohippus_mirabilis,
+		192	Pliohippus_fossulatus,
+		193	Pliohippus_tantalus,
+		194	Pliohippus_nobilis,
+		195	Pliohippus_pernix,
+		196	Heteropliohippus_hulberti,
+		197	Pliohippus_tehonensis,
+		198	Astrohippus_ansae,
+		199	Astrohippus_stockii,
+		200	Dinohippus_leardi,
+		201	Boreohippidion_galushai,
+		202	Dinohippus_interpolatus,
+		203	Dinohippus_leidyanus,
+		204	Dinohippus_mexicanus,
+		205	Equus_kiang,
+		206	Equus_simplicidens,
+		207	Equus_excelsus,
+		208	Equus_caballus,
+		209	Equus_cf_caballus,
+		210	Equus_niobrarensis,
+		211	Equus_scotti,
+		212	Equus_alaskae,
+		213	Equus_complicatus,
+		214	Equus_conversidens,
+		215	Equus_crenidens,
+		216	Equus_enormis,
+		217	Equus_francisci,
+		218	Equus_fraternus,
+		219	Equus_fromanius,
+		220	Equus_giganteus,
+		221	Equus_holmesi,
+		222	Equus_idahoensis,
+		223	Equus_leidyi,
+		224	Equus_mexicanus,
+		225	Equus_nobisi,
+		226	Equus_pacificus,
+		227	Equus_parastylidens,
+		228	Equus_pectinatus,
+		229	Equus_pseudaltidens,
+		230	Equus_semiplicatus,
+		231	Equus_verae,
+		232	Equus_curvidens,
+		233	Merychippus_brevidontus,
+		234	Merychippus_calamarius,
+		235	Merychippus_californicus,
+		236	Merychippus_coloradense,
+		237	Merychippus_goorisi,
+		238	Merychippus_insignis,
+		239	Merychippus_quintus,
+		240	Merychippus_relictus,
+		241	Merychippus_republicanus,
+		242	Merychippus_sejunctus,
+		243	Merychippus_seversus,
+		244	Merychippus_stevensi,
+		245	Merychippus_gunteri,
+		246	Merychippus_primus,
+		247	Scaphohippus_intermontanus,
+		248	Scaphohippus_sumani,
+		249	Protohippus_vetus,
+		250	Protohippus_perditus,
+		251	Protohippus_gidleyi,
+		252	Protohippus_supremus,
+		253	Calippus_large,
+		254	Calippus_elachistus,
+		255	Calippus_regulus,
+		256	Calippus_placidus,
+		257	Calippus_proplacidus,
+		258	Calippus_circulus,
+		259	Calippus_martini,
+		260	Calippus_cerasinus,
+		261	Calippus_hondurensis,
+		262	Calippus_maccartyi,
+		263	Hipparion_condoni,
+		264	Hipparion_platystyle,
+		265	Hipparion_mohavense,
+		266	Hippotherium_occidentale,
+		267	Hippotherium_quinni,
+		268	Hippotherium_plicatile,
+		269	Hippotherium_emsliei,
+		270	Cormohipparion_sphenodus,
+		271	Cormohipparion_ingenuum,
+		272	Neohipparion_affine,
+		273	Neohipparion_trampasense,
+		274	Neohipparion_leptode,
+		275	Neohipparion_eurystyle,
+		276	Neohipparion_gidleyi,
+		277	Pseudhipparion_retrusum,
+		278	Pseudhipparion_curtivallum,
+		279	Pseudhipparion_hessei,
+		280	Pseudhipparion_gratum,
+		281	Pseudhipparion_simpsoni,
+		282	Pseudhipparion_skinneri,
+		283	Hipparion_shirleyae,
+		284	Hipparion_forcei,
+		285	Hipparion_tehonense,
+		286	Nannippus_montezumae,
+		287	Nannippus_parvulus,
+		288	Nannippus_morgani,
+		289	Nannippus_westoni,
+		290	Nannippus_lenticularis,
+		291	Nannippus_aztecus,
+		292	Nannippus_beckensis,
+		293	Nannippus_peninsulatus,
+		294	Malaquiferus_tourteloti,
+		295	Merycobunodon_littoralis,
+		296	Montanatylopus_matthewi,
+		297	Oromeryx_plicatus,
+		298	Eotylopus_reedi,
+		299	Protylopus_annectens,
+		300	Protylopus_pearsonensis,
+		301	Protylopus_petersoni,
+		302	Protylopus_robustus,
+		303	Protylopus_stocki,
+		304	Poebrodon_californicus,
+		305	Poebrodon_kayi,
+		306	Poebrotherium_chadronense,
+		307	Poebrotherium_eximium,
+		308	Poebrotherium_franki,
+		309	Poebrotherium_wilsoni,
+		310	Paratylopus_labiatus,
+		311	Paratylopus_primaevus,
+		312	Paralabis_cedrensis,
+		313	Pseudolabis_dakotensis,
+		314	Miotylopus_gibbi,
+		315	Miotylopus_leonardi,
+		316	Miotylopus_taylori,
+		317	Rakomylus_raki,
+		318	Wyomylus_whitei,
+		319	Blickomylus_moroni,
+		320	Blickomylus_galushai,
+		321	Stenomylus_crassipes,
+		322	Stenomylus_gracilis,
+		323	Stenomylus_hitchcocki,
+		324	Stenomylus_keelinensis,
+		325	Stenomylus_taylori,
+		326	Aguascalientia_wilsoni,
+		327	Floridatragulus_dolichanthereus,
+		328	Floridatragulus_hesperus,
+		329	Floridatragulus_nanus,
+		330	Floridatragulus_texanus,
+		331	Gentilicamelus_sternbergi,
+		332	Delahomeryx_browni,
+		333	Nothokemas_floridanus,
+		334	Nothokemas_hidalgensis,
+		335	Nothokemas_waldropi,
+		336	Tanymykter_brachyodontus,
+		337	Michenia_agatensis,
+		338	Michenia_deschutensis,
+		339	Michenia_exilis,
+		340	Michenia_mudhillsensis,
+		341	Protolabis_barstowensis,
+		342	Protolabis_yavapaiensis,
+		343	Protolabis_coartatus,
+		344	Protolabis_gracilis,
+		345	Protolabis_heterodontus,
+		346	Protolabis_saxeus,
+		347	Cuyamacamelus_jamesi,
+		348	Capricamelus_gettyi,
+		349	Nothotylopus_camptognathus,
+		350	Paramiolabis_minutus,
+		351	Paramiolabis_singularis,
+		352	Paramiolabis_taylori,
+		353	Paramiolabis_tenuis,
+		354	Miolabis_californicus,
+		355	Miolabis_fissidens,
+		356	Miolabis_fricki,
+		357	Miolabis_longiceps,
+		358	Miolabis_transmontanus,
+		359	Oxydactylus_benedentatus,
+		360	Oxydactylus_cameloides,
+		361	Oxydactylus_campestris,
+		362	Oxydactylus_lacota,
+		363	Oxydactylus_longipes,
+		364	Oxydactylus_longirostris,
+		365	Oxydactylus_lulli,
+		366	Oxydactylus_wyomingensis,
+		367	Australocamelus_orarius,
+		368	Priscocamelus_wilsoni,
+		369	Hesperocamelus_stylodon,
+		370	Procamelus_altus,
+		371	Procamelus_coconinensis,
+		372	Procamelus_grandis,
+		373	Procamelus_leptocolon,
+		374	Procamelus_leptognathus,
+		375	Procamelus_occidentalis,
+		376	Palauchenia_mexicana,
+		377	Gigantocamelus_spatulus,
+		378	Megacamelus_merriami,
+		379	Titanotylopus_nebraskensis,
+		380	Megatylopus_cochrani,
+		381	Megatylopus_gigas,
+		382	Megatylopus_matthewi,
+		383	Megatylopus_primaevus,
+		384	Blancocamelus_meadei,
+		385	Pliauchenia_magnifontis,
+		386	Tanupolama_parvus,
+		387	Aepycamelus_alexandrae,
+		388	Aepycamelus_bradyi,
+		389	Aepycamelus_giraffinus,
+		390	Aepycamelus_major,
+		391	Aepycamelus_procerus,
+		392	Aepycamelus_robustus,
+		393	Aepycamelus_stocki,
+		394	Hemiauchenia_blancoensis,
+		395	Palaeolama_mirifica,
+		396	Alforjas_taylori,
+		397	Hemiauchenia_gracilis,
+		398	Hemiauchenia_guanajuatensis,
+		399	Hemiauchenia_macrocephala,
+		400	Hemiauchenia_minima,
+		401	Hemiauchenia_vera,
+		402	Megalomeryx_niobrarensis,
+		403	Camelops_aransas,
+		404	Camelops_hesternus,
+		405	Camelops_huerfanensis,
+		406	Camelops_kansanus,
+		407	Camelops_minidokae,
+		408	Camelops_nitidus,
+		409	Camelops_sulcatus,
+		410	Camelops_traviswhitei,
+		411	Simojovelhyus_pocitosense,
+		412	Thinohyus_lentus,
+		413	Thinohyus_rostratus,
+		414	Perchoerus_probus,
+		415	Perchoerus_minor,
+		416	Perchoerus_nanus,
+		417	Lucashyus_coombsae,
+		418	Marshochoerus_sociale,
+		419	Floridachoerus_olseni,
+		420	Stuckyhyus_siouxensis,
+		421	Desmathyus_pinensis,
+		422	Hesperhys_vagrans,
+		423	Wrightohyus_yatkolai,
+		424	Cynorca_occidentale,
+		425	Dyseohyus_fricki,
+		426	Prosthennops_xiphodonticus,
+		427	Prosthennops_niobrarensis,
+		428	Macrogenis_crassigenis,
+		429	Woodburnehyus_grenaderae,
+		430	Skinnerhyus_shermerorum,
+		431	Pecari_tajacu,
+		432	Catagonus_brachydontus,
+		433	Catagonus_stenocephalus,
+		434	Tayassu_edensis,
+		435	Prosthennops_kernensis,
+		436	Prosthennops_serus,
+		437	Mylohyus_elmorei,
+		438	Mylohyus_floridanus,
+		439	Mylohyus_fossilis,
+		440	Mylohyus_longirostris,
+		441	Platygonus_bicalcaratus,
+		442	Platygonus_brachirostris,
+		443	Platygonus_compressus,
+		444	Platygonus_marplatensis,
+		445	Platygonus_oregonensis,
+		446	Platygonus_pearcei,
+		447	Platygonus_pollenae,
+		448	Platygonus_scagliae,
+		449	Platygonus_vetus,
+		450	Platygonus_cumberlandensis,
+		451	Parvitragulus_priscus,
+		452	Simimeryx_hudsoni,
+		453	Simimeryx_minutus,
+		454	Nanotragulus_loomisi,
+		455	Nanotragulus_ordinatus,
+		456	Hypisodus_alacer,
+		457	Hypertragulus_planiceps,
+		458	Hypisodus_ironsi,
+		459	Hypisodus_minimus,
+		460	Hypisodus_paululus,
+		461	Hypisodus_retallacki,
+		462	Hypertragulus_calcaratus,
+		463	Hypertragulus_chadronensis,
+		464	Hypertragulus_crawfordensis,
+		465	Hypertragulus_dakotensis,
+		466	Hypertragulus_heikeni,
+		467	Hypertragulus_hesperius,
+		468	Hypertragulus_minor,
+		469	Hypertragulus_minutus,
+		470	Hypertragulus_quadratus,
+		471	Hypertragulus_sequens,
+		472	Pronodens_silberlingi,
+		473	Pronodens_transmontanus,
+		474	Hendryomeryx_defordi,
+		475	Hendryomeryx_esulcatus,
+		476	Hendryomeryx_wilsoni,
+		477	Pseudoparablastomeryx_francescita,
+		478	Pseudoparablastomeryx_scotti,
+		479	Leptomeryx_antecedens,
+		480	Leptomeryx_blacki,
+		481	Leptomeryx_elissae,
+		482	Leptomeryx_evansi,
+		483	Leptomeryx_exilis,
+		484	Leptomeryx_mammifer,
+		485	Leptomeryx_obliquidens,
+		486	Leptomeryx_speciosus,
+		487	Leptomeryx_yoderi,
+		488	Pseudoceras_skinneri,
+		489	Floridameryx_floridanus,
+		490	Floridameryx_klausi,
+		491	Submeryceros_minimus,
+		492	Submeryceros_minor,
+		493	Paracosoryx_alticornis,
+		494	Paracosoryx_dawesensis,
+		495	Paracosoryx_furlongi,
+		496	Paracosoryx_loxocerus,
+		497	Paracosoryx_nevadensis,
+		498	Paracosoryx_wilsoni,
+		499	Merriamoceros_coronatus,
+		500	Ramoceros_brevicornis,
+		501	Ramoceros_marthae,
+		502	Ramoceros_osborni,
+		503	Ramoceros_ramosus,
+		504	Merycodus_crucensis,
+		505	Merycodus_hookwayi,
+		506	Merycodus_joraki,
+		507	Merycodus_major,
+		508	Merycodus_necatus,
+		509	Merycodus_prodromus,
+		510	Merycodus_sabulonis,
+		511	Merycodus_warreni,
+		512	Cosoryx_cerroensis,
+		513	Cosoryx_furcatus,
+		514	Cosoryx_ilfonsensis,
+		515	Osbornoceros_osborni,
+		516	Proantilocapra_platycornea,
+		517	Ceratomeryx_prenticei,
+		518	Ottoceros_peacevalleyensis,
+		519	Plioceros_blicki,
+		520	Plioceros_dehlini,
+		521	Plioceros_floblairi,
+		522	Ilingoceros_alexandrae,
+		523	Ilingoceros_schizoceros,
+		524	Sphenophalos_garciae,
+		525	Sphenophalos_middleswarti,
+		526	Sphenophalos_nevadanus,
+		527	Antilocapra_americana,
+		528	Texoceros_altidens,
+		529	Texoceros_edensis,
+		530	Texoceros_guymonensis,
+		531	Texoceros_minorei,
+		532	Texoceros_vaughani,
+		533	Hayoceros_barbouri,
+		534	Hayoceros_falkenbachi,
+		535	Hexameryx_simpsoni,
+		536	Hexobelomeryx_fricki,
+		537	Stockoceros_conklingi,
+		538	Stockoceros_onusrosagris,
+		539	Tetrameryx_irvingtonensis,
+		540	Tetrameryx_knoxensis,
+		541	Tetrameryx_mooseri,
+		542	Tetrameryx_shuleri,
+		543	Tetrameryx_tacubayensis,
+		544	Capromeryx_arizonensis,
+		545	Capromeryx_furcifer,
+		546	Capromeryx_gidleyi,
+		547	Capromeryx_minor,
+		548	Capromeryx_tauntonensis,
+		549	Boreameryx_braskerudi,
+		550	Cervus_brevitrabalis,
+		551	Cervus_elaphus,
+		552	Alces_alces,
+		553	Bretzia_pseudalces,
+		554	Cervalces_latifrons,
+		555	Cervalces_scotti,
+		556	Sangamona_fugitivus,
+		557	Rangifer_tarandus,
+		558	Navahoceros_fricki,
+		559	Navahoceros_lascrucensis,
+		560	Odocoileus_hemionus,
+		561	Odocoileus_sellardsiae,
+		562	Odocoileus_virginianus,
+		563	Problastomeryx_primus,
+		564	Pseudoblastomeryx_advena,
+		565	Machaeromeryx_gilchristensis,
+		566	Machaeromeryx_tragulus,
+		567	Longirostromeryx_clarendonensis,
+		568	Longirostromeryx_novomexicanus,
+		569	Longirostromeryx_wellsi,
+		570	Parablastomeryx_floridanus,
+		571	Parablastomeryx_galushi,
+		572	Parablastomeryx_gregorii,
+		573	Blastomeryx_cursor,
+		574	Blastomeryx_gemmifer,
+		575	Blastomeryx_pristinus,
+		576	Blastomeryx_vigoratus,
+		577	Bos_taurus,
+		578	Bison_bison,
+		579	Bison_alaskensis,
+		580	Bison_antiquus,
+		581	Bison_latifrons,
+		582	Bison_priscus,
+		583	Saiga_tatarica,
+		584	Neotragocerus_improvisus,
+		585	Neotragocerus_lindgreni,
+		586	Sinocapra_willdownsi,
+		587	Ovis_canadensis,
+		588	Ovis_dalli,
+		589	Oreamnos_americanus,
+		590	Oreamnos_harringtoni,
+		591	Bootherium_bombifrons,
+		592	Euceratherium_collinum,
+		593	Soergelia_mayfieldi,
+		594	Ovibos_moschatus,
+		595	Diabolocornis_simonsi,
+		596	Sinclairomeryx_riparius,
+		597	Aletomeryx_gracilis,
+		598	Aletomeryx_marslandensis,
+		599	Aletomeryx_occidentalis,
+		600	Drepanomeryx_falciformis,
+		601	Dromomeryx_borealis,
+		602	Subdromomeryx_antilopinus,
+		603	Rakomeryx_raki,
+		604	Rakomeryx_sinclairi,
+		605	Barbouromeryx_trigonocorneus,
+		606	Bouromeryx_americanus,
+		607	Bouromeryx_submilleri,
+		608	Procranioceras_skinneri,
+		609	Cranioceras_clarendonensis,
+		610	Cranioceras_teres,
+		611	Cranioceras_unicornis,
+		612	Pediomeryx_hemphillensis,
+		613	Yumaceras_figginsi,
+		614	Yumaceras_hamiltoni,
+		615	Yumaceras_ruminalis,
+		616	Heptodon_calciculus,
+		617	Heptodon_posticus,
+		618	Parvicornus_occidentalis,
+		619	Notiotitanops_mississippiensis,
+		620	Protitanops_curryi,
+		621	Menodus_proutii,
+		622	Eotitanotherium_osborni,
+		623	Pseudodiplacodon_progressum,
+		624	Brontops_bicornutus,
+		625	Brontops_brachycephalus,
+		626	Brontops_dispar,
+		627	Brontops_robustus,
+		628	Brontops_tyleri,
+		629	Menops_bakeri,
+		630	Menops_heloceras,
+		631	Menops_marshi,
+		632	Menops_serotinus,
+		633	Menops_walcotti,
+		634	Lambdotherium_popoagicum,
+		635	Eotitanops_minimus,
+		636	Palaeosyops_borealis,
+		637	Palaeosyops_fontinalis,
+		638	Palaeosyops_laevidens,
+		639	Palaeosyops_laticeps,
+		640	Palaeosyops_paludosus,
+		641	Palaeosyops_robustus,
+		642	Mesatirhinus_megarhinus,
+		643	Sphenocoelus_hyognathus,
+		644	Sphenocoelus_intermedius,
+		645	Sphenocoelus_uintensis,
+		646	Metarhinus_diploconus,
+		647	Metarhinus_fluviatilis,
+		648	Heterotitanops_parvus,
+		649	Metarhinus_pater,
+		650	Sthenodectes_australis,
+		651	Sthenodectes_incisivum,
+		652	Sthenodectes_priscus,
+		653	Protitanotherium_superbum,
+		654	Eubrontotherium_clarnoensis,
+		655	Duchesneodus_primitivum,
+		656	Duchesneodus_uintensis,
+		657	Megacerops_curtus,
+		658	Megacerops_hatcheri,
+		659	Megacerops_kuwagatarhinus,
+		660	Megacerops_osborni,
+		661	Megacerops_riggsi,
+		662	Metatelmatherium_ultimum,
+		663	Telmatherium_altidens,
+		664	Telmatherium_cultridens,
+		665	Telmatherium_manteoceras,
+		666	Telmatherium_validum,
+		667	Telmatherium_accola,
+		668	Telmatherium_advocata,
+		669	Telmatherium_foris,
+		670	Telmatherium_pratensis,
+		671	Eomoropus_amarorum,
+		672	Eomoropus_anarsius,
+		673	Tylocephalonyx_skinneri,
+		674	Moropus_elatus,
+		675	Moropus_hollandi,
+		676	Moropus_merriami,
+		677	Moropus_oregonensis,
+		678	Diplobunops_crassus,
+		679	Diplobunops_matthewi,
+		680	Agriochoerus_antiquus,
+		681	Agriochoerus_gaudryi,
+		682	Agriochoerus_guyotianus,
+		683	Agriochoerus_maximus,
+		684	Protoreodon_minimus,
+		685	Protoreodon_minor,
+		686	Protoreodon_pacificus,
+		687	Protoreodon_parvus,
+		688	Protoreodon_pearcei,
+		689	Protoreodon_petersoni,
+		690	Protoreodon_pumilus,
+		691	Protoreodon_transmontanus,
+		692	Protoreodon_walshi,
+		693	Aclistomycter_middletoni,
+		694	Oreonetes_douglassi,
+		695	Bathygenys_alpha,
+		696	Bathygenys_hedlundae,
+		697	Bathygenys_reevesi,
+		698	Miniochoerus_affinis,
+		699	Miniochoerus_chadronensis,
+		700	Miniochoerus_forsythae,
+		701	Miniochoerus_gracilis,
+		702	Miniochoerus_starkensis,
+		703	Limnenetes_platyceps,
+		704	Sespia_californica,
+		705	Sespia_nitida,
+		706	Leptauchenia_decora,
+		707	Leptauchenia_loganensis,
+		708	Leptauchenia_major,
+		709	Merycoidodon_bullatus,
+		710	Merycoidodon_culbertsoni,
+		711	Merycoidodon_dunagani,
+		712	Merycoidodon_major,
+		713	Merycoidodon_presidioensis,
+		714	Mesoreodon_chelonyx,
+		715	Mesoreodon_floridensis,
+		716	Mesoreodon_minor,
+		717	Promerycochoerus_superbus,
+		718	Desmatochoerus_hesperus,
+		719	Desmatochoerus_megalodon,
+		720	Hypsiops_bannackensis,
+		721	Hypsiops_breviceps,
+		722	Merycochoerus_carrikeri,
+		723	Merycochoerus_chelydra,
+		724	Merycochoerus_compressidens,
+		725	Merycochoerus_elrodi,
+		726	Merycochoerus_madisonius,
+		727	Merycochoerus_magnus,
+		728	Merycochoerus_matthewi,
+		729	Merycochoerus_proprius,
+		730	Merycochoerus_superbus,
+		731	Merycochoerus_vantasselensis,
+		732	Ustatochoerus_leptoscelos,
+		733	Mediochoerus_blicki,
+		734	Mediochoerus_mohavensis,
+		735	Brachycrus_buwaldi,
+		736	Brachycrus_laticeps,
+		737	Brachycrus_rusticus,
+		738	Brachycrus_siouense,
+		739	Brachycrus_sweetwaterensis,
+		740	Brachycrus_vaughani,
+		741	Paroreodon_parvus,
+		742	Phenacocoelus_typus,
+		743	Ticholeptus_zygomaticus,
+		744	Eporeodon_occidentalis,
+		745	Merycoides_harrisonensis,
+		746	Merycoides_longiceps,
+		747	Merycoides_pariogonus,
+		748	Merycoides_relictus,
+		749	Oreodontoides_oregonensis,
+		750	Merychyus_arenarum,
+		751	Merychyus_crabilli,
+		752	Merychyus_elegans,
+		753	Merychyus_major,
+		754	Merychyus_medius,
+		755	Merychyus_minimus,
+		756	Merychyus_novomexicanus,
+		757	Merychyus_profectus,
+		758	Merychyus_relictus,
+		759	Merychyus_smithi,
+		760	Leptotragulus_clarki,
+		761	Leptotragulus_medius,
+		762	Leptotragulus_proavus,
+		763	Leptotragulus_ultimus,
+		764	Heteromeryx_dispar,
+		765	Toromeryx_marginensis,
+		766	Poabromylus_golzi,
+		767	Poabromylus_kayi,
+		768	Poabromylus_robustus,
+		769	Leptoreodon_edwardsi,
+		770	Leptoreodon_leptolophus,
+		771	Leptoreodon_major,
+		772	Leptoreodon_marshi,
+		773	Leptoreodon_pusillus,
+		774	Leptoreodon_stocki,
+		775	Paratoceras_macadamsi,
+		776	Paratoceras_tedfordi,
+		777	Paratoceras_wardi,
+		778	Protoceras_celer,
+		779	Protoceras_neatodelpha,
+		780	Protoceras_skinneri,
+		781	Pseudoprotoceras_longinaris,
+		782	Pseudoprotoceras_minor,
+		783	Pseudoprotoceras_semicinctus,
+		784	Pseudoprotoceras_taylori,
+		785	Trigenicus_profectus,
+		786	Kyptoceras_amatorum,
+		787	Syndyoceras_cooki,
+		788	Synthetoceras_davisorum,
+		789	Synthetoceras_tricornatus,
+		790	Lambdoceras_hessei,
+		791	Lambdoceras_siouxensis,
+		792	Lambdoceras_trinitiensis,
+		793	Prosynthetoceras_francisi,
+		794	Prosynthetoceras_orthrionanus,
+		795	Prosynthetoceras_texanus,
+		796	Boochoerus_angustus,
+		797	Choerodon_caninus,
+		798	Dinohyus_hollandi,
+		799	Entelodon_calkinsi,
+		800	Brachyhyops_viensis,
+		801	Brachyhyops_wyomingensis,
+		802	Megachoerus_latidens,
+		803	Megachoerus_zygomaticus,
+		804	Archaeotherium_altidens,
+		805	Archaeotherium_coarctatum,
+		806	Archaeotherium_lemleyi,
+		807	Archaeotherium_marshi,
+		808	Archaeotherium_minimus,
+		809	Archaeotherium_mortoni,
+		810	Archaeotherium_palustris,
+		811	Archaeotherium_ramosus,
+		812	Archaeotherium_trippensis,
+		813	Heptacodon_curtus,
+		814	Heptacodon_gibbiceps,
+		815	Heptacodon_occidentale,
+		816	Heptacodon_pellionis,
+		817	Heptacodon_yeguaensis,
+		818	Kukusepasutanka_schultzi,
+		819	Aepinacodon_americanus,
+		820	Aepinacodon_deflectus,
+		821	Bothriodon_advena,
+		822	Bothriodon_rostratus,
+		823	Elomeryx_armatus,
+		824	Elomeryx_garbanii,
+		825	Arretotherium_acridens,
+		826	Arretotherium_fricki,
+		827	Arretotherium_leptodus,
+		828	Parahyus_vagus,
+		829	Achaenodon_fremdi,
+		830	Achaenodon_insolens,
+		831	Achaenodon_robustus,
+		832	Achaenodon_uintensis,
+		833	Leptochoeridae_gen_et_sp_indet,
+		834	Laredochoerus_edwardsi,
+		835	Leptochoerus_elegans,
+		836	Leptochoerus_emilyae,
+		837	Leptochoerus_spectabilis,
+		838	Leptochoerus_supremus,
+		839	Ibarus_ignotus,
+		840	Stibarus_montanus,
+		841	Stibarus_obtusilobus,
+		842	Stibarus_quadricuspis,
+		843	Stibarus_yoderensis,
+		844	Apriculus_praeteritus,
+		845	Helohyus_lentus,
+		846	Helohyus_milleri,
+		847	Helohyus_plicodon,
+		848	Bunomeryx_montanus,
+		849	Mytonomeryx_scotti,
+		850	Mesomeryx_grangeri,
+		851	Homacodon_vagans,
+		852	Microsus_cuspidatus,
+		853	Texodon_meridianus,
+		854	Pentacemylus_leotensis,
+		855	Pentacemylus_progressus,
+		856	Hylomeryx_annectens,
+		857	Hylomeryx_quadricuspis,
+		858	Auxontodon_pattersoni,
+		859	Auxontodon_processus,
+		860	Antiacodon_pygmaeus,
+		861	Antiacodon_vanvaleni,
+		862	Antiacodon_venustus,
+		863	Hexacodus_pelodes,
+		864	Hexacodus_uintensis,
+		865	Neodiacodexis_emryi,
+		866	Simpsonodus_chacensis,
+		867	Tapochoerus_egressus,
+		868	Tapochoerus_mcmillini,
+		869	Bunophorus_etsagicus,
+		870	Bunophorus_grangeri,
+		871	Bunophorus_macropternus,
+		872	Bunophorus_pattersoni,
+		873	Bunophorus_robustus,
+		874	Bunophorus_sinclairi,
+		875	Diacodexis_gracilis,
+		876	Diacodexis_ilicis,
+		877	Diacodexis_kelleyi,
+		878	Diacodexis_metsiacus,
+		879	Diacodexis_minutus,
+		880	Diacodexis_primus,
+		881	Diacodexis_secans,
+		882	Diacodexis_woltonensis
+	;
+	TREE * UNTITLED = [&R] 
