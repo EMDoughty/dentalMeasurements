@@ -49,9 +49,9 @@ shortFam <- sort(unique(bigList$family[bigList$order %in% focal.order]))
 
 bigList$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = bigList$accepted_name)
 
-# matrix(measure.mat$species[!measure.mat$species %in% bigList$accepted_name[bigList$order %in% focal.order]], ncol=1)
-# matrix(bigList$accepted_name[bigList$order %in% focal.order][! bigList$accepted_name[bigList$order %in% focal.order] %in% measure.mat$species], ncol=1)
-measure.mat <- measure.mat[measure.mat$species %in% bigList$accepted_name[bigList$order %in% focal.order], ]
+# matrix(measure.mat$taxon[!measure.mat$taxon %in% bigList$accepted_name[bigList$order %in% focal.order]], ncol=1)
+# matrix(bigList$accepted_name[bigList$order %in% focal.order][! bigList$accepted_name[bigList$order %in% focal.order] %in% measure.mat$taxon], ncol=1)
+measure.mat <- measure.mat[measure.mat$taxon %in% bigList$accepted_name[bigList$order %in% focal.order], ]
 
 ####################################################################################################################################
 
@@ -59,10 +59,10 @@ measure.mat <- measure.mat[measure.mat$species %in% bigList$accepted_name[bigLis
 	# for (intv in seq_len((nrow(intervals)))) {
 		# thisInt <- rownames(ranges)[ranges[,"FO"] >= intervals$ageTop[intv] & ranges[, "LO"] < intervals$ageBase[intv]]
 		# richness[intv,1] <- length(thisInt)
-		# richness[intv,2] <- sum(thisInt %in% measure.mat$species)
-		# richness[intv,3] <- sum(thisInt %in% measure.mat$species[is.finite(measure.mat$bodyMass)])
-		# richness[intv,4] <- sum(thisInt %in% measure.mat$species[is.finite(measure.mat$PC3)])	
-		# print(thisInt[!thisInt %in% measure.mat$species])	
+		# richness[intv,2] <- sum(thisInt %in% measure.mat$taxon)
+		# richness[intv,3] <- sum(thisInt %in% measure.mat$taxon[is.finite(measure.mat$bodyMass)])
+		# richness[intv,4] <- sum(thisInt %in% measure.mat$taxon[is.finite(measure.mat$PC3)])	
+		# print(thisInt[!thisInt %in% measure.mat$taxon])	
 	# }
 	
 	# par(mar=c(3,4,0.5,0.5), cex=0.66)
@@ -78,7 +78,7 @@ int_length <- 2
 intervals <- makeIntervals(1, 56, int_length)
 intList <- listifyMatrixByRow(intervals)
 
-do.parallel <- TRUE
+do.parallel <- FALSE
 	if (do.parallel) require(parallel)
 reps <- 1000
 do.subsample <- TRUE
@@ -110,15 +110,15 @@ for (rep in seq_len(reps)) {
 	##################################################We need to update this sbootstrap section
 	if (bootstrapSpecimens) {
 		measure.mat <- specimenMat[sample.int(nrow(specimenMat), size=nrow(specimenMat), replace=TRUE),]
-		measure.mat <- aggregate(measure.mat, by=list(species=specimenMat$species), mean, na.rm=TRUE)
+		measure.mat <- aggregate(measure.mat, by=list(taxon=specimenMat$taxon), mean, na.rm=TRUE)
 		# measure.mat <- measure.mat[,apply(!sapply(measure.mat, is.na), 2, any)]
-		rownames(measure.mat) <- measure.mat$species
+		rownames(measure.mat) <- measure.mat$taxon
 		measure.mat[sapply(measure.mat, is.nan)] <- NA
 		# measure.mat<-cbind(measure.mat, cbind(FO=vector(length=nrow(measure.mat), mode="numeric"), LO=vector(length=nrow(measure.mat), mode="numeric")))
-		measure.mat[,"reg"] <- as.character(famList$reg[match(measure.mat$species,famList$taxon)])
+		measure.mat[,"reg"] <- as.character(famList$reg[match(measure.mat$taxon,famList$taxon)])
 		measure.mat[,"bodyMass"] <- makeBodyMasses(measure.mat, regList, best.only=TRUE)
-		# measure.mat[,"PC2"] <- pcVec[match(measure.mat$species, names(pcVec))]
-		# measure.mat[,"PC3"] <- pcaLo$x[match(measure.mat$species, rownames(pcaLo$x)),3]
+		# measure.mat[,"PC2"] <- pcVec[match(measure.mat$taxon, names(pcVec))]
+		# measure.mat[,"PC3"] <- pcaLo$x[match(measure.mat$taxon, rownames(pcaLo$x)),3]
 	}
 	if (bootstrapSpecies) measure.mat <- holderMat[sample.int(n=nrow(measure.mat), size=nrow(measure.mat), replace=TRUE),]
 
@@ -127,8 +127,8 @@ for (rep in seq_len(reps)) {
 	intOccs <- apply(intervals, 1, function(thisIntv) occs$occurrence_no[occDates > thisIntv[1] & occDates <= thisIntv[2]]) # greater than ageTop, less than or equal to ageBase
 	# intTaxa <- sapply(intOccs, function(x) unique(occs$accepted_name[occs$occurrence_no %in% x]))
 	# x <- intOccs
-	# intSp <- sapply(intOccs, function(x) match(sort(unique(gsub(pattern = "[[:space:]]", replacement = "_", x = occs$accepted_name[occs$accepted_rank  == "species" & occs$occurrence_no %in% x]))), measure.mat$species))
-	# intSp <- sapply(intOccs, function(x) match(sort(unique(occs$accepted_name[occs$accepted_rank  %in% c("genus", "species") & occs$occurrence_no %in% x]))), measure.mat$species))
+	# intSp <- sapply(intOccs, function(x) match(sort(unique(gsub(pattern = "[[:space:]]", replacement = "_", x = occs$accepted_name[occs$accepted_rank  == "species" & occs$occurrence_no %in% x]))), measure.mat$taxon))
+	# intSp <- sapply(intOccs, function(x) match(sort(unique(occs$accepted_name[occs$accepted_rank  %in% c("genus", "species") & occs$occurrence_no %in% x]))), measure.mat$taxon))
 	# intSp <- sapply(intOccs, function(x) sort(unique(as.character(occs$accepted_name[occs$occurrence_no %in% x]))))
 
 	#which(occs$occurrence_no %in% x == TRUE) # none are being returned as TRUE
@@ -148,7 +148,7 @@ for (rep in seq_len(reps)) {
 
 repIntTaxa <- getRepIntTaxaFromRepIntOccs(repIntOccs, this.rank=this.rank, do.rangethrough=do.rangethrough)
 
-print("Completed getting species with intervals")
+print("Completed getting taxa with intervals")
 
 ###################################################################################################################################
 
@@ -200,7 +200,7 @@ bmBreaks <- c(-Inf, 0.69897, 1.39794, 2.176091, 2.69897, 3.0, Inf) #Janis 2000  
 
 countCube <- sapply(repIntTaxa, function(this.rep) {
 	sapply(this.rep, function(this.intv, this.rep) {
-		hist(measure.mat$bodyMass[match(this.intv, measure.mat$species)], breaks=bmBreaks, plot=FALSE)$counts
+		hist(measure.mat$bodyMass[match(this.intv, measure.mat$taxon)], breaks=bmBreaks, plot=FALSE)$counts
 		}, this.rep=this.rep)
 	}, simplify = "array")
 	
@@ -264,18 +264,18 @@ quants <- apply(sapply(repIntTaxa, function(y) sapply(y, function(x) quantile(me
 	# optList_tax_allReps <- optList_tax_allReps_heuristic
 	# optList_tax_allReps <- optList_tax_allReps_full
 	breakHist <- hist(rowMeans(intervals)[unlist(sapply(optList_tax_allReps, function(x) x[[length(x) - 1]]$optBreaks))], breaks=sort(unique(unlist(intervals))), plot=FALSE)
-	plot(breakHist, col=NA, border=NA, labels=FALSE, freq=TRUE, cex=0.3, xaxp =c(55,5,5), xlim=rev(range(intervals)), ylim=c(0,reps), main="Number of Replicates with a Taxonomic Distribution Shift", xlab="Time (Ma)")
+	plot(breakHist, col=NA, border=NA, labels=FALSE, freq=TRUE, cex=0.3, xaxp =c(55,5,5), xlim=rev(range(intervals)), xaxp =c(55,5,10), ylim=c(0,reps), main="Number of Replicates with a Taxonomic Distribution Shift", xlab="Time (Ma)")
 	overlayCzTimescale(do.subepochs=TRUE)
-	plot(breakHist, col="orchid4", border="orchid1", labels=TRUE, freq=TRUE, cex=0.3, xaxp =c(55,5,5), xlim=c(55, 0), ylim=c(0,reps), add=TRUE)
+	plot(breakHist, col="orchid4", border="orchid1", labels=TRUE, freq=TRUE, cex=0.3, xaxp =c(55,5,10),  xlim=c(55, 0), ylim=c(0,reps), add=TRUE)
 
 	# par(mfrow=c(2,1), mar=c(3.5, 3.5, 1, 1))
 	# optList_bm_allReps <- optList_bm_allReps_heuristic
 	# optList_bm_allReps <- optList_bm_allReps_full
 	### number of Replicates with a shift in that interval
 	breakHist <- hist(rowMeans(intervals)[unlist(sapply(optList_bm_allReps, function(x) unique(x[[length(x) - 1]]$optBreaks)))], breaks=sort(unique(unlist(intervals))), plot=FALSE)
-	plot(breakHist, col=NA, border=NA, labels=FALSE, freq=TRUE, cex=0.3, xaxp =c(55,5,5), xlim=rev(range(intervals)), ylim=c(0,reps), main="Number of Replicates with a Body Mass Distribution Shift", xlab="Time (Ma)")
+	plot(breakHist, col=NA, border=NA, labels=FALSE, freq=TRUE, cex=0.3, xaxp =c(55,5,10), xlim=rev(range(intervals)), ylim=c(0,reps), main="Number of Replicates with a Body Mass Distribution Shift", xlab="Time (Ma)")
 	overlayCzTimescale(do.subepochs=TRUE)
-	plot(breakHist, col="firebrick4", border="firebrick1", labels=TRUE, freq=TRUE, cex=0.3, xaxp =c(55,5,5), xlim=c(55, 0), ylim=c(0,reps), add=TRUE)
+	plot(breakHist, col="firebrick4", border="firebrick1", labels=TRUE, freq=TRUE, cex=0.3, xaxp =c(55,5,10), xlim=c(55, 0), ylim=c(0,reps), add=TRUE)
 
 
 ####################################################################################################################################
@@ -287,10 +287,9 @@ quants <- apply(sapply(repIntTaxa, function(y) sapply(y, function(x) quantile(me
 #####
 	quartz(width=6.89)
 		par(mfrow=c(4,1), mar=c(0,4,0.5,0.5), mgp=c(2, 1,0))
-		
 	### isotope panel
 		if(Sys.info()["sysname"] == "Darwin"){
-				source("~/Dropbox/ungulate_RA/RCode/isotopes.R")
+			source('~/Dropbox/code/R/common_src/isotopes.R', chdir = TRUE)
 			} else if(Sys.info()["sysname"] == "Windows"){
 				source("C:/Users/Blaire/Dropbox/ungulate_RA/RCode/isotopes.R")
 			}
@@ -301,12 +300,12 @@ quants <- apply(sapply(repIntTaxa, function(y) sapply(y, function(x) quantile(me
 	optList_topes <- doTopesRateAnalysis(intervals)
 	plotTopesRateAnalysis(optList_topes, intervals, x.axis=FALSE) #
 	box(lwd=1)
-	getAlroyStatistics(intervals)
+	# getAlroyStatistics(intervals)
 			
 	### taxonomy panel
 		par(mar=c(0,4, 2.5,0.5))
 		
-		# taxCube <- sapply(repIntTaxa, function(y) sapply(y, function(x) tabulate(match(bigList$family[as.character(bigList$accepted_name) %in% measure.mat$species[x]], shortFam), nbins=length(shortFam)), simplify="array"), simplify="array")
+		# taxCube <- sapply(repIntTaxa, function(y) sapply(y, function(x) tabulate(match(bigList$family[as.character(bigList$accepted_name) %in% measure.mat$taxon[x]], shortFam), nbins=length(shortFam)), simplify="array"), simplify="array")
 		#taxCubeG <- sapply(repIntTaxa, function(y) sapply(y, function(x) tabulate(match(bigList$family[as.character(bigList$genus) %in% x], shortFam), nbins=length(shortFam)), simplify="array"), simplify="array")
 		taxCube <- sapply(repIntTaxa, function(y) sapply(y, function(x) tabulate(match(bigList$family[as.character(bigList$accepted_name) %in% x], shortFam), nbins=length(shortFam)), simplify="array"), simplify="array")
 		dimnames(taxCube) <- list(shortFam, rownames(intervals), NULL)
@@ -317,8 +316,8 @@ quants <- apply(sapply(repIntTaxa, function(y) sapply(y, function(x) quantile(me
 		# dimnames(prop) <- list(rownames(intervals), shortFam)
 		source("https://dl.dropbox.com/s/iy0tu983xesbig2/taxonomicEv.R")
 		plotStackedRichness(this.box=prop, intervals=intervals, do.log=FALSE, overlay.labels=TRUE, numbers.only=TRUE, legend=FALSE, xlim=c(max(intervals, na.rm=TRUE),min(intervals, na.rm=TRUE)))
-		#med.n <- median(length(unique(unlist(sapply(repIntTaxa[[this.rep]], function(x) measure.mat$species[x]))))) #what is this.rep set to during this function?  variable is used in for loop in Handley
-		# med.n <- median(sapply(repIntTaxa, function(x) length(unique(unlist(sapply(x, function(y) measure.mat$species[y]))))))
+		#med.n <- median(length(unique(unlist(sapply(repIntTaxa[[this.rep]], function(x) measure.mat$taxon[x]))))) #what is this.rep set to during this function?  variable is used in for loop in Handley
+		# med.n <- median(sapply(repIntTaxa, function(x) length(unique(unlist(sapply(x, function(y) measure.mat$taxon[y]))))))
 		# optList_tax <- doHandleyTest(thisCounts=apply(taxCube, c(1,2), median, na.rm=TRUE), n=med.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)	# based on means
 		abline(v=sort(c(intervals[optList_tax_median[[length(optList_tax_median)-1]]$optBreaks,2], range(intervals))), lwd=1.5, col="darkorchid4")
 		text(x= sort((c(max(intervals), intervals[optList_tax_median[[length(optList_tax_median)-1]]$optBreaks,2]) - 0.35)), y=par()$usr[3], labels=rev(seq_len(length(optList_tax_median[[length(optList_tax_median)-1]]$optBreaks) + 1)), pos=3, cex=0.5, col="darkorchid4")
@@ -326,9 +325,9 @@ quants <- apply(sapply(repIntTaxa, function(y) sapply(y, function(x) quantile(me
 		box(lwd=1)
 	
 	### body mass panel
-		thisRanges <- getTaxonRangesFromOccs(occs=occs, random=FALSE)
+		thisRanges <- getTaxonRangesFromOccs(occs=occs, this.rank=this.rank, random=FALSE)
 		rownames(thisRanges) <- gsub(pattern = "[[:space:]]", replacement = "_", x = rownames(thisRanges))
-		measure.mat[,c("FO","LO")] <- thisRanges[match(measure.mat$species, rownames(thisRanges)),]
+		measure.mat[,c("FO","LO")] <- thisRanges[match(measure.mat$taxon, rownames(thisRanges)),]
 
 		par(mar=c(0,4,2.5,0.5))
 		# quartz(width=12, height=6)
@@ -338,17 +337,17 @@ quants <- apply(sapply(repIntTaxa, function(y) sapply(y, function(x) quantile(me
 		overlayCzTimescale(do.subepochs=TRUE)
 		
 		famColors <- rainbow(length(shortFam))
-		colorList <- famColors[match(bigList$family[as.character(bigList$accepted_name) %in% measure.mat$species], shortFam)]
+		colorList <- famColors[match(bigList$family[as.character(bigList$accepted_name) %in% measure.mat$taxon], shortFam)]
 		colorList[is.na(colorList)] <- "gray25"
 		
 		orderColors <- array(NA, dim=nrow(measure.mat))
-		# orderColors[bigList$order[match(measure.mat$species, bigList$accepted_name)]=="Perissodactyla"] <- "dodgerblue4"
-		# orderColors[bigList$order[match(measure.mat$species, bigList$accepted_name)] =="Artiodactyla"] <- "deeppink4"
+		# orderColors[bigList$order[match(measure.mat$taxon, bigList$accepted_name)]=="Perissodactyla"] <- "dodgerblue4"
+		# orderColors[bigList$order[match(measure.mat$taxon, bigList$accepted_name)] =="Artiodactyla"] <- "deeppink4"
 
 		for (i in seq_len(nrow(measure.mat))) {
-			# lines(x=c(this["FO"], x["LO"]), y=c(x["bodyMass"], x["bodyMass"]), lwd=3, pch=21, col=famColors[match(bigList[match(measure.mat$species, bigList[,1]),2], shortFam)])
+			# lines(x=c(this["FO"], x["LO"]), y=c(x["bodyMass"], x["bodyMass"]), lwd=3, pch=21, col=famColors[match(bigList[match(measure.mat$taxon, bigList[,1]),2], shortFam)])
 			# lines(x=c(measure.mat$FO[i], measure.mat$LO[i]), y=c(measure.mat$bodyMass[i], measure.mat$bodyMass[i]), lwd=0.5, pch=21, col=alphaColor(colorList[i], 0.75))
-			# lines(x=c(thisRanges[match(measure.mat$species[i], rownames(thisRanges)),"FO"], thisRanges[match(measure.mat$species[i], rownames(thisRanges)),"LO"]), y=c(measure.mat$bodyMass[i], measure.mat$bodyMass[i]), lwd=0.5, pch=21, col=alphaColor("gray0", 0.75)) #
+			# lines(x=c(thisRanges[match(measure.mat$taxon[i], rownames(thisRanges)),"FO"], thisRanges[match(measure.mat$taxon[i], rownames(thisRanges)),"LO"]), y=c(measure.mat$bodyMass[i], measure.mat$bodyMass[i]), lwd=0.5, pch=21, col=alphaColor("gray0", 0.75)) #
 			if (is.finite(measure.mat$FO[i]) & is.finite(measure.mat$LO[i]) & measure.mat$FO[i] != measure.mat$LO[i]) lines(x=measure.mat[i,c("FO","LO")], y=c(measure.mat$bodyMass[i], measure.mat$bodyMass[i]), lwd=0.75, pch=21, col=alphaColor("gray0", 0.5)) #alphaColor(orderColors[i], 0.5)
 		}
 		points(measure.mat[complete.cases(measure.mat[ ,c("FO","LO")]) & measure.mat$FO == measure.mat$LO, c("FO","bodyMass")], pch=21, col=alphaColor("gray0", 0.5), cex=0.25) #this line is not generating the proper output for the final graph due to c("FO","bodyMass") causing a  "undefined columns selected" error
@@ -367,6 +366,8 @@ quants <- apply(sapply(repIntTaxa, function(y) sapply(y, function(x) quantile(me
 		points(rowMeans(intervals), quants[3,], col=alphaColor("darkorange1", 0.5), cex=0.5)
 		box(lwd=1)
 
+################################################################################################################################################################
+
 		endTime <- Sys.time()
 		RunTime2Ma <- endTime - startTime
 
@@ -382,7 +383,7 @@ quants <- apply(sapply(repIntTaxa, function(y) sapply(y, function(x) quantile(me
 		taxonranges <- cbind(taxonranges, (taxonranges[,"FO"]+taxonranges[,"LO"])/2); colnames(taxonranges)[3] <- "MP"
 		occDatesMP <- taxonranges[,"MP"]
 		intSpMP <- apply(intervals, 1, function(thisIntv) taxonranges[taxonranges[,"MP"] > thisIntv[1] & taxonranges[,"MP"] <= thisIntv[2],])
-		countCubeMP <- sapply(intSpMP, function(x) hist(measure.mat$bodyMass[match(rownames(x), measure.mat$species)], breaks=bmBreaks, plot=FALSE)$counts, simplify = "array")
+		countCubeMP <- sapply(intSpMP, function(x) hist(measure.mat$bodyMass[match(rownames(x), measure.mat$taxon)], breaks=bmBreaks, plot=FALSE)$counts, simplify = "array")
 		#drop the intervals that include the Quaternary (<3 Ma)
 		countCubeMP <- countCubeMP[,!as.double(str_remove(colnames(countCubeMP), " Ma")) < 3]
 		optList_bm_medianMP <- doHandleyTest(countCubeMP, n=nrow(measure.mat), do.heuristic=do.heuristic, extra.intvs=extra.intvs)
@@ -436,7 +437,7 @@ quants <- apply(sapply(repIntTaxa, function(y) sapply(y, function(x) quantile(me
     
     #intSpMP <- sapply(intOccsMP, function(x) sort(unique(as.character(gsub(pattern = "[[:space:]]", 
     #																																			 replacement = "_", x = occs$accepted_name[occs$occurrence_no %in% x])))))
-    countCubeMP <- sapply(intSpMP, function(x) hist(measure.mat$bodyMass[match(rownames(x), measure.mat$species)], breaks=bmBreaks, plot=FALSE)$counts, simplify = "array")
+    countCubeMP <- sapply(intSpMP, function(x) hist(measure.mat$bodyMass[match(rownames(x), measure.mat$taxon)], breaks=bmBreaks, plot=FALSE)$counts, simplify = "array")
     #drop the intervals that include the Quaternary (<3 Ma)
     countCubeMP <- countCubeMP[,!as.double(str_remove(colnames(countCubeMP), " Ma")) < 3]
     optList_bm_medianMP <- doHandleyTest(countCubeMP, n=nrow(measure.mat), do.heuristic=do.heuristic, extra.intvs=extra.intvs)
@@ -499,7 +500,7 @@ quants <- apply(sapply(repIntTaxa, function(y) sapply(y, function(x) quantile(me
 				
 		# #Need to Remove Intervals from Handley Bins and into actual intervals
 		# cols <- palette(rainbow(6))
-		# distBar <- barplot(r, ylim=c(0,100), xlab="Time(Ma)", ylab = "Number of Species", col =cols, space = 0)
+		# distBar <- barplot(r, ylim=c(0,100), xlab="Time(Ma)", ylab = "Number of taxa", col =cols, space = 0)
 
 	# par(mar=c(6,4,2.5,0.5))	
 		# summedDist <- colPercents(r)

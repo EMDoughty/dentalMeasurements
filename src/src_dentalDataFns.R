@@ -61,59 +61,58 @@ getSpecimenMatFromLiteratureMeasurements <- function(filename = "~/Dropbox/code/
 }
 
 makeOneSpeciesMatFromSpecimenMat <- function(specimen.mat) {
-	# species<-unique(specimen.mat$species)
+	# species <-unique(specimen.mat$species)
 	oneSpeciesMat <- aggregate(specimen.mat, by = list(specimen.mat$species), mean, na.rm = TRUE)
 	# oneSpeciesMat <- aggregate(specimen.mat, by=list(specimen.mat$species), median, na.rm=TRUE)
 	oneSpeciesMat <- data.frame(oneSpeciesMat, row.names = oneSpeciesMat[, 1])
 	oneSpeciesMat[sapply(oneSpeciesMat, is.nan)] <- NA
-	colnames(oneSpeciesMat)[1] <- "species"
+	colnames(oneSpeciesMat)[1] <- "taxon"
 	oneSpeciesMat[, -(c(2:3, which(colnames(oneSpeciesMat) %in% c("Published.name", "n", "Reference", "PaleoDB.ref", "Notes", "X", "X.1", "X.2", "X.3", 
 		"X.4"))))]
 }
 
 makeOneGenusMatFromSpecimenMat <- function(measure.mat) {
-	# species<-unique(measure.mat$species)
-	oneGenusMat <- aggregate(measure.mat, by = list(measure.mat$genus), mean, na.rm = TRUE)
+	oneGenusMat <- aggregate(measure.mat, by = list(measure.mat$genus), mean, na.rm = TRUE)		# the column "genus" is appended with the reg.vec, so might need a better way of getting this...
 	# oneGenusMat <- aggregate(measure.mat, by=list(measure.mat$genus), median, na.rm=TRUE)
 	oneGenusMat <- data.frame(oneGenusMat, row.names = oneGenusMat[, 1])
 	oneGenusMat[sapply(oneGenusMat, is.nan)] <- NA
-	colnames(oneGenusMat)[1] <- "genus"
+	colnames(oneGenusMat)[1] <- "taxon"
 	oneGenusMat[,-2]
 }
 
-getToothRowLengths <- function(species) {
+getToothRowLengths <- function(taxon) {
 	thisRow <- vector(mode = "numeric", length = 0)
-	if (!is.nan(species$upP)) {
-		thisRow <- c(thisRow, upP = species$upP)
+	if (!is.nan(taxon$upP)) {
+		thisRow <- c(thisRow, upP = taxon$upP)
 	} else {
-		thisList <- c(species$P2_L, species$P3_L, species$P4_L)
+		thisList <- c(taxon$P2_L, taxon$P3_L, taxon$P4_L)
 		if (!any(is.nan(thisList))) 
 			thisRow <- c(thisRow, upP = sum(thisList))
 		else thisRow <- c(thisRow, upP = NA)
 	}
 
-	if (!is.nan(species$upM)) {
-		thisRow <- c(thisRow, upM = species$upM)
+	if (!is.nan(taxon$upM)) {
+		thisRow <- c(thisRow, upM = taxon$upM)
 	} else {
-		thisList <- c(species$M1_L, species$M2_L, species$M3_L)
+		thisList <- c(taxon$M1_L, taxon$M2_L, taxon$M3_L)
 		if (!any(is.nan(thisList))) 
 			thisRow <- c(thisRow, upM = sum(thisList))
 		else thisRow <- c(thisRow, upM = NA)
 	}
 
-	if (!is.nan(species$loP)) {
-		thisRow <- c(thisRow, loP = species$loP)
+	if (!is.nan(taxon$loP)) {
+		thisRow <- c(thisRow, loP = taxon$loP)
 	} else {
-		thisList <- c(species$p2_l, species$p3_l, species$p4_l)
+		thisList <- c(taxon$p2_l, taxon$p3_l, taxon$p4_l)
 		if (!any(is.nan(thisList))) 
 			thisRow <- c(thisRow, loP = sum(thisList))
 		else thisRow <- c(thisRow, loP = NA)
 	}
 
-	if (!is.nan(species$loM)) {
-		thisRow <- c(thisRow, loM = species$loM)
+	if (!is.nan(taxon$loM)) {
+		thisRow <- c(thisRow, loM = taxon$loM)
 	} else {
-		thisList <- c(species$m1_l, species$m2_l, species$m3_l)
+		thisList <- c(taxon$m1_l, taxon$m2_l, taxon$m3_l)
 		if (!any(is.nan(thisList))) 
 			thisRow <- c(thisRow, loM = sum(thisList))
 		else thisRow <- c(thisRow, loM = NA)
@@ -141,27 +140,27 @@ getSingleSpeciesMatrix <- function() {
 	#### note that specimens are aggregated by their medians, so as to minimize the effect of outlier measurements
 	############################
 	
-	# measure.mat <- aggregate(specimen.mat[, c(upLabels, loLabels)], by = list(species = specimen.mat$species), mean, na.rm = TRUE)
-	measure.mat <- aggregate(specimen.mat[, c(upLabels, loLabels)], by = list(species = specimen.mat$species), median, na.rm = TRUE)
+	# measure.mat <- aggregate(specimen.mat[, c(upLabels, loLabels)], by = list(taxon = specimen.mat$species), mean, na.rm = TRUE)
+	measure.mat <- aggregate(specimen.mat[, c(upLabels, loLabels)], by = list(taxon = specimen.mat$species), median, na.rm = TRUE)
 
 	measure.mat[, sapply(measure.mat, is.numeric)] <- measure.mat[, sapply(measure.mat, is.numeric)]/10 #converts mm measurements to cm for compatibility with Janis regressions
 	measure.mat <- transform(measure.mat, p4_a = p4_l * p4_w, m1_a = m1_l * m1_w, m2_a = m2_l * m2_w, m3_a = m3_l * m3_w, M2_A = M2_L * M2_W)
 	measure.mat[sapply(measure.mat, is.nan)] <- NA
 
-	rownames(measure.mat) <- measure.mat$species
+	rownames(measure.mat) <- measure.mat$taxon
 
 	return(measure.mat)
 }
 
 appendMissingPaleoDBSpecies <- function(measure.mat, tax.vec) {
 	# this adds taxa that are in PaleoDB (i.e., occurrence data), but not in the measurement files
-	tax.vec <- tax.vec[!tax.vec %in% measure.mat$species]
+	tax.vec <- tax.vec[!tax.vec %in% measure.mat$taxon]
 	tax.frame <- data.frame(array(NA, dim = c(length(tax.vec), ncol(measure.mat)), dimnames = list(tax.vec, colnames(measure.mat))))
-	tax.frame$species <- tax.vec
-	if (any(tax.frame$species %in% measure.mat$species)) {
-		# measure.mat[match(rangesNotmeasure.mat$species, measure.mat$species),c("FO", "LO")] <- ranges[,c("FO", "LO")]
+	tax.frame$taxon <- tax.vec
+	if (any(tax.frame$taxon %in% measure.mat$taxon)) {
+		# measure.mat[match(rangesNotmeasure.mat$taxon, measure.mat$taxon),c("FO", "LO")] <- ranges[,c("FO", "LO")]
 		} else measure.mat <- merge(measure.mat, tax.frame, all = TRUE, sort = FALSE)
-	rownames(measure.mat) <- measure.mat$species
+	rownames(measure.mat) <- measure.mat$taxon
 	measure.mat
 }
 

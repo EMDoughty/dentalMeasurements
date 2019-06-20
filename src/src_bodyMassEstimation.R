@@ -57,7 +57,7 @@ getMLBodyMasses_compiled <- cmpfun(getMLBodyMasses)
 
 appendRegTypeTomeasure.mat <- function(measure.mat) {
 		famList <- unique(read.csv("~/Dropbox/code/common_dat/taxonomy.csv"), strip.white=TRUE)
-		measure.mat[,"reg"] <- famList$reg[match(x=measure.mat$species, famList$taxon)]	# now assuming reg will already be a part of measure.mat
+		measure.mat[,"reg"] <- famList$reg[match(x=measure.mat$taxon, famList$taxon)]	# now assuming reg will already be a part of measure.mat
 		measure.mat
 }
 
@@ -109,21 +109,21 @@ getBodyMassVectorFromMeasureMatAllMeasures <- function(measure.mat, linked.files
 	##### recalculate body masses of all taxa with all (merged) measurements
 	#######################################################################################################################################
 	bm <-  getMLBodyMasses_compiled(measure.mat, regList, best.only=FALSE)
-	bm[match(measure.mat$species, rownames(bm))]	
+	bm[match(measure.mat$taxon, rownames(bm))]	
 }
 
 fillMissingBodyMasses <- function(measure.mat) {
 	# require(stringr)
-	noMass <- measure.mat$species[!is.finite(measure.mat$bodyMass)]
+	noMass <- measure.mat$taxon[!is.finite(measure.mat$bodyMass)]
 
 		#### mean of congeners
-		noMass <- data.frame(species=noMass, bodyMass=sapply(X=noMass, FUN=function(x) mean(measure.mat[grep(pattern=strsplit(x=x, split="_")[[1]][1], x=measure.mat$species),"bodyMass"], na.rm=TRUE)))
+		noMass <- data.frame(species=noMass, bodyMass=sapply(X=noMass, FUN=function(x) mean(measure.mat[grep(pattern=strsplit(x=x, split="_")[[1]][1], x=measure.mat$taxon),"bodyMass"], na.rm=TRUE)))
 		# #### median of congeners
-		# noMass <- data.frame(species=noMass, bodyMass=sapply(X=noMass, FUN=function(x) median(measure.mat[grep(pattern= strsplit(x=x, split="_")[[1]][1], x=measure.mat$species),"bodyMass"], na.rm=TRUE)))
+		# noMass <- data.frame(species=noMass, bodyMass=sapply(X=noMass, FUN=function(x) median(measure.mat[grep(pattern= strsplit(x=x, split="_")[[1]][1], x=measure.mat$taxon),"bodyMass"], na.rm=TRUE)))
 		# #### randomly select a congener
-		# noMass <- data.frame(species=noMass, bodyMass=sapply(X=noMass, FUN=function(x) sample(x=measure.mat[grep(pattern= strsplit(x=x, split="_")[[1]][1], x=measure.mat$species),"bodyMass"], size=1)))
+		# noMass <- data.frame(species=noMass, bodyMass=sapply(X=noMass, FUN=function(x) sample(x=measure.mat[grep(pattern= strsplit(x=x, split="_")[[1]][1], x=measure.mat$taxon),"bodyMass"], size=1)))
 
-	measure.mat$bodyMass[match(noMass$species, measure.mat$species)] <- noMass[,"bodyMass"]
+	measure.mat$bodyMass[match(noMass$taxon, measure.mat$taxon)] <- noMass[,"bodyMass"]
 	measure.mat
 }
 
