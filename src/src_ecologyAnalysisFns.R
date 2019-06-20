@@ -1,12 +1,12 @@
  # require(gss)
-makeRangeThroughOneRep <- function(this.rep) {
-	tax.vec <- sort(unique(unlist(this.rep)))
-	tax.ranges <- cbind(tax.vec, t(sapply(tax.vec, function(taxon) rev(range(which(sapply(this.rep, function(y, taxon) taxon %in% y, taxon)))))))
-	for (i in seq_len(nrow(tax.ranges))) {
-		for (i in tax.ranges[i, 2]:tax.ranges[i, 3]) this.rep[[i]] <- sort(unique(c(this.rep[[i]], tax.ranges[i, 1])))
-	}
-	this.rep
-}
+# makeRangeThroughOneRep <- function(this.rep) {
+	# tax.vec <- sort(unique(unlist(this.rep)))
+	# tax.ranges <- data.frame(tax.vec, t(sapply(tax.vec, function(taxon) rev(range(which(sapply(this.rep, function(y, taxon) taxon %in% y, taxon)))))))
+	# for (i in seq_len(nrow(tax.ranges))) {
+		# for (i in tax.ranges[i, 2]:tax.ranges[i, 3]) this.rep[[i]] <- sort(unique(c(this.rep[[i]], tax.ranges[i, 1])))
+	# }
+	# this.rep
+# }
 
 getMPWD<-function(datMat) {
 	if (nrow(datMat)<2) return(NA)
@@ -15,9 +15,9 @@ getMPWD<-function(datMat) {
 	mean(apply(cbind(rep(1:(nrow(datMat)-1), (nrow(datMat)-1):1), unlist(sapply(1:(nrow(datMat)-1), function(x) (x+1):nrow(datMat)))), 1, function(y) cged(datMat[y[1],], datMat[y[2],])), na.rm=TRUE)
 }
 
-getMPWD_hard<-function(intSp, thisMat) {
-	mean(mapply(cged_h, rownames(thisMat)[intSp[rep(1:(length(intSp)-1), (length(intSp)-1):1)]], rownames(thisMat)[intSp[unlist(sapply(1:(length(intSp)-1), function(x) (x+1):length(intSp)))]], MoreArgs=list(datMat=thisMat)), na.rm=TRUE)
-	# mean(mcmapply(cged_h, rownames(thisMat)[intSp[rep(1:(length(intSp)-1), (length(intSp)-1):1)]], rownames(thisMat)[intSp[unlist(sapply(1:(length(intSp)-1), function(x) (x+1):length(intSp)))]], MoreArgs=list(datMat=thisMat), mc.cores=detectCores()-2), na.rm=TRUE)
+getMPWD_hard<-function(intTaxa, thisMat) {
+	mean(mapply(cged_h, rownames(thisMat)[intTaxa[rep(1:(length(intTaxa)-1), (length(intTaxa)-1):1)]], rownames(thisMat)[intTaxa[unlist(sapply(1:(length(intTaxa)-1), function(x) (x+1):length(intTaxa)))]], MoreArgs=list(datMat=thisMat)), na.rm=TRUE)
+	# mean(mcmapply(cged_h, rownames(thisMat)[intTaxa[rep(1:(length(intTaxa)-1), (length(intTaxa)-1):1)]], rownames(thisMat)[intTaxa[unlist(sapply(1:(length(intTaxa)-1), function(x) (x+1):length(intTaxa)))]], MoreArgs=list(datMat=thisMat), mc.cores=detectCores()-2), na.rm=TRUE)
 }
 
 plotUnivStats<-function(statbox, intervals, dispMat=NULL, new.window=TRUE, thisLab=NULL) {
@@ -266,13 +266,13 @@ findOptimalPartitions<-function(thisCol, dframe, intervals, breaks, minTimes=5, 
 	# for (int in seq_len(nrow(intervals))) {
 		# setwd("~/Desktop/amandaFigs/")
 		# png(filename=paste("pca_", regmatches(rownames(intervals)[int], regexpr(" ", rownames(intervals)[int]), invert=TRUE)[[1]], ".png", sep=""), width=scaler*(max(pca$x[,2])-min(pca$x[,2])), height=scaler*(max(pca$x[,3])-min(pca$x[,3])))
-		# intSp<-which(!is.na(thisMat$FO) & !is.na(thisMat$LO) & thisMat$FO>intervals$ageTop[int] & thisMat$LO<intervals$ageBase[int] & !is.na(thisMat$bodyMass))
-		# plot(pca$x[rownames(pca$x)%in%rownames(thisMat)[intSp],2], pca$x[rownames(pca$x)%in%rownames(thisMat)[intSp],3], xlim=c(min(pca$x[,2]),1.5*max(pca$x[,2])), ylim=c(min(pca$x[,3]),max(pca$x[,3])), xlab=paste("PC2 (",round(100*(pca$sdev[2]^2/sum(pca$sdev^2)), digits=1),"%)", sep=""), ylab=paste("PC3 (",round(100*(pca$sdev[3]^2/sum(pca$sdev^2)), digits=1),"%)", sep=""), type="n", main=rownames(intervals)[int])
+		# intTaxa<-which(!is.na(thisMat$FO) & !is.na(thisMat$LO) & thisMat$FO>intervals$ageTop[int] & thisMat$LO<intervals$ageBase[int] & !is.na(thisMat$bodyMass))
+		# plot(pca$x[rownames(pca$x)%in%rownames(thisMat)[intTaxa],2], pca$x[rownames(pca$x)%in%rownames(thisMat)[intTaxa],3], xlim=c(min(pca$x[,2]),1.5*max(pca$x[,2])), ylim=c(min(pca$x[,3]),max(pca$x[,3])), xlab=paste("PC2 (",round(100*(pca$sdev[2]^2/sum(pca$sdev^2)), digits=1),"%)", sep=""), ylab=paste("PC3 (",round(100*(pca$sdev[3]^2/sum(pca$sdev^2)), digits=1),"%)", sep=""), type="n", main=rownames(intervals)[int])
 		# # polygon(c(-10,10,10,-10), c(-10,-10,10,10), col="gray33")
 		# lines(x=c(0,0), y=c(-100, 100), lty=3, col="gray50")
 		# lines(x=c(-100,100), y=c(0, 0), lty=3, col="gray50")
-		# # text(pca$x[rownames(pca$x)%in%rownames(thisMat)[intSp],2], pca$x[rownames(pca$x)%in%rownames(thisMat)[intSp],3], labels=rownames(rownames(pca$x)%in%rownames(thisMat)[intSp]), cex=0.5, col=famColors[match(bigList[match(rownames(pca$x), bigList[,1]),2], shortFam)])
-		# points(pca$x[rownames(pca$x)%in%rownames(thisMat)[intSp],2], pca$x[rownames(pca$x)%in%rownames(thisMat)[intSp],3], cex=2.0, pch=bigList$symbol[match(rownames(pca$x)[rownames(pca$x)%in%rownames(thisMat)[intSp]], bigList$taxon)], col=bigList$color[match(rownames(pca$x)[rownames(pca$x)%in%rownames(thisMat)[intSp]], bigList$taxon)])
+		# # text(pca$x[rownames(pca$x)%in%rownames(thisMat)[intTaxa],2], pca$x[rownames(pca$x)%in%rownames(thisMat)[intTaxa],3], labels=rownames(rownames(pca$x)%in%rownames(thisMat)[intTaxa]), cex=0.5, col=famColors[match(bigList[match(rownames(pca$x), bigList[,1]),2], shortFam)])
+		# points(pca$x[rownames(pca$x)%in%rownames(thisMat)[intTaxa],2], pca$x[rownames(pca$x)%in%rownames(thisMat)[intTaxa],3], cex=2.0, pch=bigList$symbol[match(rownames(pca$x)[rownames(pca$x)%in%rownames(thisMat)[intTaxa]], bigList$taxon)], col=bigList$color[match(rownames(pca$x)[rownames(pca$x)%in%rownames(thisMat)[intTaxa]], bigList$taxon)])
 		# legend("bottomright", legend=famLegend$family, pch=famLegend$symbol, col=famLegend$color, box.col="gray50", bg="white", cex=1)
 		# dev.off()
 	# }
@@ -477,13 +477,13 @@ getTaxaInJanisLocs <- function() {
 	locList
 }	
 
-testNewTaxaOneRep <- function (intSp, thisVec, test=c("ks", "mw")) {
+testNewTaxaOneRep <- function (intTaxa, thisVec, test=c("ks", "mw")) {
 	test <- match.arg(test)
 	thisTest <- list()
-	# thisTest[[length(intSp)]] <- list(prevDist=NA, newDist=NA, ks=NA)
-	for (i in seq(from=length(intSp) - 1, to=1)) {
-		prevDist = thisVec[intSp[[i]][intSp[[i]] %in% intSp[[i+1]]]]
-		newDist = thisVec[intSp[[i]][!intSp[[i]] %in% intSp[[i+1]]]]
+	# thisTest[[length(intTaxa)]] <- list(prevDist=NA, newDist=NA, ks=NA)
+	for (i in seq(from=length(intTaxa) - 1, to=1)) {
+		prevDist = thisVec[intTaxa[[i]][intTaxa[[i]] %in% intTaxa[[i+1]]]]
+		newDist = thisVec[intTaxa[[i]][!intTaxa[[i]] %in% intTaxa[[i+1]]]]
 		if (length(prevDist) > 0 & length(newDist) > 0) { 
 			if(test=="ks") { thisTest[[i]] <- list( prevDist = prevDist, newDist = newDist, ks = ks.test(prevDist, newDist))
 			} else thisTest[[i]] <- list( prevDist = prevDist, newDist = newDist, ks = wilcox.test(prevDist, newDist))
@@ -525,12 +525,12 @@ getOneCategoryCountsFromRep <- function(this.rep.sample, this.category=NULL, spl
 	lapply(this.rep.sample, FUN=getOneCategoryCountsFromIntvSample, this.category=this.category, split.by=split.by)
 }
 
-getAllRepCountsForOneCategory <- function(this.category, split.by, repIntSp) {
-	lapply(repIntSp, FUN=getOneCategoryCountsFromRep, this.category=this.category, split.by=split.by)
+getAllRepCountsForOneCategory <- function(this.category, split.by, repIntTaxa) {
+	lapply(repIntTaxa, FUN=getOneCategoryCountsFromRep, this.category=this.category, split.by=split.by)
 }
 
-getAllRepCountsSplit <- function(repIntSp, split.by) {
-	rep.intv.sp.split <- lapply(unique(split.by), FUN=getAllRepCountsForOneCategory, split.by=split.by, repIntSp=repIntSp)
+getAllRepCountsSplit <- function(repIntTaxa, split.by) {
+	rep.intv.sp.split <- lapply(unique(split.by), FUN=getAllRepCountsForOneCategory, split.by=split.by, repIntTaxa=repIntTaxa)
 	names(rep.intv.sp.split) <- unique(split.by)
 	rep.intv.sp.split
 }
@@ -554,25 +554,25 @@ BreakComboFreq <- function(optList = NULL) {
 	return(count(optFrame))
 }
 
-#regimeHist is meant to parse through the repIntSp list object to print the distribution of traits
+#regimeHist is meant to parse through the repIntTaxa list object to print the distribution of traits
 #within the regimes demarcated by breaks or designated by optList (if breaks are not provided).
 #netFreq and regime Freq sets whether to use proportions or actually counts for the net gain/loss and regime 
 #distribution histograms, respectively.
-regimeHist <- function(repIntSp = NULL, breaks = NULL, optList, thisMat, netFreq = TRUE, regimeFreq = FALSE, netPlotType = "absolute", plot.together = FALSE) {
+regimeHist <- function(repIntTaxa = NULL, breaks = NULL, optList, thisMat, netFreq = TRUE, regimeFreq = FALSE, netPlotType = "absolute", plot.together = FALSE) {
 	#function to generate histograms of species within each regime
 	#get list of intervals that comprise a regime
-repIntSp_regimes <- repIntSp
+repIntTaxa_regimes <- repIntTaxa
 	if (is.null(breaks)) 
 		breaks <- optList_bm_allReps[[1]][[10]]$optBreaks
 
 	regimeBM.list <- list()
 	regimeSp.List <- list()
 
-	for (ii in seq(1, length(repIntSp_regimes), 1)) {
-		names(repIntSp_regimes[[ii]]) <- str_remove(names(repIntSp_regimes[[ii]]), " Ma")
+	for (ii in seq(1, length(repIntTaxa_regimes), 1)) {
+		names(repIntTaxa_regimes[[ii]]) <- str_remove(names(repIntTaxa_regimes[[ii]]), " Ma")
 	}
 
-	regimeSp <- unique(unlist(repIntSp_regimes[[1]][which(as.double(names(repIntSp_regimes[[ii]])) > breaks[1])]))
+	regimeSp <- unique(unlist(repIntTaxa_regimes[[1]][which(as.double(names(repIntTaxa_regimes[[ii]])) > breaks[1])]))
 	regimeSp <- regimeSp[regimeSp %in% thisMat$species]
 	regimeBM <- thisMat[thisMat$species %in% regimeSp, "bodyMass"]
 
@@ -584,9 +584,9 @@ repIntSp_regimes <- repIntSp
 	for (mm in seq(2, length(breaks), 1)) {
 		#get regimes for remaining sections
 		
-		#seq(min(which(as.double(names(repIntSp_regimes[[ii]])) < breaks[mm-1] & as.double(names(repIntSp_regimes[[ii]])) > breaks[mm])),
-		#max(which(as.double(names(repIntSp_regimes[[ii]])) < breaks[mm-1] & as.double(names(repIntSp_regimes[[ii]])) > breaks[mm])),1))
-regimeSp <- unique(unlist(repIntSp_regimes[[1]][which(as.double(names(repIntSp_regimes[[ii]])) < breaks[mm - 1] & as.double(names(repIntSp_regimes[[ii]])) > 
+		#seq(min(which(as.double(names(repIntTaxa_regimes[[ii]])) < breaks[mm-1] & as.double(names(repIntTaxa_regimes[[ii]])) > breaks[mm])),
+		#max(which(as.double(names(repIntTaxa_regimes[[ii]])) < breaks[mm-1] & as.double(names(repIntTaxa_regimes[[ii]])) > breaks[mm])),1))
+regimeSp <- unique(unlist(repIntTaxa_regimes[[1]][which(as.double(names(repIntTaxa_regimes[[ii]])) < breaks[mm - 1] & as.double(names(repIntTaxa_regimes[[ii]])) > 
 			breaks[mm])]))
 		regimeSp <- regimeSp[regimeSp %in% thisMat$species]
 		regimeBM <- thisMat[thisMat$species %in% regimeSp, "bodyMass"]
@@ -597,7 +597,7 @@ regimeSp <- unique(unlist(repIntSp_regimes[[1]][which(as.double(names(repIntSp_r
 		rm(regimeSp, regimeBM)
 	}
 
-	regimeSp <- unique(unlist(repIntSp_regimes[[1]][which(as.double(names(repIntSp_regimes[[ii]])) < breaks[length(breaks)])]))
+	regimeSp <- unique(unlist(repIntTaxa_regimes[[1]][which(as.double(names(repIntTaxa_regimes[[ii]])) < breaks[length(breaks)])]))
 	regimeSp <- regimeSp[regimeSp %in% thisMat$species]
 	regimeBM <- thisMat[thisMat$species %in% regimeSp, "bodyMass"]
 
@@ -651,7 +651,7 @@ regimeSp <- unique(unlist(repIntSp_regimes[[1]][which(as.double(names(repIntSp_r
 		}
 	}
 
-	####Get a hsitogram for each entry of repIntSp to avoid missing unique species in each regime
+	####Get a hsitogram for each entry of repIntTaxa to avoid missing unique species in each regime
 	####and then take median across all of the histograms.	
 
 	return()
@@ -679,8 +679,8 @@ regimeHist_countBox <- function(countBox = NULL, breaks = NULL, optList, thisMat
 		{
 			#get regimes for remaining sections
 			
-			#seq(min(which(as.double(names(repIntSp_regimes[[ii]])) < breaks[mm-1] & as.double(names(repIntSp_regimes[[ii]])) > breaks[mm])),
-			#max(which(as.double(names(repIntSp_regimes[[ii]])) < breaks[mm-1] & as.double(names(repIntSp_regimes[[ii]])) > breaks[mm])),1))
+			#seq(min(which(as.double(names(repIntTaxa_regimes[[ii]])) < breaks[mm-1] & as.double(names(repIntTaxa_regimes[[ii]])) > breaks[mm])),
+			#max(which(as.double(names(repIntTaxa_regimes[[ii]])) < breaks[mm-1] & as.double(names(repIntTaxa_regimes[[ii]])) > breaks[mm])),1))
 			regimeBM <- countBox[,which(as.double(colnames(countBox)) < breaks[mm-1] 
 																	& as.double(colnames(countBox)) > breaks[mm])]
 			regimeBM.list[[mm]] <- apply(regimeBM, c(1), sum)
@@ -776,22 +776,22 @@ regimeHist_countBox <- function(countBox = NULL, breaks = NULL, optList, thisMat
 	return()
 }
 #############################################################################################################################
-regimeHist_HistMedian<- function(repIntSp = NULL, breaks = NULL, optList, thisMat, netFreq = TRUE, regimeFreq=FALSE,
+regimeHist_HistMedian<- function(repIntTaxa = NULL, breaks = NULL, optList, thisMat, netFreq = TRUE, regimeFreq=FALSE,
 																 netPlotType = "absolute", plot.together = FALSE) {
-	repIntSp_regimes <- repIntSp
+	repIntTaxa_regimes <- repIntTaxa
 	if(is.null(breaks)) print("Error: Input a vector of break dates")
 	
 	regimeBM.list <- list()
 	regimeSp.List <- list()
 	all.hist <- list()
 	
-	for(ii in seq(1, length(repIntSp_regimes),1))
+	for(ii in seq(1, length(repIntTaxa_regimes),1))
 	{
-		names(repIntSp_regimes[[ii]]) <- str_remove(names(repIntSp_regimes[[ii]]), " Ma")
+		names(repIntTaxa_regimes[[ii]]) <- str_remove(names(repIntTaxa_regimes[[ii]]), " Ma")
 	}
 	
-	for (ii in seq(1, length(repIntSp_regimes),1)) {
-		regimeSp <- unique(unlist(repIntSp_regimes[[ii]][which(as.double(names(repIntSp_regimes[[ii]])) > breaks[1])]))
+	for (ii in seq(1, length(repIntTaxa_regimes),1)) {
+		regimeSp <- unique(unlist(repIntTaxa_regimes[[ii]][which(as.double(names(repIntTaxa_regimes[[ii]])) > breaks[1])]))
 		regimeSp <- regimeSp[regimeSp %in% thisMat$species]
 		regimeBM <- thisMat[thisMat$species %in% regimeSp, "bodyMass"]
 		
@@ -804,10 +804,10 @@ regimeHist_HistMedian<- function(repIntSp = NULL, breaks = NULL, optList, thisMa
 		{
 			#get regimes for remaining sections
 			
-			#seq(min(which(as.double(names(repIntSp_regimes[[ii]])) < breaks[mm-1] & as.double(names(repIntSp_regimes[[ii]])) > breaks[mm])),
-			#max(which(as.double(names(repIntSp_regimes[[ii]])) < breaks[mm-1] & as.double(names(repIntSp_regimes[[ii]])) > breaks[mm])),1))
-			regimeSp <- unique(unlist(repIntSp_regimes[[ii]][which(as.double(names(repIntSp_regimes[[ii]])) < breaks[mm-1] 
-																														 & as.double(names(repIntSp_regimes[[ii]])) > breaks[mm])]))
+			#seq(min(which(as.double(names(repIntTaxa_regimes[[ii]])) < breaks[mm-1] & as.double(names(repIntTaxa_regimes[[ii]])) > breaks[mm])),
+			#max(which(as.double(names(repIntTaxa_regimes[[ii]])) < breaks[mm-1] & as.double(names(repIntTaxa_regimes[[ii]])) > breaks[mm])),1))
+			regimeSp <- unique(unlist(repIntTaxa_regimes[[ii]][which(as.double(names(repIntTaxa_regimes[[ii]])) < breaks[mm-1] 
+																														 & as.double(names(repIntTaxa_regimes[[ii]])) > breaks[mm])]))
 			regimeSp <- regimeSp[regimeSp %in% thisMat$species]
 			regimeBM <- thisMat[thisMat$species %in% regimeSp, "bodyMass"]
 			
@@ -817,7 +817,7 @@ regimeHist_HistMedian<- function(repIntSp = NULL, breaks = NULL, optList, thisMa
 			rm(regimeSp, regimeBM)
 		}
 		
-		regimeSp <- unique(unlist(repIntSp_regimes[[ii]][which(as.double(names(repIntSp_regimes[[ii]])) < breaks[length(breaks)])]))
+		regimeSp <- unique(unlist(repIntTaxa_regimes[[ii]][which(as.double(names(repIntTaxa_regimes[[ii]])) < breaks[length(breaks)])]))
 		regimeSp <- regimeSp[regimeSp %in% thisMat$species]
 		regimeBM <- thisMat[thisMat$species %in% regimeSp, "bodyMass"]
 		
@@ -973,4 +973,32 @@ checkRangeThrough <- function(repIntTest, ints) {
 	return(checkMat)
 }
 ################################################################################################################
+#### Marcot 2019 06 18
+################################################################################################################
+makeRangeThroughOneRep <- function(intTaxa) {
+	sampled.taxa <- sort(unique(unlist(intTaxa)))					## vector of all sampled taxa in this rep
+	# sampled.taxa <- sampled.taxa[grep(pattern="_", x=sampled.taxa)]		## only those at the species level - do not want to range through occurrences at higher taxonomic ranks
+	first.last <- t(sapply(sampled.taxa, function(x) array(data=range(which(sapply(intTaxa, function(y, x) x %in% y, x=x))), dimnames=list(c("LI", "FI")))))
+	first.last <- data.frame(taxon=rownames(first.last), first.last, stringsAsFactors=FALSE)
+	for (this.taxon in seq_along(sampled.taxa)) {
+		for (this.intv in seq(from=first.last$LI[this.taxon], to=first.last$FI[this.taxon])) {								# for all intervals in which this.taxon should range-through
+			if (!first.last$taxon[this.taxon] %in% intTaxa[[this.intv]]) intTaxa[[this.intv]] <- c(intTaxa[[this.intv]], first.last$taxon[this.taxon])	# if it is not currently in the interval, add it
+		}
+	}
+	intTaxa
+}
 
+getIntTaxaFromOneRepIntOccs <- function(this.repIntOccs, this.rank="species", do.rangethrough=TRUE) {
+	if (this.rank=="species") {
+		intTaxa <- lapply(this.repIntOccs, function(x) sort(unique(as.character(occs$accepted_name[occs$occurrence_no %in% x & occs$accepted_rank=="species"]))))
+	} else if (this.rank=="genus") {
+		intTaxa <- lapply(this.repIntOccs, function(x) sort(unique(as.character(occs$genus[occs$occurrence_no %in% x & occs$accepted_rank %in% c("genus", "species")]))))
+	}
+
+	if (do.rangethrough) intTaxa <- makeRangeThroughOneRep(intTaxa)
+	intTaxa
+}
+
+getRepIntTaxaFromRepIntOccs <- function(repIntOccs, this.rank="species", do.rangethrough=TRUE) {
+	lapply(repIntOccs, getIntTaxaFromOneRepIntOccs, this.rank=this.rank, do.rangethrough= do.rangethrough)
+}

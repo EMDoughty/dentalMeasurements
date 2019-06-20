@@ -11,21 +11,21 @@ getSpecimenMatFromAmandaMeasurements <- function(filename = "~/Dropbox/code/R/de
 	cube <- abind::abind(datMeasures[seq(from = 1, to = nrow(datMeasures), by = 3), m], datMeasures[seq(from = 2, to = nrow(datMeasures), by = 3), 
 		m], along = 3)
 	cube <- abind::abind(cube, datMeasures[seq(from = 3, to = nrow(datMeasures), by = 3), m], along = 3)
-	replicateMeasureMat <- apply(cube, c(1, 2), mean, na.rm = TRUE)
-	rownames(replicateMeasureMat) <- datMeasures$species[seq(from = 1, to = nrow(datMeasures), by = 3)]
-	replicateMeasureMat[!is.finite(replicateMeasureMat)] <- NA
-	# replicateMeasureMat<-data.frame(species=datMeasures$species[seq(from=1, to=nrow(datMeasures), by=3)], specimen=datMeasures$Specimen.no.[seq(from=1, to=nrow(datMeasures), by=3)], replicateMeasureMat, stringsAsFactors=FALSE, row.names=NULL)
+	replicatemeasure.mat <- apply(cube, c(1, 2), mean, na.rm = TRUE)
+	rownames(replicatemeasure.mat) <- datMeasures$species[seq(from = 1, to = nrow(datMeasures), by = 3)]
+	replicatemeasure.mat[!is.finite(replicatemeasure.mat)] <- NA
+	# replicatemeasure.mat<-data.frame(species=datMeasures$species[seq(from=1, to=nrow(datMeasures), by=3)], specimen=datMeasures$Specimen.no.[seq(from=1, to=nrow(datMeasures), by=3)], replicatemeasure.mat, stringsAsFactors=FALSE, row.names=NULL)
 	
 	theseSpecimenNos <- datMeasures$Specimen.no.[seq(from = 1, to = nrow(datMeasures), by = 3)]
 	specimenNos <- unique(theseSpecimenNos)
-	specimen.mat <- matrix(nrow = 0, ncol = ncol(replicateMeasureMat))
+	specimen.mat <- matrix(nrow = 0, ncol = ncol(replicatemeasure.mat))
 	for (i in seq_len(length(specimenNos))) {
 		index <- which(theseSpecimenNos == specimenNos[i])
-		thisSpecimen <- replicateMeasureMat[index, ]
+		thisSpecimen <- replicatemeasure.mat[index, ]
 		if (!is.null(dim(thisSpecimen))) 
 			thisSpecimen <- apply(thisSpecimen, 2, mean, na.rm = TRUE)
 		specimen.mat <- rbind(specimen.mat, thisSpecimen)
-		rownames(specimen.mat)[nrow(specimen.mat)] <- rownames(replicateMeasureMat)[index[1]]
+		rownames(specimen.mat)[nrow(specimen.mat)] <- rownames(replicatemeasure.mat)[index[1]]
 	}
 	specimen.mat <- data.frame(species = rownames(specimen.mat), specimen = specimenNos, specimen.mat, stringsAsFactors = FALSE, row.names = NULL)
 	specimen.mat
@@ -69,6 +69,16 @@ makeOneSpeciesMatFromSpecimenMat <- function(specimen.mat) {
 	colnames(oneSpeciesMat)[1] <- "species"
 	oneSpeciesMat[, -(c(2:3, which(colnames(oneSpeciesMat) %in% c("Published.name", "n", "Reference", "PaleoDB.ref", "Notes", "X", "X.1", "X.2", "X.3", 
 		"X.4"))))]
+}
+
+makeOneGenusMatFromSpecimenMat <- function(measure.mat) {
+	# species<-unique(measure.mat$species)
+	oneGenusMat <- aggregate(measure.mat, by = list(measure.mat$genus), mean, na.rm = TRUE)
+	# oneGenusMat <- aggregate(measure.mat, by=list(measure.mat$genus), median, na.rm=TRUE)
+	oneGenusMat <- data.frame(oneGenusMat, row.names = oneGenusMat[, 1])
+	oneGenusMat[sapply(oneGenusMat, is.nan)] <- NA
+	colnames(oneGenusMat)[1] <- "genus"
+	oneGenusMat[,-2]
 }
 
 getToothRowLengths <- function(species) {
@@ -122,49 +132,50 @@ getSingleSpeciesMatrix <- function() {
 
 	specimen.mat[sapply(specimen.mat, is.nan)] <- NA
 	specimen.mat$species <- getCurrentTaxa(tax.vec = specimen.mat$species)
+	specimen.mat$species <- gsub(pattern = "[[:space:]]", replacement = "_", x = specimen.mat$species)
 
 	upLabels <- c("P2_L", "P2_W", "P3_L", "P3_W", "P4_L", "P4_W", "M1_L", "M1_W", "M2_L", "M2_W", "M3_L", "M3_W") #\P2_L\",\"P2_W\","
 	loLabels <- casefold(upLabels)
 
-	### node that specimens are aggregated by their medians, so as to minimize the effect of outlier measurements
-	thisMat <- aggregate(specimen.mat[, c(upLabels, loLabels)], by = list(species = specimen.mat$species), median, na.rm = TRUE)
+	############################
+	#### note that specimens are aggregated by their medians, so as to minimize the effect of outlier measurements
+	############################
+	
+	# measure.mat <- aggregate(specimen.mat[, c(upLabels, loLabels)], by = list(species = specimen.mat$species), mean, na.rm = TRUE)
+	measure.mat <- aggregate(specimen.mat[, c(upLabels, loLabels)], by = list(species = specimen.mat$species), median, na.rm = TRUE)
 
-	thisMat[, sapply(thisMat, is.numeric)] <- thisMat[, sapply(thisMat, is.numeric)]/10 #converts mm measurements to cm for compatibility with Janis regressions
-	thisMat <- transform(thisMat, p4_a = p4_l * p4_w, m1_a = m1_l * m1_w, m2_a = m2_l * m2_w, m3_a = m3_l * m3_w, M2_A = M2_L * M2_W)
-	thisMat[sapply(thisMat, is.nan)] <- NA
+	measure.mat[, sapply(measure.mat, is.numeric)] <- measure.mat[, sapply(measure.mat, is.numeric)]/10 #converts mm measurements to cm for compatibility with Janis regressions
+	measure.mat <- transform(measure.mat, p4_a = p4_l * p4_w, m1_a = m1_l * m1_w, m2_a = m2_l * m2_w, m3_a = m3_l * m3_w, M2_A = M2_L * M2_W)
+	measure.mat[sapply(measure.mat, is.nan)] <- NA
 
-	#thisMat$species <- gsub(pattern = "[[:space:]]", replacement = "_", x = thisMat$species)
-	rownames(thisMat) <- thisMat$species
+	rownames(measure.mat) <- measure.mat$species
 
-	return(thisMat)
+	return(measure.mat)
 }
 
-appendMissingPaleoDBSpecies <- function(thisMat, tax.vec) {
+appendMissingPaleoDBSpecies <- function(measure.mat, tax.vec) {
 	# this adds taxa that are in PaleoDB (i.e., occurrence data), but not in the measurement files
-	tax.vec <- tax.vec[!tax.vec %in% thisMat$species]
-	tax.frame <- data.frame(array(NA, dim = c(length(tax.vec), ncol(thisMat)), dimnames = list(tax.vec, colnames(thisMat))))
+	tax.vec <- tax.vec[!tax.vec %in% measure.mat$species]
+	tax.frame <- data.frame(array(NA, dim = c(length(tax.vec), ncol(measure.mat)), dimnames = list(tax.vec, colnames(measure.mat))))
 	tax.frame$species <- tax.vec
-	if (any(tax.frame$species %in% thisMat$species)) {
-		# thisMat[match(rangesNotThisMat$species, thisMat$species),c("FO", "LO")] <- ranges[,c("FO", "LO")]
-		} else thisMat <- merge(thisMat, tax.frame, all = TRUE, sort = FALSE)
-	rownames(thisMat) <- thisMat$species
-	thisMat
+	if (any(tax.frame$species %in% measure.mat$species)) {
+		# measure.mat[match(rangesNotmeasure.mat$species, measure.mat$species),c("FO", "LO")] <- ranges[,c("FO", "LO")]
+		} else measure.mat <- merge(measure.mat, tax.frame, all = TRUE, sort = FALSE)
+	rownames(measure.mat) <- measure.mat$species
+	measure.mat
 }
 
-getMeasureMat <- function() {
+getMeasureMatWithBodyMasses <- function() {
 	print("Building measurement matrix...")
-	measureMat <- getSingleSpeciesMatrix()
-	# print("getSingleSpMat completed")
-	rownames(measureMat) <- gsub(pattern = "[[:space:]]", replacement = "_", x = measureMat$species)
+	measure.mat <- getSingleSpeciesMatrix()
 
-	measureMat <- appendRegressionCategories(thisMat = measureMat, regMat = read.csv(file="~/Dropbox/code/R/dentalMeasurements/dat/regressionLabelsJDM.csv"))
-	# print("regression append completed")
-	#head(measureMat)
-	measureMat$species <- gsub(pattern = "[[:space:]]", replacement = "_", x = measureMat$species)
-	#Approxiate body masses
-	measureMat <- approxBodyMass(measureMat = measureMat)
-	# print("bodymass approximated")
-	measureMat <- measureMat[is.finite(measureMat $bodyMass),]		#### clears taxa without body mass estimate
+	tax.vec <- sort(unique(occs$accepted_name[occs$accepted_rank %in% c("genus", "species")]))
+	tax.vec <- tax.vec[!tax.vec %in% rownames(measure.mat)]
+	measure.mat <- appendMissingPaleoDBSpecies(measure.mat, tax.vec)
 
-	return(measureMat)
+	measure.mat <- appendRegressionCategories(measure.mat = measure.mat, regMat = read.csv(file="~/Dropbox/code/R/dentalMeasurements/dat/regressionLabelsJDM.csv"))
+	measure.mat <- approxBodyMass(measure.mat = measure.mat)
+	measure.mat <- measure.mat[is.finite(measure.mat$bodyMass),]		#### clears taxa without body mass estimate
+
+	return(measure.mat)
 }

@@ -44,24 +44,24 @@ getMLbodyMassForOneSpecies <- function(this, thisReg, best.only=FALSE) {
 }
 getMLbodyMassForOneSpecies_compiled <- cmpfun(getMLbodyMassForOneSpecies)
 
-getMLBodyMasses <- function(thisMat, regList, best.only=FALSE) {
-	bmVec <- array(NA, dim=c(nrow(thisMat), 1), dimnames=list(rownames(thisMat), "bodyMass"))
-	for (i in seq_len(nrow(thisMat))) {
-		if (!is.na(thisMat$reg[i])) {
-			bmVec[i] <- getMLbodyMassForOneSpecies_compiled(this=thisMat[i,], thisReg=regList[[which(names(regList) == thisMat$reg[i])]])
+getMLBodyMasses <- function(measure.mat, regList, best.only=FALSE) {
+	bmVec <- array(NA, dim=c(nrow(measure.mat), 1), dimnames=list(rownames(measure.mat), "bodyMass"))
+	for (i in seq_len(nrow(measure.mat))) {
+		if (!is.na(measure.mat$reg[i])) {
+			bmVec[i] <- getMLbodyMassForOneSpecies_compiled(this=measure.mat[i,], thisReg=regList[[which(names(regList) == measure.mat$reg[i])]])
 		} else bmVec[i] <- NA
 	} 
 	bmVec
 } 
 getMLBodyMasses_compiled <- cmpfun(getMLBodyMasses)
 
-appendRegTypeToThisMat <- function(thisMat) {
+appendRegTypeTomeasure.mat <- function(measure.mat) {
 		famList <- unique(read.csv("~/Dropbox/code/common_dat/taxonomy.csv"), strip.white=TRUE)
-		thisMat[,"reg"] <- famList$reg[match(x=thisMat$species, famList$taxon)]	# now assuming reg will already be a part of thisMat
-		thisMat
+		measure.mat[,"reg"] <- famList$reg[match(x=measure.mat$species, famList$taxon)]	# now assuming reg will already be a part of measure.mat
+		measure.mat
 }
 
-getBodyMassVectorFromMeasureMatAllMeasures <- function(thisMat, linked.files=FALSE) {
+getBodyMassVectorFromMeasureMatAllMeasures <- function(measure.mat, linked.files=FALSE) {
 	#######################################################################################################################################
 	##### read Janis 1990 regression parameters from file, and append standard deviations
 	#######################################################################################################################################
@@ -75,18 +75,18 @@ getBodyMassVectorFromMeasureMatAllMeasures <- function(thisMat, linked.files=FAL
 	#######################################################################################################################################
 	##### get body mass for only those taxa that have all (i.e., are not missing any) of the published measurements (about 325 species)
 	#######################################################################################################################################
-	thisMat$reg[thisMat$reg==""] <- NA
+	measure.mat$reg[measure.mat$reg==""] <- NA
 	theseColumns <- c(as.character(regList[[1]]$m)[-which(as.character(regList[[1]]$m) %in% c("loP", "loM"))], "reg") # theseColumns is the names of columns that are also in reg - published measuremnts
-	bm <- getMLBodyMasses_compiled(thisMat[complete.cases(thisMat[,theseColumns]), theseColumns], regList, best.only=FALSE)
+	bm <- getMLBodyMasses_compiled(measure.mat[complete.cases(measure.mat[,theseColumns]), theseColumns], regList, best.only=FALSE)
 	
 	#######################################################################################################################################
 	##### get regression parameters for measurements not in published regression
 	#######################################################################################################################################
 	other_m <- c("P2_L", "P2_W", "P3_L", "P3_W", "P4_L", "P4_W", "M1_L", "M1_W", "M3_L", "M3_W")
-# 	other_m <- colnames(thisMat[,sapply(thisMat, is.numeric)])[!colnames(thisMat[,sapply(thisMat, is.numeric)]) %in% theseColumns]
+# 	other_m <- colnames(measure.mat[,sapply(measure.mat, is.numeric)])[!colnames(measure.mat[,sapply(measure.mat, is.numeric)]) %in% theseColumns]
 
 	otherReg <- lapply(X=names(regList), FUN=function(this.group) {
-		shortMat <- thisMat[rownames(thisMat) %in% rownames(bm) & thisMat$reg==this.group, other_m]
+		shortMat <- measure.mat[rownames(measure.mat) %in% rownames(bm) & measure.mat$reg==this.group, other_m]
 		short.bm <- bm[rownames(bm) %in% rownames(shortMat),]
 		apply(log10(shortMat), MARGIN=2, FUN=function(x, bm) {
 			lm(bm ~ x) } , bm=short.bm ) 
@@ -108,51 +108,58 @@ getBodyMassVectorFromMeasureMatAllMeasures <- function(thisMat, linked.files=FAL
 	#######################################################################################################################################
 	##### recalculate body masses of all taxa with all (merged) measurements
 	#######################################################################################################################################
-	bm <-  getMLBodyMasses_compiled(thisMat, regList, best.only=FALSE)
-	bm[match(thisMat$species, rownames(bm))]	
+	bm <-  getMLBodyMasses_compiled(measure.mat, regList, best.only=FALSE)
+	bm[match(measure.mat$species, rownames(bm))]	
 }
 
-fillMissingBodyMasses <- function(thisMat) {
-	require(stringr)
-	noMass <- rownames(thisMat)[!is.finite(thisMat$bodyMass)]
-	noMass <- data.frame(species=noMass, bodyMass=sapply(X=noMass, FUN=function(x) mean(thisMat[grep(str_split(x, pattern=" ")[[1]][1], rownames(thisMat)),"bodyMass"], na.rm=TRUE)))
-	thisMat$bodyMass[match(rownames(noMass), rownames(thisMat))] <- noMass[,"bodyMass"]
-	array(thisMat$bodyMass, dimnames=list(rownames(thisMat)))
+fillMissingBodyMasses <- function(measure.mat) {
+	# require(stringr)
+	noMass <- measure.mat$species[!is.finite(measure.mat$bodyMass)]
+
+		#### mean of congeners
+		noMass <- data.frame(species=noMass, bodyMass=sapply(X=noMass, FUN=function(x) mean(measure.mat[grep(pattern=strsplit(x=x, split="_")[[1]][1], x=measure.mat$species),"bodyMass"], na.rm=TRUE)))
+		# #### median of congeners
+		# noMass <- data.frame(species=noMass, bodyMass=sapply(X=noMass, FUN=function(x) median(measure.mat[grep(pattern= strsplit(x=x, split="_")[[1]][1], x=measure.mat$species),"bodyMass"], na.rm=TRUE)))
+		# #### randomly select a congener
+		# noMass <- data.frame(species=noMass, bodyMass=sapply(X=noMass, FUN=function(x) sample(x=measure.mat[grep(pattern= strsplit(x=x, split="_")[[1]][1], x=measure.mat$species),"bodyMass"], size=1)))
+
+	measure.mat$bodyMass[match(noMass$species, measure.mat$species)] <- noMass[,"bodyMass"]
+	measure.mat
 }
 
 ############################################################################################################################################
 
 #Compile and format matrix of all measurements from multiple sources
-appendRegressionCategories <- function(thisMat, regMat) {
+appendRegressionCategories <- function(measure.mat, regMat) {
 	
 	uniqTax <- lapply(c("Artiodactyla", "Perissodactyla"), FUN=getTaxonomyForOneBaseTaxon)
 	uniqTax <- rbind(uniqTax[[1]], uniqTax[[2]])
 	uniqTax$taxon_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = uniqTax$taxon_name)
 	
 	#delete unique taxa that lack family and genus
-	thisMat$family <- uniqTax$family[match(x=rownames(thisMat), table=uniqTax$taxon_name)]
-	# thisMat$family <- sapply(thisMat$family, as.character)
-	thisMat$family[thisMat$family == ""] <- NA
+	measure.mat$family <- uniqTax$family[match(x=rownames(measure.mat), table=uniqTax$taxon_name)]
+	# measure.mat$family <- sapply(measure.mat$family, as.character)
+	measure.mat$family[measure.mat$family == ""] <- NA
 	
-	thisMat$genus <- uniqTax$genus[match(x=rownames(thisMat), table=uniqTax$taxon_name)]
-	# thisMat$genus <- sapply(thisMat$genus, as.character)
-	thisMat$genus[thisMat$genus == ""] <- NA
+	measure.mat$genus <- uniqTax$genus[match(x=rownames(measure.mat), table=uniqTax$taxon_name)]
+	# measure.mat$genus <- sapply(measure.mat$genus, as.character)
+	measure.mat$genus[measure.mat$genus == ""] <- NA
 	
 	#### 
 	#append regression catagories to each species
 	####
 	
-	# reg.vec <- array(dim=nrow(thisMat))
-	# apply(thisMat, 1, function(x) {
+	# reg.vec <- array(dim=nrow(measure.mat))
+	# apply(measure.mat, 1, function(x) {
 		# if (!is.na(x["family"]) & x["family"] %in% regMat$family) 
 	
-	family.names <- uniqTax$family[match(x=rownames(thisMat), table=uniqTax$taxon_name)]
+	family.names <- uniqTax$family[match(x=rownames(measure.mat), table=uniqTax$taxon_name)]
 	reg.vec <- regMat$reg[!is.na(regMat$family)][match(family.names, regMat$family[!is.na(regMat$family)])]  # this is the regression "labels" for the species from measure.mat in the correct order, based on family name
 	
-	genus.names <- uniqTax$genus[match(x=rownames(thisMat), table=uniqTax$taxon_name)]
+	genus.names <- uniqTax$genus[match(x=rownames(measure.mat), table=uniqTax$taxon_name)]
 	reg.vec[is.na(reg.vec)] <- regMat$reg[!is.na(regMat$genus)][match(genus.names, regMat$genus[!is.na(regMat$genus)])][is.na(reg.vec)]   #this is the regression "labels" for the species from measure.mat in the correct order, based on genus name; it appears that having regMat$genus[!is.na(regMat$genus)] will cause the index to improperly assign regressions
 	
-	thisMat$reg.vec <- reg.vec
+	measure.mat$reg.vec <- reg.vec
 
 	#check for taxa that are not recieving a regression
 	#missingReg <- measure.mat[is.na(measure.mat $reg.vec),]
@@ -161,25 +168,23 @@ appendRegressionCategories <- function(thisMat, regMat) {
 	#missingReg <- missingReg[!grepl("cf.",missingReg$species),]
 	#write.csv(missingReg, '/Users/evandoughty/Dropbox/ungulate_RA/RCode/JonCode/2017_2_27_missingReg.csv')
 	
-	# nrow(thisMat) #803 species remain after final removal 
+	# nrow(measure.mat) #803 species remain after final removal 
 	
-	# rownames(thisMat) <- gsub(pattern = "[[:space:]]", replacement = "_", x = rownames(thisMat))
+	# rownames(measure.mat) <- gsub(pattern = "[[:space:]]", replacement = "_", x = rownames(measure.mat))
 	
-	return(thisMat)
+	return(measure.mat)
 }
 
 ############################################################################################################################################
 
-approxBodyMass <- function(measureMat) {
+approxBodyMass <- function(measure.mat, fill.missing=TRUE) {
 	#Approximate body mass
 	print("Building body mass estimates...")
-	measureMat[!is.na(measureMat $family) & measureMat $family=="Entelodontidae", c("P2_L", "P3_L", "p2_w", "m2_w", "m3_w")] <- NA	### entelodont tooth widths were generating >5 ton body masses, so dropped here.
-	measureMat[,"bodyMass"] <- getBodyMassVectorFromMeasureMatAllMeasures(measureMat, linked.files=FALSE)
-	measureMat $bodyMass <- fillMissingBodyMasses(measureMat)	# this fills taxa missing their body mass with the average body mass of its cogeners
-	measureMat[!sapply(measureMat, is.finite)] <- NA
-	#rownames(measureMat) <- gsub(pattern = "[[:space:]]", replacement = "_", x = rownames(measureMat))
-	measureMat $species <- rownames(measureMat)
-	return(measureMat)
+	measure.mat[!is.na(measure.mat$family) & measure.mat$family=="Entelodontidae", c("P2_L", "P3_L", "p2_w", "m2_w", "m3_w")] <- NA	### entelodont tooth widths were generating >5 ton body masses, so not used for body mass estimation, here.
+	measure.mat[,"bodyMass"] <- getBodyMassVectorFromMeasureMatAllMeasures(measure.mat, linked.files=FALSE)
+	if (fill.missing) measure.mat <- fillMissingBodyMasses(measure.mat)	# this fills taxa missing their body mass with the average body mass of its cogeners
+	# sort(unique(measure.mat[!sapply(measure.mat, function(x) is.character(x) | is.finite(x) | is.na(x))])) <- NA
+	return(measure.mat)
 }
 
 ############################################################################################################################################
