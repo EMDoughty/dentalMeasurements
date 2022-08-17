@@ -558,10 +558,10 @@ BreakComboFreq <- function(optList = NULL) {
 #within the regimes demarcated by breaks or designated by optList (if breaks are not provided).
 #netFreq and regime Freq sets whether to use proportions or actually counts for the net gain/loss and regime 
 #distribution histograms, respectively.
-regimeHist <- function(repIntTaxa = NULL, breaks = NULL, optList, thisMat, netFreq = TRUE, regimeFreq = FALSE, netPlotType = "absolute", plot.together = FALSE) {
+regimeHist <- function(repIntTaxa = NULL, trait.Col = "bodyMass", breaks = NULL, optList, thisMat, netFreq = TRUE, regimeFreq = FALSE, netPlotType = "absolute", plot.together = FALSE) {
 	#function to generate histograms of species within each regime
 	#get list of intervals that comprise a regime
-repIntTaxa_regimes <- repIntTaxa
+  repIntTaxa_regimes <- repIntTaxa
 	if (is.null(breaks)) 
 		breaks <- optList_bm_allReps[[1]][[10]]$optBreaks
 
@@ -574,7 +574,7 @@ repIntTaxa_regimes <- repIntTaxa
 
 	regimeSp <- unique(unlist(repIntTaxa_regimes[[1]][which(as.double(names(repIntTaxa_regimes[[ii]])) > breaks[1])]))
 	regimeSp <- regimeSp[regimeSp %in% thisMat$species]
-	regimeBM <- thisMat[thisMat$species %in% regimeSp, "bodyMass"]
+	regimeBM <- thisMat[thisMat$species %in% regimeSp, trait.Col]
 
 	regimeSp.List[[1]] <- regimeSp
 	regimeBM.list[[1]] <- regimeBM
@@ -586,10 +586,10 @@ repIntTaxa_regimes <- repIntTaxa
 		
 		#seq(min(which(as.double(names(repIntTaxa_regimes[[ii]])) < breaks[mm-1] & as.double(names(repIntTaxa_regimes[[ii]])) > breaks[mm])),
 		#max(which(as.double(names(repIntTaxa_regimes[[ii]])) < breaks[mm-1] & as.double(names(repIntTaxa_regimes[[ii]])) > breaks[mm])),1))
-regimeSp <- unique(unlist(repIntTaxa_regimes[[1]][which(as.double(names(repIntTaxa_regimes[[ii]])) < breaks[mm - 1] & as.double(names(repIntTaxa_regimes[[ii]])) > 
+  regimeSp <- unique(unlist(repIntTaxa_regimes[[1]][which(as.double(names(repIntTaxa_regimes[[ii]])) < breaks[mm - 1] & as.double(names(repIntTaxa_regimes[[ii]])) > 
 			breaks[mm])]))
 		regimeSp <- regimeSp[regimeSp %in% thisMat$species]
-		regimeBM <- thisMat[thisMat$species %in% regimeSp, "bodyMass"]
+		regimeBM <- thisMat[thisMat$species %in% regimeSp, trait.Col]
 
 		regimeSp.List[[mm]] <- regimeSp
 		regimeBM.list[[mm]] <- regimeBM
@@ -599,7 +599,7 @@ regimeSp <- unique(unlist(repIntTaxa_regimes[[1]][which(as.double(names(repIntTa
 
 	regimeSp <- unique(unlist(repIntTaxa_regimes[[1]][which(as.double(names(repIntTaxa_regimes[[ii]])) < breaks[length(breaks)])]))
 	regimeSp <- regimeSp[regimeSp %in% thisMat$species]
-	regimeBM <- thisMat[thisMat$species %in% regimeSp, "bodyMass"]
+	regimeBM <- thisMat[thisMat$species %in% regimeSp, trait.Col]
 
 	regimeSp.List[[length(breaks) + 1]] <- regimeSp
 	regimeBM.list[[length(breaks) + 1]] <- regimeBM
@@ -661,120 +661,188 @@ regimeSp <- unique(unlist(repIntTaxa_regimes[[1]][which(as.double(names(repIntTa
 #of traits within the regimes demarcated by breaks or designated by optList (if breaks are not provided).
 #netFreq and regime Freq sets whether to use proportions or actually counts for the net gain/loss and regime 
 #distribution histograms, respectively.
-regimeHist_countBox <- function(countBox = NULL, breaks = NULL, optList, thisMat, netFreq = TRUE, regimeFreq=FALSE,
-																netPlotType = "absolute", plot.together = FALSE, grayscale = TRUE, plot.axes = FALSE) {
-	if(class(countBox) == "matrix"){
-		if(is.null(breaks)) breaks <- optList_bm_allReps[[1]][[length(optList_bm_allReps)]]$optBreaks
-		
+regimeHist_countBox <- function(countBox = NULL, intervals = NULL, breaks = NULL, bmbreaks = NULL, optList, 
+                                grayscale = TRUE, regime.func = sum,
+                                plot.type = c("raw", "proportion", "netChange"), ylim = c(0, 100), 
+                                mfrow = NULL, mar = c(10,3,5,0), omi = c(0,0,0,0.25), 
+                                mtext.cex = 1, mtext.line = 1, cex.names = 1, cex.axis = 1, add.plots = FALSE)
+{
+	#if(class(countBox) == "array") countBox <- countBox[2,,]
+
+		if(is.null(breaks)) 
+		{
+		  breaks <- intervals[optList[[length(optList)-1]]$optBreaks,2]
+		}
+    
+    breaks.dropped.lower <- NULL
+    breaks.dropped.upper <- NULL
+    
+    #if the breaks are found along the very start or end of the analysis then the plots will breaks as nothing comes before or after.
+    ##will drop those problem elements for now
+    if(breaks[1] == max(intervals$ageBase)) 
+      {
+       breaks.dropped.lower <- breaks[1]
+       breaks <- breaks[-1]
+      }
+    if(breaks[length(breaks)] == min(intervals$ageTop))
+    {
+      breaks.dropped.upper <- breaks[length(breaks)]
+      breaks <- breaks[-c(length(breaks))]
+    }
+    
 		regimeBM.list <- list()
 		regimeSp.List <- list()
 		
-		colnames(countBox) <- str_remove(colnames(countBox), " Ma")
+  	regimeBM <-	countBox[,intervals$ageBase > breaks[1]]
 		
-		regimeBM <- countBox[,which(as.double(colnames(countBox)) > breaks[1])]
-		regimeBM.list[[1]] <- apply(regimeBM, c(1), sum)
-		rm(regimeBM)
-		
-		for(mm in seq(2,length(breaks),1))
-		{
-			#get regimes for remaining sections
-			
-			#seq(min(which(as.double(names(repIntTaxa_regimes[[ii]])) < breaks[mm-1] & as.double(names(repIntTaxa_regimes[[ii]])) > breaks[mm])),
-			#max(which(as.double(names(repIntTaxa_regimes[[ii]])) < breaks[mm-1] & as.double(names(repIntTaxa_regimes[[ii]])) > breaks[mm])),1))
-			regimeBM <- countBox[,which(as.double(colnames(countBox)) < breaks[mm-1] 
-																	& as.double(colnames(countBox)) > breaks[mm])]
-			regimeBM.list[[mm]] <- apply(regimeBM, c(1), sum)
-			
-			rm(regimeBM)
-		}  
-		
-		regimeBM <- countBox[,which(as.double(colnames(countBox)) < breaks[length(breaks)])]
-		regimeBM.list[[length(breaks)+1]] <- apply(regimeBM, c(1),sum)
-		
-		rm(regimeBM)
-		
-		regimeNames <- vector()
-		regimeNames[1] <- paste(">",max(breaks,sep=""))
-		
-		for(ii in seq(2,length(regimeBM.list)-1,1))
-		{
-			regimeNames[ii] <- paste(paste(breaks[ii-1]," to ",sep=""),breaks[ii],sep="")
-		}
-		regimeNames[length(regimeBM.list)] <- paste(breaks[length(regimeBM.list)-1],">",sep="")
-		names(regimeBM.list) <- regimeNames 
-		bmBreaks <- c(0, 0.69897, 1.39794, 2.176091, 2.69897, 3.0, 4.0)
-		
-		btwnBreaks <- vector()
-		for(ii in seq(1, length(bmBreaks)-1,1)) btwnBreaks[ii] <- (bmBreaks[ii]+bmBreaks[ii+1])/2 
-		
-		if(grayscale == TRUE) breakCol <- gray.colors(length(bmBreaks), start=0, end=1)
-		else breakCol <- rainbow(length(bmBreaks))
-		
-		#make vector that conbtains the btwBreak values at qunatity listed by countBox
-		for(hh in seq(1, length(regimeBM.list),1))
-		{
-			
-			regimeBM.list[[hh]] <- c(rep(btwnBreaks[1],regimeBM.list[[hh]][1]),rep(btwnBreaks[2],regimeBM.list[[hh]][2]),
-															 rep(btwnBreaks[3],regimeBM.list[[hh]][3]),rep(btwnBreaks[4],regimeBM.list[[hh]][4]),
-															 rep(btwnBreaks[5],regimeBM.list[[hh]][5]),rep(btwnBreaks[6],regimeBM.list[[hh]][6]))
-		}
-		
-		hist.list <- list()
-		for(jj in seq(1, length(regimeBM.list),1))
-		{
-			
-			hist.list[[jj]] <- hist(regimeBM.list[[jj]], breaks = bmBreaks, plot = FALSE)
-			hist.list[[jj]]$density <- hist.list[[jj]]$counts/sum(hist.list[[jj]]$counts)
-		}
-		
-		net.plot <- hist.list
-		net.plot[[length(regimeNetChange)]] <- NULL
-		names(net.plot) <- breaks
-		
-		for(tt in seq(2,length(hist.list),1))
-		{
-			net.plot[[tt-1]]$counts <- hist.list[[tt]]$counts - hist.list[[tt-1]]$counts
-			#tt <- tt+1
-		}
-		
-		max(sapply(net.plot, function(x) max(x$counts)))
-		min(sapply(net.plot, function(x) min(x$counts)))
-		#get limits for plot dimensions and scale
-		hist.plot_ylimMax <- max(sapply(hist.list, function(x) max(x$density)))
-		net.plot_ylimMax <- max(sapply(net.plot, function(x) max(x$counts)))
-		net.plot_ylimMin <- min(sapply(net.plot, function(x) min(x$counts)))
-		
-		if(plot.axes == TRUE) marginPlot <- c(2,3,0,0)
-		else marginPlot <- c(0,0.5,0,0)
-		
-		quartz(width = 11, height = 4)
-		par(mfrow = c(1, length(hist.list)),mar=marginPlot)
-		axesCheck <- FALSE
-		for(ii in seq(1, length(hist.list),1))
-		{
-			if(plot.axes == TRUE)
-			{
-				if(ii == 1) axesCheck <- TRUE 
-				else axesCheck <- FALSE
-			}
-			plot(hist.list[[ii]], col = breakCol, axes = axesCheck, ylim = c(0,1), main = NULL, freq = FALSE)
-		}
-		quartz(width = 11, height = 4)
-		par(mfrow = c(1, length(net.plot)+1),mar=marginPlot) #have +1 to plot lenght so plots are same size as those for hist.plot
-		for(ii in seq(1, length(net.plot),1))
-		{
-			if(plot.axes == TRUE)
-			{
-				if(ii == 1) axesCheck <- TRUE 
-				else axesCheck <- FALSE
-			}
-			plot(net.plot[[ii]], col=breakCol, freq=TRUE, axes = axesCheck, ylim = c(net.plot_ylimMin,net.plot_ylimMax), 
-					 main = NULL)
-		}
-	}
+    	if(is.vector(regimeBM)) {regimeBM.list[[1]] <- regimeBM
+    	} else regimeBM.list[[1]] <- apply(regimeBM, c(1), regime.func)
+  		
+  		rm(regimeBM)
+  		
+  	if(length(breaks) >= 2)
+  	{		
+  		for(mm in seq(1,length(breaks)-1,1))
+  		{
+  			#get regimes for remaining sections
+  			
+  			#seq(min(which(as.double(names(repIntTaxa_regimes[[ii]])) < breaks[mm-1] & as.double(names(repIntTaxa_regimes[[ii]])) > breaks[mm])),
+  			#max(which(as.double(names(repIntTaxa_regimes[[ii]])) < breaks[mm-1] & as.double(names(repIntTaxa_regimes[[ii]])) > breaks[mm])),1))
+  			regimeBM <- countBox[,intervals$ageBase <= breaks[mm] 
+  													& intervals$ageBase > breaks[mm+1]]
+  	
+  		  if(is.vector(regimeBM)) {regimeBM.list[[mm+1]] <- regimeBM
+  			} else regimeBM.list[[mm+1]] <- apply(regimeBM, c(1), regime.func)
+  		
+  			rm(regimeBM)
+  		}  
+  	}
+		regimeBM <- countBox[,intervals$ageBase <= breaks[length(breaks)]]
 	
+		if(is.vector(regimeBM)) { regimeBM.list[[length(breaks)+1]] <- regimeBM
+		} else regimeBM.list[[length(breaks)+1]] <- apply(regimeBM, c(1), regime.func)
+		rm(regimeBM)
+		
+  ###assign names to the different regimes
+		regimeNames <- vector()
+		
+		if(!is.null(breaks.dropped.lower))
+		{
+		  regimeNames[1] <- paste0(breaks.dropped.lower, " to ", breaks[1], " Ma")
+		} else regimeNames[1] <- paste0(">",max(breaks), " Ma")
+		
+		for(ii in seq(2,length(regimeBM.list),1))
+		{
+			regimeNames[ii] <- paste0(breaks[ii-1]," to ", breaks[ii], " Ma")
+		}
+		regimeNames[length(regimeBM.list)] <- paste("< ", breaks[length(breaks)]," Ma",sep="")
+		names(regimeBM.list) <- regimeNames 
+		
+		### generate histograms
+		
+		if(grayscale == TRUE) 
+		{
+		  breakCol <- gray.colors(length(regimeBM.list[[1]]), start=0, end=1)
+		} else breakCol <- rainbow(length(regimeBM.list[[1]]))
+		
+		
+		regimeBM.list
+		
+	#	quartz(width = 11, height = 4)
+		
+		if(is.null(mfrow)) mfrow <- c(1, length(regimeBM.list))
+		
+	  par(mfrow = mfrow, mar = mar, omi = omi)
+		
+		if(plot.type %in% "raw")
+		{
+  		for(ii in seq(1,length(regimeBM.list),1))	
+  		{
+  		  barplot(regimeBM.list[[ii]], col = breakCol, ylim = ylim, las = 3, cex.names = cex.names, cex.axis = cex.axis)
+  		  mtext(regimeNames[ii], side = 3, line = mtext.line, cex = mtext.cex)
+  		}
+		}
+		
+		#make it plot proportion instead of raw counts
+		if(plot.type %in% "proportion")
+		{
+  		for(jj in seq(1, length(regimeBM.list),1))
+  		{
+  		  regime.prop <- regimeBM.list[[jj]]/sum(regimeBM.list[[jj]])
+  		  barplot(regime.prop, col = breakCol, ylim = ylim, las = 3, cex.names = cex.names, cex.axis = cex.axis)
+  		  mtext(regimeNames[jj], side = 3, line = mtext.line, cex = mtext.cex)
+  		}
+		}
+		
+		#need to make the net change between regime plots
+		if(plot.type %in% "netChange")
+		{
+		  for(jj in seq(1, length(regimeBM.list)-1,1))
+		  {
+		    regime.net <- regimeBM.list[[jj+1]]-regimeBM.list[[jj]]
+		    barplot(regime.net, col = breakCol, ylim = ylim, las = 3, cex.names = cex.names, cex.axis = cex.axis)
+		    mtext(breaks[jj], side = 3, line = mtext.line, cex = mtext.cex)
+		  }
+		}
+		
+	#	hist.list <- list()
+	#	for(jj in seq(1, length(regimeBM.list),1))
+	#	{
+	#		
+	#		hist.list[[jj]] <- hist(regimeBM.list[[jj]], breaks = bmBreaks, plot = TRUE)
+	#		hist.list[[jj]]$density <- hist.list[[jj]]$counts/sum(hist.list[[jj]]$counts)
+	#	}
+	#	
+	#	net.plot <- hist.list
+	#	net.plot[[length(regimeNetChange)]] <- NULL
+	#	names(net.plot) <- breaks
+	#	
+	#	for(tt in seq(2,length(hist.list),1))
+	#	{
+	#		net.plot[[tt-1]]$counts <- hist.list[[tt]]$counts - hist.list[[tt-1]]$counts
+	#		#tt <- tt+1
+	#	}
+	#	
+	#	max(sapply(net.plot, function(x) max(x$counts)))
+	#	min(sapply(net.plot, function(x) min(x$counts)))
+	#	#get limits for plot dimensions and scale
+	#	hist.plot_ylimMax <- max(sapply(hist.list, function(x) max(x$density)))
+	#	net.plot_ylimMax <- max(sapply(net.plot, function(x) max(x$counts)))
+	#	net.plot_ylimMin <- min(sapply(net.plot, function(x) min(x$counts)))
+		
+	#	if(plot.axes == TRUE) marginPlot <- c(2,3,0,0)
+	#	else marginPlot <- c(0,0.5,0,0)
+		
+	#	quartz(width = 11, height = 4)
+	#	par(mfrow = c(1, length(hist.list)),mar=marginPlot)
+	#	axesCheck <- FALSE
+	#	for(ii in seq(1, length(hist.list),1))
+	#	{
+	#		if(plot.axes == TRUE)
+	#		{
+	#			if(ii == 1) axesCheck <- TRUE 
+	#			else axesCheck <- FALSE
+	#		}
+	#		plot(hist.list[[ii]], col = breakCol, axes = axesCheck, ylim = c(0,1), main = NULL, freq = FALSE)
+	#	}
+	#	quartz(width = 11, height = 4)
+	#	par(mfrow = c(1, length(net.plot)+1),mar=marginPlot) #have +1 to plot lenght so plots are same size as those for hist.plot
+	#	for(ii in seq(1, length(net.plot),1))
+	#	{
+	#		if(plot.axes == TRUE)
+	#		{
+	#			if(ii == 1) axesCheck <- TRUE 
+	#			else axesCheck <- FALSE
+	#		}
+	#		plot(net.plot[[ii]], col=breakCol, freq=TRUE, axes = axesCheck, ylim = c(net.plot_ylimMin,net.plot_ylimMax), 
+	#				 main = NULL)
+	#	}
+	#}
+  
 	return()
 }
+
+
 #############################################################################################################################
 regimeHist_HistMedian<- function(repIntTaxa = NULL, breaks = NULL, optList, thisMat, netFreq = TRUE, regimeFreq=FALSE,
 																 netPlotType = "absolute", plot.together = FALSE) {
@@ -802,10 +870,7 @@ regimeHist_HistMedian<- function(repIntTaxa = NULL, breaks = NULL, optList, this
 		
 		for(mm in seq(2,length(breaks),1))
 		{
-			#get regimes for remaining sections
-			
-			#seq(min(which(as.double(names(repIntTaxa_regimes[[ii]])) < breaks[mm-1] & as.double(names(repIntTaxa_regimes[[ii]])) > breaks[mm])),
-			#max(which(as.double(names(repIntTaxa_regimes[[ii]])) < breaks[mm-1] & as.double(names(repIntTaxa_regimes[[ii]])) > breaks[mm])),1))
+		
 			regimeSp <- unique(unlist(repIntTaxa_regimes[[ii]][which(as.double(names(repIntTaxa_regimes[[ii]])) < breaks[mm-1] 
 																														 & as.double(names(repIntTaxa_regimes[[ii]])) > breaks[mm])]))
 			regimeSp <- regimeSp[regimeSp %in% thisMat$species]
@@ -828,6 +893,7 @@ regimeHist_HistMedian<- function(repIntTaxa = NULL, breaks = NULL, optList, this
 		
 		regimeNames <- vector()
 		regimeNames[1] <- paste(">",max(breaks,sep=""))
+		
 		for(nn in seq(2,length(regimeBM.list)-1,1))
 		{
 			regimeNames[nn] <- paste(paste(breaks[nn-1]," to ",sep=""),breaks[nn],sep="")

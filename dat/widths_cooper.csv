@@ -1,0 +1,243 @@
+specimen,family,name,species,gender,p2.1,p2.2,p2.3,p3.1,p3.2,p3.3,p4.1,p4.2,p4.3,m1.1,m1.2,m1.3,m2.1,m2.2,m2.3,m3.1,m3.2,m3.3
+FMNH 137417,Bovidae,Addax nasomaculatus,Addax nasomaculatus,Male,6.945,7.365,7.007,10.341,10.338,10.198,11.47,11.896,11.53,13.748,13.878,13.736,14.875,14.875,14.875,15.123,15.158,15.387
+FMNH 160011,Bovidae,Addax nasomaculatus,Addax nasomaculatus,Female,6.485,6.474,6.127,8.847,9.189,9.187,11.57,11.91,11.57,12.09,11.929,11.953,12.689,12.998,13.046,11.925,11.685,11.595
+FMNH 66888,Bovidae,Addax nasomaculatus,Addax nasomaculatus,Female,7.407,7.718,7.743,9.376,9.744,9.545,11.222,11.392,10.982,12.246,12.246,12.13,14.148,14.382,14.275,15.565,15.495,15.362
+FMNH 99009,Bovidae,Addax nasomaculatus,Addax nasomaculatus,Female,8.208,8.504,8.81,9.543,9.722,9.388,9.578,9.899,9.882,12.493,12.763,13.023,14.616,14.641,14.735,14.518,14.822,14.505
+FMNH 34472,Bovidae,Aepyceros melampus,Aepyceros melampus,Female,4.277,4.289,4.391,5.559,5.991,5.493,6.498,6.391,6.491,8.519,8.641,8.731,9.584,9.617,9.988,9.718,9.497,9.679
+FMNH 34470,Bovidae,Aepyceros melampus melampus,Aepyceros melampus,Female,4.529,4.677,4.918,5.679,5.678,5.499,6.629,6.701,6.691,8.257,8.641,8.344,9.191,9.249,9.346,8.057,8.053,8.204
+FMNH 34478,Bovidae,Aepyceros melampus melampus,Aepyceros melampus,Female,3.767,3.761,3.679,5.573,5.91,5.607,6.553,6.551,6.61,7.887,7.881,7.917,9.981,10.491,10.098,9.763,9.904,9.837
+FMNH 127888,Bovidae,Aepyceros melampus suara,Aepyceros melampus,Male,3.993,4.001,4,5.741,5.614,5.553,6.689,6.991,6.721,8.815,8.924,9.079,9.471,9.661,9.423,9.618,10.004,9.819
+FMNH 127890,Bovidae,Aepyceros melampus suara,Aepyceros melampus,Female,4.657,4.679,4.733,5.93,5.812,6.041,7.189,7.691,7.124,8.295,8.216,8.348,9.145,9.246,9.114,9.261,9.614,9.433
+FMNH 34458,Bovidae,Alcelaphus buselaphus caama,Alcelaphus buselaphus,Male,5.212,4.968,5.179,7.937,7.792,7.778,10.219,9.92,10.071,10.991,11.443,11.135,12.058,11.953,11.953,10.986,10.829,10.982
+FMNH 29552,Bovidae,Alcelaphus buselaphus cokii,Alcelaphus buselaphus,Male,5.351,5.758,5.616,8.217,8.213,8.451,9.452,9.301,9.551,11.337,11.32,11.491,10.762,10.873,10.564,10.1,10.391,10.113
+FMNH 29564,Bovidae,Alcelaphus buselaphus jacksoni,Alcelaphus buselaphus,Male,5.01,5.153,5.017,6.989,6.888,6.945,8.613,8.659,8.813,11.536,11.258,11.137,11.97,12.078,12.08,11.168,11.358,11.505
+FMNH 29646,Bovidae,Alcelaphus buselaphus lelwel,Alcelaphus buselaphus,Male,6.072,5.919,5.964,7.275,7.153,7.153,8.798,8.809,8.153,10.268,10.095,10.109,10.769,11.035,10.887,10.402,10.364,10.264
+FMNH 26972,Bovidae,Alcelaphus buselaphus swaynei,Alcelaphus buselaphus,Female,5.643,5.322,5.95,8.514,8.301,8.614,11.426,11.899,11.435,11.443,11.634,11.464,13.097,12.794,12.946,13.182,13.241,13.133
+FMNH 27128,Bovidae,Alcelaphus buselaphus tora,Alcelaphus buselaphus,Male,5.713,5.808,5.897,8.038,7.718,8.034,9.134,9.766,9.313,11.979,11.979,11.664,10.711,10.88,10.213,10.594,10.66,10.281
+FMNH 140886,Bovidae,Alcelaphus lichtensteinii,Alcelaphus lichtensteinii,Male,5.088,4.872,5.054,7.312,7.598,7.153,9.713,9.596,9.713,11.4,11.534,11.31,10.718,10.651,10.893,10.649,10.387,10.512
+FMNH 29649,Bovidae,Alcelaphus lichtensteinii,Alcelaphus lichtensteinii,Male,4.901,4.727,4.952,6.521,6.396,6.433,9.407,9.272,9.252,10.393,10.661,10.393,10.495,10.424,10.501,9.256,9.382,9.466
+FMNH 35262,Bovidae,Alcelaphus lichtensteinii kongoni,Alcelaphus lichtensteinii,Male,3.912,4.264,4.335,6.95,7.16,6.996,8.621,8.601,8.796,9.971,9.714,9.833,10.845,10.954,10.756,9.79,9.412,9.689
+FMNH 15571,Cervidae,Alces alces americanus,Alces alces,Female,15.182,14.799,14.775,16.439,16.631,16.259,17.674,17.483,17.674,19.926,20.388,20.308,20.358,20.451,20.647,21.747,21.958,22.25
+FMNH 20336,Cervidae,Alces alces gigas,Alces alces,Male,13.824,13.394,13.634,16.942,17.098,17.195,18.499,18.674,18.49,19.088,18.971,19.259,20.485,20.303,20.481,21.061,20.899,20.857
+FMNH 55701,Bovidae,Ammotragus lervia,Ammotragus lervia,Male,5.969,5.684,5.288,7.786,7.475,7.319,10.018,10.768,10.218,10.208,10.47,10.183,12.065,12.541,12.301,11.42,11.11,11.423
+FMNH 34490,Bovidae,Antidorcas marsupialis hofmeyri,Antidorcas marsupialis,Female,,,,2.001,2.098,2.177,4.158,4.229,4.443,5.697,5.997,5.778,8.604,8.411,8.379,8.362,8.466,8.519
+FMNH 34497,Bovidae,Antidorcas marsupialis hofmeyri,Antidorcas marsupialis,Female,,,,3.922,3.744,3.612,6.903,6.999,6.722,8.791,8.889,9.041,9.053,9.131,9.079,9.292,9.379,9.591
+FMNH 34498,Bovidae,Antidorcas marsupialis hofmeyri,Antidorcas marsupialis,Male,,,,3.569,3.492,3.341,5.669,5.791,5.669,7.215,7.915,7.443,8.217,8.001,8.436,7.183,7.346,7.355
+FMNH 34481,Bovidae,Antidorcas marsupialis marsupialis,Antidorcas marsupialis,Male,,,,4.003,4.033,4.255,4.468,4.468,4.468,8.111,7.097,8.107,7.928,7.999,8.21,7.854,7.834,7.411
+FMNH 13881,Bovidae,Antilocapra americana americana,Antilocapra americana,Male,3.106,3.213,3.213,3.427,3.853,3.746,4.924,5.18,5.139,5.805,5.841,8.914,8.097,8.054,8.314,7.576,7.851,7.624
+FMNH 60471,Bovidae,Antilocapra americana americana,Antilocapra americana,Unknown ,3.615,3.521,3.666,3.885,3.569,3.779,4.305,4.62,4.524,5.672,6.091,5.994,7.514,7.622,7.801,8.684,8.505,8.431
+FMNH 74242,Bovidae,Antilocapra americana americana,Antilocapra americana,Female,3.559,3.602,3.771,4.522,4.562,4.428,4.11,4.474,4.551,4.967,5.152,4.876,6.189,5.8,5.818,5.998,5.903,5.874
+FMNH 13877,Bovidae,Antilocapra americana mexicana,Antilocapra americana,Male ,2.765,3.064,3.041,3.703,3.667,3.708,4.827,4.314,4.523,6.272,6.503,6.332,6.807,6.527,6.774,6.204,6.129,6.151
+FMNH 13878,Bovidae,Antilocapra americana mexicana,Antilocapra americana,Male,2.702,2.918,2.702,2.388,2.397,1.983,3.325,3.219,3.635,4.925,4.705,4.937,5.518,5.551,5.441,5.566,5.65,5.667
+FMNH 18807,Bovidae,Antilope cervicapra,Antilope cervicapra,Female,,,,4.142,4.002,4.345,6.14,6.245,6.255,7.202,7.202,7.202,8.168,8.224,8.224,7.293,7.551,7.438
+FMNH 25730,Bovidae,Antilope cervicapra,Antilope cervicapra,Female,,,,4.985,4.999,5.214,5.46,5.551,5.668,7.978,7.559,7.637,8.177,8.194,8.248,7.105,7.009,7.248
+FMNH 30260,Bovidae,Antilope cervicapra,Antilope cervicapra,Female,,,,4.614,4.429,4.562,5.571,5.571,5.941,7.189,6.795,6.889,9.461,9.334,9.411,7.449,7.924,7.963
+FMNH 18850,Bovidae,Bison Bison,Bison bison,Unknown,9.092,9.044,9.39,11.925,11.925,11.733,13.255,13.507,12.903,15.433,15.264,14.603,14.64,14.531,14.474,13.314,13.255,13.074
+FMNH 21513,Bovidae,Bison bison bison,Bison bison,Male,11.214,11.614,11.014,15.428,15.628,15.418,17.113,17.012,17.466,19.43,19.222,19.43,20.233,20.423,20.423,19.422,19.237,19.025
+FMNH 60191,Bovidae,Bison bonasus,Bison bonasus,Female,10.133,9.706,9.945,11.882,11.843,12.018,14.425,14.421,15.022,16.041,16.652,16.681,18.874,18.876,18.746,19.488,19.565,19.118
+FMNH 153729,Bovidae,Bison bonasus,Bison bonasus,Unknown,10.409,10.817,10.819,13.76,13.699,13.785,15.749,16.351,16.156,17.396,17.164,17.435,19.624,19.746,19.645,20,20.629,20.542
+FMNH 21374,Cervidae,Blastocerus dichotomus,Blastocerus dichotomus,Male,5.889,5.889,5.757,9.25,9.418,9.251,9.76,9.592,9.756,12.02,12.244,12.13,12.775,12.872,12.932,12.34,12.323,12.286
+FMNH 26554,Cervidae,Blastocerus dichotomus,Blastocerus dichotomus,Male,5.968,6.321,6.002,7.571,7.617,7.665,9.33,9.326,9.165,11.073,10.725,11.085,12.383,12.01,11.902,11.217,11.648,11.586
+FMNH 28279,Cervidae,Blastocerus dichotomus,Blastocerus dichotomus,Male,5.404,5.246,5.404,7.599,7.768,7.937,8.783,9.119,9.29,10.531,10.694,10.576,11.803,11.535,11.429,11.632,11.555,11.822
+FMNH 28282,Cervidae,Blastocerus dichotomus,Blastocerus dichotomus,Male,8.102,8.315,8.102,8.342,8.093,8.09,9.898,10.115,10.112,12.441,12.226,12.294,12.07,12.164,12.165,11.568,11.256,11.458
+FMNH 34012,Bovidae,Bos banteng bermanicus,Bos javanicus,Male,9.128,9.143,9.313,13.038,13.039,12.951,13.41,13.601,13.803,16.087,16.407,16.071,16.627,16.726,16.596,17.075,16.982,17.002
+FMNH 31705,Bovidae,Bos javanicus,Bos javanicus,Male,9.488,9.327,9.138,12.368,12.717,12.144,12.907,13.103,13.061,15.484,15.614,15.977,16.51,16.136,16.695,15.197,15.179,15.562
+FMNH 44338,Bovidae,Bos javanicus,Bos javanicus,Male,10.12,9.983,9.701,13.751,13.709,13.709,12.957,13.412,13.601,16.395,16.212,16.434,17.289,17.159,17.217,16.298,15.837,16.434
+FMNH 25697,Bovidae,Boselaphus tragocamelus,Boselaphus tragocamelus,Female,8.289,7.986,7.948,9.968,9.932,9.922,10.896,11.064,11.03,13.14,13.162,12.988,13.477,13.732,13.53,13.162,13.34,13.162
+FMNH 25719,Bovidae,Boselaphus tragocamelus,Boselaphus tragocamelus,Male,6.959,7.286,7.432,9.313,9.318,8.864,9.625,9.746,9.809,12.391,12.391,12.077,13.752,14.334,14.484,13.901,13.982,14.106
+FMNH 91223,Bovidae,Boselaphus tragocamelus,Boselaphus tragocamelus,Female,7.4,7.239,7.239,8.527,8.849,8.563,9.975,9.503,9.814,13.2,13.191,13.192,13.835,13.834,13.513,12.226,12.564,12.712
+FMNH 91224,Bovidae,Boselaphus tragocamelus,Boselaphus tragocamelus,Female,6.783,6.774,6.795,9.079,8.92,9.079,10.819,11.007,10.819,12.964,12.789,12.635,13.403,13.605,13.241,12.154,12.328,12.166
+FMNH 91225,Bovidae,Boselaphus tragocamelus,Boselaphus tragocamelus,Unknowm,7.329,7.519,7.707,9.028,9.397,9.442,10.335,10.53,10.525,13.748,13.599,13.636,15.45,15.437,15.41,16.124,16.165,16.012
+FMNH 91226,Bovidae,Boselaphus tragocamelus,Boselaphus tragocamelus,Unknowm,7.621,7.069,7.465,8.79,8.979,8.979,10.538,10.343,10.15,12.758,12.963,12.708,13.088,13.088,12.961,12.886,12.941,13.076
+FMNH 31711,Bovidae,Bubalus bubalis bubalis,Bubalus bubalis,Female,,,,15.047,15.095,14.927,17.503,17.245,17.382,20.927,21.284,21.129,23.187,22.981,22.996,21.317,21.479,21.502
+FMNH 31712,Bovidae,Bubalus bubalis bubalis,Bubalus bubalis,Male,,,,14.567,14.721,14.353,14.888,14.877,14.942,18.152,18.392,18.59,20.198,20.635,20.338,18.731,18.268,18.685
+FMNH 98791,Bovidae,Bubulus depressicornis,Bubalus depressicornis,Female,6.052,6.349,6.047,8.528,8.87,8.571,10.153,10.33,10.28,9.701,9.701,9.525,11.558,11.41,11.684,11.069,10.991,11.175
+FMNH 18937,Bovidae,Budorcas taxicolor tibetana,Budorcas taxicolor,Male,8.339,8.652,8.496,11.072,10.794,11.155,12.475,12.753,12.631,13.738,13.971,13.144,14.82,14.418,14.593,14.718,14.564,14.49
+FMNH 36791,Bovidae,Budorcas taxicolor tibetana,Budorcas taxicolor,Female,8.423,8.5,8.277,10.842,10.458,10.621,13.156,13.181,13.032,13.479,15.099,13.266,16.173,17.681,16.653,17.254,16.978,17.301
+FMNH 39508,Bovidae,Budorcas taxicolor tibetana,Budorcas taxicolor,Male,7.802,7.915,7.822,10.103,10.496,10.229,13.779,13.618,13.768,12.999,13.036,13.164,16.619,16.619,15.999,16.102,16.008,16.365
+FMNH 39510,Bovidae,Budorcas taxicolor tibetana,Budorcas taxicolor,Female,9.165,8.891,8.508,13.702,13.994,14.005,15.799,15.803,15.967,14.936,15.26,14.942,15.288,15.499,15.601,18.874,19.724,18.914
+FMNH 39513,Bovidae,Budorcas taxicolor tibetana,Budorcas taxicolor,Female,8.087,7.981,8.865,10.029,10.254,10.214,11.365,11.565,11.693,12.633,12.638,12.645,15.015,15.169,15.29,16.754,16.024,16.295
+FMNH 18847,Camelidae,Camelus bacterianus,Camelus bactrianus,Unknown,,,,,,,14.672,14.287,14.482,22.502,22.457,22.587,23.152,23.149,23.017,21.542,21.689,21.649
+FMNH 21708,Camelidae,Camelus bacterianus,Camelus bactrianus,Male,,,,,,,13.355,13.175,13.426,21.313,20.946,21.12,24.532,25.063,24.945,21.235,21.502,21.418
+FMNH 8411,Camelidae,Camelus dromedarius,Camelus dromedarius,Male,,,,,,,16.37,15.918,16.188,20.505,20.152,20.425,28.772,28.949,28.433,27.615,27.571,27.571
+FMNH 92238,Camelidae,Camelus dromedarius,Camelus dromedarius,Unknown,,,,,,,12.79,12.538,12.493,21.622,21.899,21.899,23.006,22.938,22.938,24.709,25.031,24.9
+FMNH 92239,Camelidae,Camelus dromedarius,Camelus dromedarius,Unknown,,,,,,,12.482,12.48,12.418,20.592,20.145,20.364,21.266,21.248,21.037,21.239,21.477,21.243
+FMNH 134553,Bovidae,Capra falconeri,Capra falconeri,Unknown,6.424,6.684,6.17,7.911,7.921,7.894,7.623,7.901,7.764,7.681,7.528,7.866,10.714,9.996,10.469,10.394,10.725,10.945
+FMNH 129757,Bovidae,Capra hircus aegagrus,Capra aegagrus,Male,4.15,4.06,4.337,5.529,5.671,5.814,6.24,6.244,6.546,7.428,7.29,7.324,7.462,7.809,7.772,8.339,8.07,8.198
+FMNH 97928,Bovidae,Capra hircus aegagrus,Capra aegagrus,Male,4.028,4.169,3.911,5.701,5.557,5.84,6.672,6.529,6.667,7.479,7.556,7.444,8.09,8.394,8.12,7.351,7.518,7.703
+FMNH 134310,Bovidae,Capra nubiana,Capra nubiana,Male,4.48,4.751,4.913,5.679,5.781,5.511,5.49,5.633,5.635,7.622,7.495,7.622,8.726,8.668,8.952,7.491,7.435,7.381
+FMNH 21717,Bovidae,Capra pyrenaica,Capra pyrenaica,Male,4.823,4.823,4.421,6.297,6.432,6.565,6.969,6.834,7.121,8.013,8.139,8.186,8.833,8.734,8.89,9.183,9.008,9.183
+FMNH 134540,Bovidae,Capra sibirica,Capra sibirica,Male,5.896,5.629,5.336,6.854,6.656,6.656,6.427,6.92,6.744,7.838,7.218,8.363,10.01,10.001,9.973,10.057,9.712,10.277
+FMNH 27109,Bovidae,Capra walie,Capra walie,Unknown,5.351,5.228,5.47,6.754,7.14,7.14,7.267,7.529,7.257,9.138,8.869,8.975,9.039,8.933,9.133,8.713,9.158,8.931
+FMNH 1278,Cervidae,Capreolus capreolus pygargus,Capreolus capreolus,Male,4.936,5.012,4.966,7.182,7.001,7.246,7.809,8.034,7.943,8.69,8.992,8.864,9.878,9.973,9.731,9.285,9.179,8.834
+FMNH 25648,Cervidae,Capreolus capreolus pygargus,Capreolus capreolus,male,4.679,4.911,4.824,6.893,6.923,6.744,8.738,8.738,8.432,8.9,9.045,9.287,8.913,9.201,9.198,8.555,8.431,8.274
+FMNH 25651,Cervidae,Capreolus capreolus pygargus,Capreolus capreolus,Female,5.252,5.399,5.492,6.882,6.862,6.8,8.109,7.965,8.107,9.537,10.025,9.791,9.833,9.353,9.784,9.67,9.674,9.724
+FMNH 34287,Bovidae,Cephalophus callipygus,Cephalophus callipygus,Male,4.081,4.046,3.932,4.653,4.457,4.401,5.498,5.106,5.349,5.876,6.361,5.925,7.226,6.991,7.115,6.343,6.836,6.543
+FMNH 27547,Bovidae,Cephalophus leucogaster,Cephalophus leucogaster,Male,1.961,1.785,1.891,1.961,1.874,1.92,2.498,2.769,2.764,3.957,3.527,3.957,4.09,4.186,4.226,3.512,3.351,3.477
+FMNH 34291,Bovidae,Cephalophus leucogaster,Cephalophus leucogaster,Female,3.841,4.151,4.169,5.001,5.113,4.832,3.958,3.855,3.964,5.938,6.293,6.099,6.925,6.973,6.922,6.7,6.899,6.948
+FMNH 26916,Bovidae,Cephalophus natalensis robertsi,Cephalophus natalensis,Male ,3.507,3.931,3.731,4.366,4.356,4.338,4.466,4.997,4.751,5.049,5.209,5.179,6.095,5.7,6.137,5.445,5.565,5.679
+FMNH 54451,Bovidae,Philantomba maxwellii liberiensis,Philantomba maxwelli,Male,2.641,2.574,2.246,3.549,3.549,3.549,4.005,4.197,3.944,4.971,4.814,4.9,5.497,5.341,5.614,5.312,5.224,5.497
+FMNH 34295,Bovidae,Cephalophus silvicultor silvicultor,Cephalophus silvicultor,Male,3.224,2.341,3.088,4.278,4.761,4.669,4.874,4.714,4.855,5.278,5.501,5.311,6.7,6.743,6.597,6.612,6.5,6.421
+FMNH 29519,Bovidae,Connochaetes taurinus albojubatus,Connochaetes taurinus,Male,,,,11.204,11.212,11.072,11.941,11.793,11.532,13.951,13.81,13.845,12.565,12.468,12.408,12.434,12.171,12.327
+FMNH 127910,Bovidae,Connochaetes taurinus mearnsi,Connochaetes taurinus,Male,,,,9.431,9.221,9.483,12.922,13.125,13.372,11.877,11.744,11.683,12.206,12.581,12.804,14.352,14.372,14.391
+FMNH 34559,Bovidae,Connochaetes taurinus taurinus,Connochaetes taurinus,Male,,,,8.309,8.769,8.523,11.333,11.848,11.606,11.14,11.165,11.348,12.636,12.95,12.648,12.489,12.47,12.436
+FMNH 34567,Bovidae,Damaliscus dorcas phillipsi,Damaliscus pygargus,Male,2.838,2.651,2.838,4.882,5.584,5.325,6.974,6.758,6.974,7.904,8.91,8.14,9.299,9.135,9.302,8.347,7.696,8.239
+FMNH 29530,Bovidae,Damaliscus lunatus jimela,Damaliscus lunatus,Male,,,,5.9,5.67,6.126,8.625,8.852,8.861,9.597,9.781,9.547,10.725,10.782,10.636,10.334,10.017,10.411
+FMNH 34522,Bovidae,Damaliscus lunatus jimela,Damaliscus lunatus,Male,5.119,5.33,5.581,7.184,6.952,7.416,8.575,8.346,8.111,9.968,10.902,10.431,9.976,9.281,9.086,8.687,8.575,8.915
+FMNH 34525,Bovidae,Damaliscus lunatus lunatus,Damaliscus lunatus,Male,,,,6.318,6.151,6.363,7.313,7.313,7.31,8.38,9.174,8.952,9.758,9.539,9.39,8.501,8.958,8.817
+FMNH 42214,Bovidae,Ourebia ourebi Epomophorus gambianus gambianus,Ourebia ourebi,Male,2.797,2.673,2.797,4.071,3.823,3.942,4.458,4.705,4.323,5.342,5.342,5.596,5.849,6.104,5.601,5.982,5.982,5.822
+FMNH 77734,Bovidae,Gazella arabica bilkis,Gazella bilkis ,Female,3.248,3.407,3.378,4.405,4.507,4.24,5.302,5.433,5.433,6.034,6.296,6.296,7.953,7.902,7.496,7.426,7.136,7.136
+FMNH 101169,Bovidae,Gazella dorcas dorcas,Gazella dorcas,Male,2.285,2.483,2.533,3.097,2.968,3.226,4.256,3.999,4.248,5.853,5.853,5.953,5.668,5.668,5.423,5.709,5.655,5.714
+FMNH 100715,Bovidae,Gazella dorcas littoralis,Gazella dorcas,Female,3.363,3.087,3.218,4.433,4.29,4.292,4.022,4.158,4.227,5.658,5.158,5.601,5.39,5.577,5.688,5.39,5.504,5.671
+FMNH 1527,Bovidae,Gazella dorcas pelzelni,Gazella dorcas,Male,2.489,2.489,2.375,3.844,3.647,3.932,4.544,4.425,4.655,5.654,6,6.265,5.96,6.09,6.004,6.911,7.107,6.935
+FMNH 77736,Bovidae,Gazella gazella cora,Gazella gazella,Male,3.411,3.318,3.506,4.774,4.636,4.916,5.869,5.865,8.727,6.305,6.468,6.256,6.708,7.196,7.259,6.597,6.426,6.717
+FMNH 105051,Bovidae,Gazella leptoceros leptoceros,Gazella leptoceros,Male,3.744,3.512,3.871,4.356,4.365,4.35,4.734,4.748,4.611,6.607,7.048,6.898,7.781,7.806,7.605,7.485,7.104,7.326
+FMNH 98746,Bovidae,Gazella rufifrons laevipes,Eudorcas rufifrons,Female,3.223,3.273,3.335,4.575,4.727,4.403,5.353,5.092,5.097,6.769,6.4,6.49,6.869,6.869,6.838,6.156,6.191,6.255
+FMNH 26689,Bovidae,Gazella s. hillierana,Nanger soemmerringii,Male,3.459,3.334,3.381,4.309,3.921,4.182,4.691,4.689,4.562,7.069,7.016,6.97,7.039,6.984,7.134,6.615,6.494,6.496
+FMNH 1363,Bovidae,Gazella soemmerringii berberana,Nanger soemmerringii,Male,4.19,3.932,4.217,5.947,5.641,6.045,6.702,6.702,6.683,9.036,9.023,8.898,9.59,9.722,9.788,9.348,9.351,9.273
+FMNH 122718,Bovidae,Gazella soemmerringii soemmerringii,Nanger soemmerringii,Female,4.459,4.438,4.356,5.301,5.296,5.038,6.457,6.587,6.72,8.09,8.082,8.09,8.413,8.827,8.209,7.843,8.168,7.843
+FMNH 1348,Bovidae,Gazella spekei,Gazella spekei,Female,3.049,2.966,3.013,4.077,3.944,4.215,4.608,4.608,4.388,6.008,6.033,5.931,5.962,5.646,5.62,5.663,5.299,5.351
+FMNH 104008,Bovidae,Gazella subgutturosa subgutturosa,Gazella subgutturosa,Male,3.087,3.09,3.233,3.634,4.181,3.929,4.427,4.204,4.118,6.713,6.98,6.981,6.449,6.465,6.344,6.211,6.211,6.198
+FMNH 29611,Bovidae,Gazella thomsoni,Eudorcas thomsonii,Male,3.236,3.416,3.569,4.652,4.289,4.652,5.602,5.73,5.494,6.529,6.452,6.576,7.044,6.959,7.106,6.931,6.931,6.983
+FMNH 34425,Giraffidae,Giraffa camelopardalis angolensis,Giraffa camelopardalis,Female,11.321,11.633,11.549,16.99,17.106,17.298,21.614,22.048,21.818,21.57,21.829,21.963,23.263,23.433,23.933,24.85,25.345,24.968
+FMNH 34426,Giraffidae,Giraffa camelopardalis angolensis,Giraffa camelopardalis,Male,10.882,11.367,11.282,21.542,21.442,21.113,24.062,24.062,24.019,22.022,22.573,22.384,23.763,23.71,24.052,26.493,26.229,26.715
+FMNH 127880,Giraffidae,Giraffa camelopardalis tippelskirchif,Giraffa camelopardalis,Female,18.465,18.954,19.199,20.639,20.899,20.702,19.203,18.808,18.999,21.173,20.944,21.041,23.09,23.507,23.234,24.339,24.127,24.293
+FMNH 152043,Giraffidae,Giraffa camelopardlis rothschildi,Giraffa camelopardalis,Male,15.414,15.453,15.431,19.837,19.5,19.865,20.656,20.845,20.624,22.636,22.247,22.426,22.628,22.622,22.42,22.426,22.642,22.828
+FMNH 60540,Bovidae,Hemitragus jemlahiws,Hemitragus jemlahicus,Male,5.19,5.185,4.947,7.164,7.176,7.197,7.329,7.549,7.647,7.632,7.746,7.761,8.466,8.182,8.286,9.328,9.328,9.204
+FMNH 7229 ,Bovidae,Hippotragulus equinus equinus,Hippotragus equinus,Male,10.775,10.603,11.058,12.748,12.788,12.953,14.539,14.896,14.538,14.724,15.876,14.874,14.849,14.935,14.608,13.494,13.517,13.517
+FMNH 67020,Bovidae,Hippotragus equinus bakeri,Hippotragus equinus,Female,10.993,10.646,10.414,12.846,12.34,11.008,13.655,12.555,13.491,12.617,11.653,11.871,12.028,11.826,11.711,10.556,11.214,11.076
+FMNH 34520,Bovidae,Hippotragus equinus cottoni,Hippotragus equinus,Male,8.583,7.979,8.641,10.335,9.996,10.165,12.538,12.034,12.2,14.066,14.193,14.3,14.313,13.905,14.3,14.103,13.615,13.899
+FMNH 127939,Bovidae,Hippotragus equinus langheldi,Hippotragus equinus,Male,9.678,9.749,10.12,11.348,11.964,11.824,12.375,12.079,11.959,11.752,11.988,12.619,11.351,11.447,11.752,11.988,12.221,12.135
+FMNH 34515,Bovidae,Hippotragus niger niger,Hippotragus niger,Male,7.028,6.143,6.126,8.408,8.649,8.529,9.984,10.213,10.213,11.982,12.854,11.911,12.775,13.066,12.846,12.751,12.137,13.203
+FMNH 29545,Bovidae,Kobus ellipsiprymnus adolfifrideric,Kobus ellipsiprymnus,Male,6.634,6.759,6.681,8.936,8.89,8.6,10.875,11.021,10.541,12.495,12.772,13.184,14.189,13.735,14.459,13.719,12.451,13.175
+FMNH 27199,Bovidae,Kobus ellipsiprymnus defassa,Kobus ellipsiprymnus,Male,6.682,6.603,6.252,8.067,8.671,7.763,10.548,10.716,10.627,12.203,12.477,11.812,12.408,12.906,12.11,12.769,12.906,12.802
+FMNH 1091,Bovidae,Kobus ellipsiprymnus ellipsiprymnus,Kobus ellipsiprymnus,Female,5.396,5.436,5.246,8.564,8.233,8.379,10.663,10.302,10.221,13.583,12.641,13.543,14.181,13.091,13.692,13.418,13.25,12.859
+FMNH 7065,Bovidae,Kobus ellipsiprymnus ellipsiprymnus,Kobus ellipsiprymnus,Male,7.511,7.854,8.069,9.734,9.41,9.251,10.207,9.889,9.888,10.944,11.247,10.603,12.185,12.16,12.469,12.275,12.566,12.197
+FMNH 24322,Bovidae,Kobus ellipsiprymnus harnieri,Kobus ellipsiprymnus,Male,7.232,6.931,7.133,10.137,9.647,9.344,10.858,10.974,11.11,13.626,13.965,13.524,12.152,13.649,13.612,12.368,11.504,11.531
+FMNH 85432 ,Bovidae,Kobus ellipsiprymnus harnieri,Kobus ellipsiprymnus,Male,7.519,7.129,7.071,9.703,9.389,9.39,11.816,11.813,11.662,13.081,14.106,13.276,14.51,13.601,14.934,14.291,13.276,14.399
+FMNH 29547,Bovidae,Kobus ellipsiprymnus thikae,Kobus ellipsiprymnus,Male,6.574,6.423,6.274,8.813,9.113,8.964,9.304,9.637,9.495,12.25,11.337,11.998,12.19,12.377,12.188,12.599,12.137,12.573
+FMNH 27479,Bovidae,Kobus kob neumanni,Kobus kob,Male,5.198,5.423,5.391,6.699,6.836,6.837,8.037,7.961,7.937,9.948,10.569,9.671,10.397,11.018,10.192,10.408,10.155,10.505
+FMNH 27482,Bovidae,Kobus kob neumanni,Kobus kob,Male,4.079,3.853,3.608,5.614,5.614,5.798,7.903,7.366,7.41,10.542,11.065,10.542,11.067,11.283,11.142,10.892,10.549,10.475
+FMNH 34468,Bovidae,Kobus leche leche,Kobus leche,Male,5.048,5.543,5.524,6.21,6.805,6.651,8.019,7.652,8.086,9.705,9.812,9.765,9.444,9.812,9.262,9.627,9.861,10.001
+FMNH 34469,Bovidae,Kobus leche leche,Kobus leche,Male,4.33,4.139,3.761,6.396,6.002,6.002,7.567,7.834,8.016,8.965,9.251,8.825,9.427,9.489,9.307,10.549,9.89,10.048
+FMNH 134555,Bovidae,Kobus megaceros,Kobus megaceros,Male,4.84,4.711,4.767,7.008,7.159,6.819,8.128,7.989,8.273,10.526,10.786,10.618,10.681,11.219,10.957,10.813,11.427,11.32
+FMNH 38165,Bovidae,Kobus vardonii vardonii,Kobus vardoni,Male,4.95,4.95,5.08,6.485,6.526,6.384,7.841,7.533,7.559,9.441,9.181,9.483,10.252,9.84,10.443,10.424,10.003,9.912
+FMNH 27610,Camelidae,Lama glama guanicoe,Lama guanicoe,Male,,,,,,,5.904,5.568,5.76,11.332,11.205,11.066,12.103,12.248,12.088,12.262,12.221,12.38
+FMNH 25608,Camelidae,Lama glama guanicoe,Lama guanicoe,Unknown,,,,,,,6.955,7.122,6.947,12.006,12.305,12.313,13.311,13.315,13.461,13.014,13.014,12.926
+FMNH 50776,Camelidae,Lama glama guanicoe,Lama guanicoe,Unknown,,,,,,,7.99,7.99,7.994,11.756,11.941,11.941,13.009,13.024,13.382,12.964,13.184,13.198
+FMNH 27602,Camelidae,Lama glama guanicoe,Lama guanicoe,Unknown,,,,,,,7.761,7.813,7.786,12.985,12.734,12.753,13.903,14.133,13.974,13.294,13.032,13.261
+FMNH 127690 ,Bovidae,Litcranius walleri walleri,Litocranius walleri,Male,2.539,2.789,2.306,4.529,4.657,4.385,5.034,5.163,5.034,6.729,6.853,6.768,7.383,7.266,7.151,6.853,6.851,6.655
+FMNH 1377,Bovidae,Litocranius walleri,Litocranius walleri,Male,2.734,2.882,2.815,3.867,4.004,3.996,4.776,4.642,4.771,6.422,6.549,6.4,6.522,6.488,6.466,6.075,6.488,6.359
+FMNH 20670,Bovidae,Litocranius walleri,Litocranius walleri,Male,2.374,2.499,2.374,3.7,4.029,4.337,4.153,4.428,4.56,6.127,5.888,5.85,6.717,6.917,6.729,6.8,6.64,6.729
+FMNH 1393,Bovidae,Litocranius walleri sclateri,Litocranius walleri,Male,2.602,2.498,2.372,4.253,4.125,4.381,5.532,6.176,5.789,7.676,7.652,7.775,7.974,8.136,8.014,7.988,7.694,7.822
+FMNH 1395,Bovidae,Litocranius walleri sclateri,Litocranius walleri,Male,2.514,2.414,2.499,3.73,3.73,3.608,4.477,4.476,4.339,5.662,5.662,5.827,6.607,6.373,6.448,6.49,6.288,6.695
+FMNH 26985,Bovidae,Litocranius walleri walleri,Litocranius walleri,Male,2.579,2.963,2.942,4.715,4.586,4.331,5.483,5.773,5.738,6.426,6.581,6.848,6.247,6.727,7.025,6.687,7.172,7.025
+FMNH 32921,Bovidae,Madoqua guentheri guentheri,Madoqua guentheri,Male,2.457,2.582,2.311,3.257,3.257,3.403,4.073,3.909,4.08,4.436,4.436,4.492,4.31,4.189,4.221,4.248,4.191,4.345
+FMNH 17785,Bovidae,Madoqua kirkii cavendishi,Madoqua kirkii,Male,2.243,2.009,2.031,2.902,3.046,2.774,3.433,3.562,3.177,4.602,4.632,4.557,4.926,5.05,5.006,4.534,4.736,4.625
+FMNH 27000,Bovidae,Madoqua saltiana phillipsi,Madoqua saltiana,Male,1.806,2.063,1.874,2.586,2.33,2.602,2.962,2.959,2.959,3.477,3.477,3.477,3.86,3.989,3.803,3.603,3.605,3.74
+FMNH 15646,Bovidae,Madoqua saltiana swaynei,Madoqua saltiana,Male,2.307,2.307,2.454,2.845,2.981,2.978,2.981,3.119,3.255,3.661,3.929,3.888,3.88,4.042,3.854,3.987,4.235,3.939
+FMNH 15647,Bovidae,Madoqua saltiana swaynei,Madoqua saltiana,Male,2.215,2.081,2.059,2.735,2.349,2.559,2.585,2.464,2.66,3.268,3.54,3.332,3.54,3.948,3.812,3.809,3.809,3.948
+FMNH 61861,Cervidae,Mazama americana trinitatus,Mazama americana,Male,4.475,4.378,4.561,6.181,6.481,6.124,6.889,6.869,6.497,8.657,8.641,8.468,9.148,9.456,9.301,9.656,9.482,9.642
+FMNH 88498,Cervidae,Mazama americana zetta,Mazama americana,Male,3.926,3.941,3.843,5.418,5.543,5.914,6.655,6.6,6.655,7.641,7.943,7.734,8.504,8.649,8.379,8.436,8.349,8.246
+FMNH 88499,Cervidae,Mazama americana zetta,Mazama americana,Male,4.663,4.731,4.51,6.218,6.348,6.473,6.91,6.911,6.843,8.802,8.434,8.489,9.258,9.458,9.349,8.713,8.917,8.796
+FMNH 89208,Cervidae,Mazama americana zetta,Mazama americana,Male,4.896,4.923,4.876,6.318,6.079,6.401,7.18,7.272,7.194,8.354,8.351,8.438,9.433,9.671,9.402,8.624,8.614,8.734
+FMNH 79912,Cervidae,Mazama chunyi,Mazama chunyi,Female,3.182,3.184,3.048,4.069,4.198,4.241,5.315,5.665,5.548,5.926,5.997,5.874,6.27,6.27,6.278,6.25,6.241,6.102
+FMNH 36759,Moschidae,Moschus sifanicus,Moschus sifanicus,Male,2.826,2.826,2.84,3.52,3.675,3.484,4.151,3.986,3.996,5.312,5.144,5.146,5.944,6.314,5.81,6.141,6.141,6.29
+FMNH 36762,Moschidae,Moschus sifanicus,Moschus sifanicus,Unknown,2.339,2.173,2.5,3.515,3.837,3.67,4.512,4.666,4.833,5,5.002,5.333,6.346,6.066,6.335,5.842,5.842,8.952
+FMNH 36761,Moschidae,Moschus sifaniens,Moschus sifanicus,Unknown,2.575,2.575,2.798,3.025,3.451,3.571,3.999,3.999,4.172,5.197,5.546,5.373,5.727,5.546,5.716,5.243,5.395,5.208
+FMNH 36783,Bovidae,Naemorhedus sumatraensis milneedwardsi,Nemorhaedus sumatraensis,Male,6.222,5.84,6.361,7.993,8.111,8.348,8.868,9.012,9.374,10.257,10.392,10.122,10.494,10.527,10.311,8.443,8.704,8.705
+FMNH 26704,Bovidae,Nemorhaedus goral griseus,Nemorhaedus goral,Male,3.958,3.675,3.881,5.261,5.287,5.151,5.096,5.365,5.516,8.084,8.272,8.352,7.995,7.607,7.414,7.976,8.116,7.886
+FMNH 26706,Bovidae,Nemorhaedus goral griseus,Nemorhaedus goral,Male,3.495,3.6,3.406,4.837,4.977,4.967,5.683,5.939,5.998,6.3,6.64,6.237,6.719,6.581,6.631,6.898,7.242,7.188
+FMNH 36788,Bovidae,Nemorhaedus goral griseus,Nemorhaedus goral,Male,4.121,3.985,4.002,4.767,4.469,4.521,6.085,6.491,6.368,8.106,8.052,7.85,7.717,7.802,7.673,7.889,7.922,7.991
+FMNH 58839,Giraffidae,Okapia johnstoni,Okapia johnstoni,Female,8.458,8.815,8.25,12.373,12.732,12.552,14.209,14.353,14.594,16.105,15.832,16.09,15.421,15.958,15.557,16.519,16.637,16.731
+FMNH 1477,Bovidae,Oreotragus oreotragus,Oreotragus oreotragus,Male,3.264,3.683,3.39,4.015,4.023,4.017,4.768,4.518,5.145,5.52,5.396,5.777,5.526,5.773,5.783,5.533,5.651,5.783
+FMNH 26957,Bovidae,Oreotragus oreotragus saltatrixoides,Oreotragus oreotragus,Male,2.715,2.57,2.802,2.86,3.336,3.116,4.288,4.407,4.405,4.766,4.794,4.895,4.822,4.957,5.066,4.686,4.633,4.367
+FMNH 19577,Bovidae,Oreotragus oreotragus schillingsi,Oreotragus oreotragus,Male,3.566,3.472,3.354,3.795,3.797,4.034,4.35,4.328,4.428,4.583,4.722,4.838,4.692,4.699,4.91,4.414,4.663,4.68
+FMNH 19581,Bovidae,Oreotragus oreotragus schillingsi,Oreotragus oreotragus,Male,3.379,3.428,3.379,3.92,4.039,4.039,4.303,4.528,4.435,4.62,4.478,4.478,5.101,5.117,5.21,4.547,4.771,4.547
+FMNH 19584,Bovidae,Oreotragus oreotragus schillingsi,Oreotragus oreotragus,Male,2.861,2.995,2.979,4.335,4.048,4.201,5.262,5.801,5.666,5.162,4.99,5.375,6.577,6.877,6.82,6.642,6.341,6.756
+FMNH 127968,Bovidae,Oryx gazella beisa,Oryx beisa,Male,6.128,6.361,6.361,9.875,9.551,9.553,11.343,11.019,11.351,13.32,13.32,13.121,14.001,13.987,13.529,14.583,14.13,14.981
+FMNH 1405,Bovidae,Oryx gazella beisa,Oryx beisa,Male,6.807,6.623,6.623,9.19,9.229,9.031,10.263,10.584,10.427,12.212,12.203,12.301,12.271,12.351,12.187,11.413,11.395,11.242
+FMNH 22256,Bovidae,Oryx gazella callotis,Oryx gazella,Male,6.925,6.771,7.245,9.077,9.232,9.078,11.077,10.769,11.081,11.253,10.753,10.933,14.514,13.892,14.227,16.923,17.091,16.843
+FMNH 26978,Bovidae,Oryx gazella gallarum,Oryx gazella,Male,6.328,6.82,6.404,9.893,9.528,9.528,11.694,11.55,12.001,12.538,12.54,12.294,14.205,13.902,14.501,13.102,12.934,13.341
+FMNH 34446,Bovidae,Oryx gazella gazella,Oryx gazella,Male,9.046,9.046,9.258,12.239,11.48,11.882,14.876,15.061,15.146,15.823,15.748,16.001,15.983,16.575,16.408,16.422,16.982,16.655
+FMNH 66875,Bovidae,Ourebia ourebia aequatoria,Ourebia ourebi,Male,2.451,2.579,2.322,3.224,3.106,3.095,4.256,3.998,4.127,4.983,5.008,4.911,5.711,5.84,5.663,5.437,5.556,5.595
+FMNH 127972,Bovidae,Ourebia ourebia cottoni,Ourebia ourebi,Male,2.962,3.146,3.218,4.379,4.52,4.392,4.619,4.62,4.379,5.888,5.738,5.943,6.542,6.771,6.716,6.676,7.057,6.933
+FMNH 8173,Bovidae,Ourebia ourebia montana,Ourebia ourebi,Male,3.234,3.358,3.11,4.101,4.226,3.985,4.242,4.228,4.101,5.07,5.116,5.243,5.857,5.895,5.778,5.429,5.19,5.334
+FMNH 138841,Bovidae,Ovibos moschatus moschatus,Ovibos moschatus,Female,7.842,7.788,7.897,10.111,10.38,10.433,16.474,16.303,16.303,16.518,16.597,16.778,16.89,16.583,16.583,14.616,14.393,14.183
+FMNH 25685,Bovidae,Ovis ammon karelini,Ovis ammon,Male,6.638,6.421,6.282,7.079,7.079,6.9,8.753,8.753,8.916,9.787,10.05,9.987,13.767,13.995,13.743,14.669,14.678,14.667
+FMNH 57621,Bovidae,Ovis ammon karelini,Ovis ammon,Female,6.34,6.444,5.997,9.551,9.576,9.603,12.944,12.781,13.024,13.991,14.106,14.274,16.044,16.313,16.427,14.255,14.452,14.453
+FMNH 25679,Bovidae,Ovis ammon polii,Ovis ammon,Male,5.456,5.061,5.456,6.006,6.185,6.265,7.774,7.614,7.949,9.016,9.377,9.339,9.898,9.894,9.892,11.14,10.965,11.151
+FMNH 57255,Bovidae,Ovis aries aries,Ovis aries,Male,4.957,5.122,4.946,6.274,6.471,5.973,6.682,6.871,6.826,9.664,9.367,9.574,8.964,8.675,8.881,8.602,8.859,8.812
+FMNH 58037,Bovidae,Ovis aries gmelini,Ovis aries,Male,5.292,5.587,5.585,7.285,7.271,7.252,8.153,8.308,8.151,9.456,9.601,9.5,9.978,9.978,9.5,9.183,9.257,9.316
+FMNH 97971,Bovidae,Ovis aries laristanica,Ovis aries,Male,5.762,5.488,5.359,6.226,6.371,6.239,7.155,7.452,7.297,7.295,7.607,7.452,8.434,8.65,8.759,8.001,8.013,7.904
+FMNH 58043,Bovidae,Ovis aries urmiana,Ovis aries,Male,5.573,5.641,5.598,6.367,6.653,6.655,8.074,7.896,8.05,10.082,9.969,9.922,8.992,9.003,8.944,8.992,9.264,9.01
+FMNH 58048,Bovidae,Ovis aries urmiana,Ovis aries,Male,5.006,5.174,5.311,6.403,6.401,6.247,7.338,7.345,7.65,9.333,9.431,9.394,9.357,9.217,9.217,7.764,8.048,7.764
+FMNH 97935,Bovidae,Ovis aries x vignei orientalis x dolgopo,Ovis aries,Female,6.282,6.306,6.312,7.043,6.976,6.678,7.938,8.34,8.192,9.855,9.414,9.784,8.759,8.643,8.643,9.357,9.038,9.086
+FMNH 21862,Bovidae,Ovis canadensis mexicana,Ovis canadensis,Unknown,5.354,5.394,5.495,6.602,6.874,6.484,8.264,8.319,8.445,10.372,10.512,10.372,10.258,10.385,10.593,10.385,10.433,10.412
+FMNH 6979,Bovidae,Ovis dalli dalli,Ovis dalli,Female,4.824,4.722,4.901,5.611,5.301,5.488,7.397,7.431,4.662,9.021,9.354,9.466,9.897,10.001,9.764,9.561,9.69,9.731
+FMNH 6621,Bovidae,Ovis dalli kenaiensis,Ovis dalli,Male,4.957,5.054,4.789,5.946,5.852,6.031,7.988,7.986,7.961,10.163,10.018,10.018,10.248,10.38,10.309,9.514,9.308,9.486
+FMNH 92955,Bovidae,Ovis nivicola,Ovis nivicola,Male,4.789,5.203,5.085,6.267,6.276,6.143,6.844,6.983,7.136,8.727,8.68,8.796,9.901,9.853,9.878,8.986,9.121,9.111
+FMNH 58064,Bovidae,Ovis vignei dolgopolovi,Ovis vignei,Male,4.78,5.003,4.893,6.467,6.295,6.13,7.289,7.123,7.289,7.956,8.282,8.13,9.645,9.48,9.75,10.333,10.375,10.445
+FMNH 97947,Bovidae,Ovis vignei dolgopolovi,Ovis vignei,Unknown,5.407,5.524,5.401,6.728,6.619,6.591,7.492,7.646,7.695,9.12,9.376,9.166,8.434,8.68,8.493,8.013,7.973,8.246
+FMNH 24372,Bovidae,Pantholops hodgsonii,Pantholops hodgsonii,Male,,,,3.692,4.158,3.839,5.761,5.466,5.613,8.281,7.979,8.269,8.123,8.269,8.27,8.121,8.134,7.928
+FMNH 25669,Bovidae,Pantholops hodgsonii,Pantholops hodgsonii,Male,,,,4.439,4.98,4.572,8.582,8.592,8.592,8.246,8.574,8.245,8.591,8.284,8.743,7.842,7.529,7.926
+FMNH 25671,Bovidae,Pantholops hodgsonii,Pantholops hodgsonii,Male,,,,4.453,4.285,4.45,6.107,6.107,6.265,7.254,7.26,7.433,8.558,8.566,8.698,7.853,8.078,7.911
+FMNH 62198,Bovidae,Cephalophus Philantomba maxwellii liberiensis,Philantomba maxwelli,Female,2.794,2.884,2.642,3.71,3.664,3.243,4.355,4.661,4.339,4.938,4.994,4.731,5.945,6.141,6.008,5.982,6.078,6.198
+FMNH 27543,Bovidae,Cephalophus Philantomba monticola aequatorialis,Philantomba monticola,Male,2.95,2.841,2.611,2.991,3.001,2.915,2.419,2.941,2.59,3.914,3.743,3.743,4.664,4.5,4.599,4.489,4.5,4.642
+FMNH 34285,Bovidae,Cephalophus Philantomba monticola schultzei,Philantomba monticola,Male,2.731,2.699,2.799,3.263,3.495,3.26,3.787,3.914,3.799,4.518,4.559,4.812,5.394,5.391,5.501,5.361,5.204,5.004
+FMNH 26676,Bovidae,Procapra gutturosa gutturosa,Procapra gutturosa,Male,3.186,3.063,2.919,4.782,4.782,5.143,5.389,5.515,5.511,7.718,7.473,7.959,8.081,8.081,7.96,8.819,9.064,9.186
+FMNH 26678,Bovidae,Procapra gutturosa gutturosa,Procapra gutturosa,Male,2.976,2.979,3.024,5.21,5.21,5.334,5.582,5.957,5.71,7.937,7.937,7.937,8.804,9.177,8.808,8.557,8.436,8.688
+FMNH 26679,Bovidae,Procapra gutturosa gutturosa,Procapra gutturosa,Unknown,3.57,3.204,3.302,4.953,4.953,4.99,6.295,6.153,6.299,8.011,8.253,8.009,7.89,7.904,8.136,8.254,7.948,8.011
+FMNH 26681,Bovidae,Procapra gutturosa gutturosa,Procapra gutturosa,Male,3.153,2.905,2.995,4.312,4.566,4.688,5.418,5.786,5.54,7.935,8.249,7.948,8.133,8.151,8.286,7.789,7.926,7.876
+FMNH 26684,Bovidae,Procapra gutturosa gutturosa,Procapra gutturosa,Unknown,3.6,3.782,3.903,5.07,5.068,5.074,6.058,6.058,6.304,7.662,7.858,7.709,8.406,8.461,8.271,8.044,8.066,8.053
+FMNH 25672,Bovidae,Pseudois nayaur nayaur,Pseudois nayaur,Male,4.578,4.427,4.581,5.232,5.406,5.562,6.706,6.712,6.706,9.158,9.18,8.961,10.171,9.98,10.143,9.785,9.86,9.758
+FMNH 31134,Bovidae,Pseudois nayaur szechuanensis,Pseudois nayaur,Male,4.751,5.07,5.226,6.179,6.337,6.353,6.81,6.812,6.653,8.249,8.077,8.235,10.568,10.568,10.718,9.816,9.618,9.529
+FMNH 31135,Bovidae,Pseudois nayaur szechuanensis,Pseudois nayaur,Male,4.854,4.863,5.027,6.431,6.42,6.42,6.932,6.939,6.932,8.489,8.836,8.318,10.082,9.977,9.963,9.71,9.71,9.592
+FMNH 134366,Bovidae,Redunca arundinum arundinum,Redunca arundinum,Male,5.245,4.862,4.805,6.318,6.176,5.879,7.713,7.432,7.512,8.262,8.471,8.331,10.066,10.266,9.972,9.978,9.402,9.729
+FMNH 127993,Bovidae,Redunca fulvorufula chanleri,Redunca fulvorufula,Male,3.855,3.588,3.588,4.697,4.549,4.541,5.683,5.748,5.41,7.293,7.988,7.707,8.212,7.977,8.285,7.599,7.375,7.391
+FMNH 42105,Bovidae,Redunca redunca,Redunca redunca,Male,3.182,3,2.789,4.793,4.631,4.471,5.589,5.589,5.432,5.61,6.087,5.928,7.831,7.533,7.674,7.888,7.972,8.157
+FMNH 7468,Bovidae,Redunca redunca wardi,Redunca redunca,Male,4.304,4.461,4.154,5.257,5.419,5.493,6.523,6.315,6.896,7.467,7.039,7.361,8.539,8.449,8.921,7.832,7.662,7.864
+FMNH 46455,Bovidae,Rupicapra rupicapra,Rupicapra rupicapra,Male,3.93,3.927,3.927,4.792,4.954,4.808,5.634,5.985,5.975,7,7,7,7.457,7.669,7.293,7.993,8.154,8.26
+FMNH 13369,Bovidae,Saiga tatarica,Saiga tatarica,Male,,,,4.492,4.344,4.2,5.664,5.793,5.503,8.604,8.997,8.713,7.385,7.543,7.681,7.841,7.687,7.912
+FMNH 57323,Bovidae,Saiga tatarica,Saiga tatarica,Male,,,,3.766,3.858,3.507,4.92,5.19,4.92,8.533,8.657,8.716,8.788,9.019,9.075,8.719,8.469,8.772
+FMNH 62830,Suidae,Sus barbatus ahoenobarbus,Sus barbatus,Male,5.687,5.666,5.974,7.44,7.44,7.431,9.195,9.245,9.104,10.496,10.497,10.491,14.044,14.164,14.315,16.6,16.421,14.679
+FMNH 56475,Suidae,Sus barbatus mindanensis,Sus barbatus,Male,6.416,6.488,6.349,7.489,7.694,7.947,8.352,8.491,8.348,10.66,10.498,10.667,12.834,12.934,12.834,14.195,14.241,13.094
+FMNH 41889,Suidae,Sus barbatus philippinensis,Sus philippensis,Female,5.31,5.316,5.461,6.112,6.474,6.461,8.442,8.479,8.649,12.177,12.974,12.015,15.124,15.134,15.497,14.997,14.945,14.795
+FMNH 148196,Suidae,Sus cebifrons,Sus cebifrons,Male,5.1,5.178,5.21,6.029,6.049,6.188,7.466,7.641,7.315,10.235,10.166,10.346,13.516,13.516,13.516,14.947,14.944,15.047
+FMNH 26961,Bovidae,Sylvicapra grimmia abyssinicus,Sylvicapra grimmia,Male,3.377,3.473,3.4,4.109,4.001,4.213,4.133,4.425,4.407,6.116,6.103,5.912,5.982,6.116,6.047,6.401,6.497,6.504
+FMNH 27139,Bovidae,Sylvicapra grimmia abyssinicus,Sylvicapra grimmia,Female,3.178,3.424,3.337,4.311,4.055,4.201,4.005,4.182,4.007,5.78,5.972,5.487,6.639,6.707,6.701,6.691,6.524,6.751
+FMNH 17840,Bovidae,Sylvicapra grimmia altivallis,Sylvicapra grimmia,Female,3.759,3.898,3.804,4.173,4.452,4.398,5.5425,5,4.807,6.357,6.382,6.317,7.181,7.478,7.401,7.129,7.207,7.008
+FMNH 17787,Bovidae,Sylvicapra grimmia nyansae,Sylvicapra grimmia,Female,3.587,3.579,3.449,4.18,4.014,4.201,4.207,4.185,4.137,5.853,5.963,5.741,6.495,6.545,6.44,7.822,7.941,7.664
+FMNH 17790,Bovidae,Sylvicapra grimmia nyansae,Sylvicapra grimmia,Male,3.676,3.676,3.9,4.653,4.6,4.123,5.255,5.71,5.301,5.939,6.201,5.872,7.114,7,7.301,5.888,6.01,6.241
+FMNH 128001 ,Bovidae,Syncerus caffer caffer,Syncerus caffer,Male,9.191,9.344,9.239,13.175,12.986,13.374,16.129,16.251,15.93,17.74,17.642,17.942,18.382,18.072,18.444,18.693,19.104,18.868
+FMNH 34547,Bovidae,Syncerus caffer caffer,Syncerus caffer,Male,8.12,8.552,8.378,13.338,13.531,13.717,17.385,16.811,17.197,19.055,18.701,18.756,18.926,19.398,19.315,18.604,18.784,18.648
+FMNH 198366,Bovidae,Syncerus caffer nanus,Syncerus nanus,Female,10.002,10.16,10.328,13.027,12.957,12.951,14.996,15.325,15.117,18.585,18.393,18.773,19.355,19.542,19.652,18.032,18.39,17.923
+FMNH 24324,Bovidae,Syncerus caffer nanus,Syncerus nanus,Female,9.154,8.929,9.193,13.939,13.47,13.067,16.643,16.992,16.992,17.339,17.336,17.352,18.859,19.24,19.248,19.353,18.885,18.747
+FMNH 27522,Bovidae,Syncerus caffer nanus,Syncerus nanus,Male,9.07,9.618,9.449,12.073,12.208,12.582,13.883,14.242,13.872,16.598,16.871,16.871,17.313,17.431,17.621,17.08,17.449,17.493
+FMNH 44063,Bovidae,Syncerus caffer nanus,Syncerus nanus,Female,8.283,8.322,8.293,11.921,11.517,11.342,13.791,13.81,13.992,16.566,16.971,16.567,19.12,19.345,19.446,18.325,18.403,17.983
+FMNH 44067,Bovidae,Syncerus caffer nanus,Syncerus nanus,Male,8.742,9.138,8.932,11.37,11.567,11.567,14.953,15.004,14.847,15.504,15.568,15.688,15.821,15.634,15.772,17.093,17.365,17.19
+FMNH 53866,Bovidae,Taurotragus derbianus derbianus,Taurotragus derbianus,Male,8.608,9.194,8.651,11.241,11.087,11.246,16.51,16.511,16.672,16.454,16.997,16.51,17.127,16.869,17.051,16.511,16.865,16.722
+FMNH 34532,Bovidae,Taurotragus oryx livingstonei,Taurotragus oryx,Female,8.836,8.914,9.151,12.088,11.869,12.079,11.751,11.841,11.477,16.31,16.113,16.371,18.95,19.008,19.156,17.764,17.598,17.786
+FMNH 34535,Bovidae,Taurotragus oryx livingstonei,Taurotragus oryx,Female,9.031,8.864,9.173,11.468,11.999,11.688,15.066,15.244,15.606,18.002,18.196,18.147,19.11,19.505,19.348,19.194,18.921,18.926
+FMNH 128005,Bovidae,Taurotragus oryx pattersonias,Taurotragus oryx,Male,5.834,6.273,6.09,8.65,9.039,8.871,13.087,13.087,12.863,17.139,16.703,16.746,18.949,18.558,18.829,18.836,19.025,18.615
+FMNH 20664,Bovidae,Taurotragus oryx pattersonias,Taurotragus oryx,Unknown,10.319,10.573,10.07,14.737,15.015,14.931,14.77,14.756,14.322,18.875,18.975,18.658,22.223,21.672,21.677,19.901,19.81,20.028
+FMNH 30238,Bovidae,Tragelaphus angasi,Tragelaphus angasi,Male,5.617,5.108,5.555,6.413,6.577,6.413,7.325,7.791,7.629,9.006,9.344,9.252,11.415,11.177,11.034,11.238,11.599,11.84
+FMNH 51777,Bovidae,Tragelaphus angasi,Tragelaphus angasi,Male,5.898,5.866,5.712,7.018,7.129,7.018,9.297,9.157,9.032,10.529,10.738,10.461,11.097,11.174,10.916,11.602,11.977,11.663
+FMNH 65736,Bovidae,Tragelaphus angasi,Tragelaphus angasi,Unknown,5.927,5.497,5.07,7.356,7.206,7.192,8.991,8.84,8.99,9.673,10.047,9.95,11.42,11.514,11.296,11.654,11.748,11.654
+FMNH 28482,Bovidae,Tragelaphus buxtoni,Tragelaphus buxtoni,Male,6.362,6.216,6.217,9.252,9.406,9.4,9.83,9.829,9.829,11.29,10.914,11.198,12.45,12.388,12.431,14.255,13.834,13.836
+FMNH 105028,Bovidae,Tragelaphus imberbis australis,Tragelaphus imberbis,Male,7.266,7.543,7.716,8.797,8.506,8.651,8.777,8.66,8.851,10.985,11.062,11.021,11.924,11.924,11.943,12.637,12.523,12.433
+FMNH 26940,Bovidae,Tragelaphus meneliki,Tragelaphus scriptus,Male,3.421,3.576,3.757,4.508,4.818,4.943,5.836,5.912,5.601,6.752,6.814,6.752,7.732,7.642,7.529,7.385,7.446,7.529
+FMNH 38162,Bovidae,Tragelaphus scriptus ornatus,Tragelaphus scriptus,Male,4.835,4.806,5.002,6.468,7.029,6.476,7.389,7.391,8.046,8.121,8.238,8.298,9.059,9.193,9.265,9.708,9.509,9.493
+FMNH 7038,Bovidae,Tragelaphus scrtiptus delamerei,Tragelaphus scriptus,Male,5.329,5.708,5.558,6.647,6.268,6.268,6.516,7.001,7.186,7.005,8.844,8.72,9.005,9.492,9.067,8.778,8.646,9.201
+FMNH 101861,Bovidae,Tragelaphus spekii,Tragelaphus spekii,Male,4.916,5.476,5.385,6.895,6.513,6.887,8.708,8.169,8.284,10.12,10.351,10.524,12.109,11.983,12.094,11.374,11.931,11.741
+FMNH 128017,Bovidae,Tragelaphus spekii sylvestris,Tragelaphus spekii,Male,5.15,5.615,5.185,8.01,8.154,8.154,9.36,9.517,9.668,11.712,11.897,11.693,13.601,13.768,14.055,13.954,14.181,14.125
+FMNH 1412,Bovidae,Tragelaphus strepsiceros chora,Tragelaphus strepsiceros,Male,8.563,8.352,8.614,10.765,10.649,10.875,12.144,12.222,11.805,12.652,12.981,12.962,14.601,14.772,14.373,15.353,15.405,15.16
+FMNH 26932,Bovidae,Tragelaphus strepsiceros chora,Tragelaphus strepsiceros,Male,10.055,9.822,9.602,11.669,11.664,11.491,12.36,12.191,12.536,13.763,13.598,13.657,14.484,14.948,14.993,14.65,14.516,14.501
+FMNH 34431,Bovidae,Tragelaphus strepsiceros strepsiceros,Tragelaphus strepsiceros,Male,8.528,8.257,8.596,9.935,9.998,9.706,10.058,10.209,10.066,14.096,14.164,14.165,14.982,14.733,14.541,15.948,16.117,15.965
+FMNH 48935,Tragulidae,Tragulus javanicus javanicus,Tragulus javanicus,Female,2.329,1.633,2.095,2.201,1.74,1.984,2.053,2.169,2.061,3.039,2.945,2.698,3.746,3.992,3.62,4.496,4.35,4.008
+FMNH 68769,Tragulidae,Tragulus j. borneanus,Tragulus javanicus,Unknown,2.06,1.891,1.853,2.442,2.312,2.396,2.848,3.02,2.955,2.618,2.741,2.297,4.31,4.7,4.628,4.419,4.684,4.45
+FMNH 98652,Tragulidae,Tragulus j.ravus,Tragulus javanicus,Male,1.849,1.944,1.947,2.918,2.708,2.702,2.7,2.7,2.7,3.486,3.772,3.442,4.675,4.385,4.441,4.461,4.664,4.701
+FMNH 85915,Tragulidae,Tragulus javanicus borneanus,Tragulus javanicus,Female,2.539,2.711,2.901,3.031,2.903,2.091,3.456,3.456,3.455,3.891,4.007,3.991,5.006,5.211,5.107,5.078,5.005,5.217
+FMNH 38013,Tragulidae,Tragulus k. affinis ,Tragulus kanchil,Male,2.015,1.596,2.021,2.128,1.876,1.985,2.325,2.301,2.342,2.849,2.675,2.807,3.313,3.204,3.441,3.728,3.529,3.873
+FMNH 33529,Tragulidae,Tragulus kanchil kossi,Tragulus kanchil,Female,2.24,2.233,2.011,2.716,2.061,2.461,3.092,2.925,2.998,3.587,3.667,3.41,4.083,4.11,4.379,4.46,4.538,4.661
+FMNH 11318,Tragulidae,Tragulus napu nigricans,Tragulus napu,Male,2.267,2.436,2.014,2.694,2.742,2.694,3.014,3.099,3.277,3.497,3.591,3.611,4.461,4.36,4.734,4.479,4.349,4.599
