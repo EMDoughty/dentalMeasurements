@@ -15,11 +15,7 @@ source('~/Dropbox/code/R/dentalMeasurements/src/src_dentalDataFns.R', chdir = TR
 
 	measure.mat <- getSingleSpeciesMatrix()
 	measure.mat <- measure.mat[-which(measure.mat$taxon=="Merycoidodon_(Merycoidodon)_presidioensis"),]		### this is a big outlier on PC2 x PC3 plot
-<<<<<<< HEAD
 #	measure.mat <- measure.mat[-which(measure.mat$taxon=="Cephalophus_silvicultor"),]						### this is a big outlier on PC2 x PC3 plot
-=======
-	measure.mat <- measure.mat[-which(measure.mat$taxon=="Cephalophus_silvicultor"),]						### this is a big outlier on PC2 x PC3 plot
->>>>>>> parent of 5fd0d68 (Merge branch 'Evan-Doughty-Alterations' into master)
 	
 	matrix(sort(unique(measure.mat$taxon[!measure.mat$taxon %in% occs$accepted_name])), ncol=1)
 	matrix(sort(unique(occs$accepted_name[!occs$accepted_name %in% measure.mat$taxon & occs$order %in% focal.order & occs$accepted_rank=="species"])), ncol=1)
@@ -72,13 +68,12 @@ source('~/Dropbox/code/R/dentalMeasurements/src/src_dentalDataFns.R', chdir = TR
 ####################################################################################################################################
 #### plot PCA using both uppers and lowers
 ####################################################################################################################################
-
+  quartz()
 	plot(pcaAll$x[,pc_h], pcaAll$x[,pc_v], xlim=c(min(pcaAll$x[,pc_h]),1.5*max(pcaAll$x[,pc_h])), xlab=paste("PC",pc_h," (",round(100*(pcaAll$sdev[pc_h]^2/sum(pcaAll$sdev^2)), digits=1),"%)", sep=""), ylab=paste("PC",pc_v," (",round(100*(pcaAll$sdev[pc_v]^2/sum(pcaAll$sdev^2)), digits=1),"%)", sep=""), type="n", main="Upper and Lower P3-M3")
 	# polygon(c(-10,10,10,-10), c(-10,-10,10,10), col="gray33")
 	lines(x=c(0,0), y=c(-100, 100), lty=3, col="gray50")
 	lines(x=c(-100,100), y=c(0, 0), lty=3, col="gray50")
 	# text(pcaAll$x[,pc_h], pcaAll$x[,pc_v], labels=rownames(pcaAll$x), cex=0.5, col= famColors[match(m$family[match(rownames(pcaAll$x), m$species)])
-<<<<<<< HEAD
 	text(pcaAll$x[,pc_h], pcaAll$x[,pc_v], labels=rownames(pcaAll$x), pos=4, cex=0.3, 
 	     col=famColors[as.character(m$family[match(rownames(pcaAll$x), m$species)], shortFam)])
 	points(pcaAll$x[,pc_h], pcaAll$x[,pc_v], cex=1.0, 
@@ -88,11 +83,6 @@ source('~/Dropbox/code/R/dentalMeasurements/src/src_dentalDataFns.R', chdir = TR
 	       pch=symbolVec[shortFam%in%bigList[bigList$genus%in%rownames(pcaAll$x),2]], 
 	       col=famColors[shortFam%in%bigList[bigList$genus%in%rownames(pcaAll$x),2]], 
 	       box.col="gray50", bg="white", cex=0.55)
-=======
-	text(pcaAll$x[,pc_h], pcaAll$x[,pc_v], labels=rownames(pcaAll$x), pos=4, cex=0.3, col=famColors[as.character(m$family[match(rownames(pcaAll$x), m$species)], shortFam)])
-	points(pcaAll$x[,pc_h], pcaAll$x[,pc_v], cex=1.0, pch=symbolVec[match(m$family[match(rownames(pcaAll$x), m$species)], col=famColors[match(m$family[match(rownames(pcaAll$x), m$species)])
-	legend("bottomright", legend=shortFam[shortFam%in%bigList[bigList$accepted_name %in% rownames(pcaAll$x),2]], pch=symbolVec[shortFam%in%bigList[bigList$genus%in%rownames(pcaAll$x),2]], col=famColors[shortFam%in%bigList[bigList$genus%in%rownames(pcaAll$x),2]], box.col="gray50", bg="white", cex=0.55)
->>>>>>> parent of 5fd0d68 (Merge branch 'Evan-Doughty-Alterations' into master)
 	
 # # # # # pcaAll$rotation
 
