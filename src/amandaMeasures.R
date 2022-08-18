@@ -15,8 +15,9 @@ source('~/Dropbox/code/R/dentalMeasurements/src/src_dentalDataFns.R', chdir = TR
 
 	measure.mat <- getSingleSpeciesMatrix()
 	measure.mat <- measure.mat[-which(measure.mat$taxon=="Merycoidodon_(Merycoidodon)_presidioensis"),]		### this is a big outlier on PC2 x PC3 plot
+
 #	measure.mat <- measure.mat[-which(measure.mat$taxon=="Cephalophus_silvicultor"),]						### this is a big outlier on PC2 x PC3 plot
-	
+
 	matrix(sort(unique(measure.mat$taxon[!measure.mat$taxon %in% occs$accepted_name])), ncol=1)
 	matrix(sort(unique(occs$accepted_name[!occs$accepted_name %in% measure.mat$taxon & occs$order %in% focal.order & occs$accepted_rank=="species"])), ncol=1)
 
@@ -74,6 +75,7 @@ source('~/Dropbox/code/R/dentalMeasurements/src/src_dentalDataFns.R', chdir = TR
 	lines(x=c(0,0), y=c(-100, 100), lty=3, col="gray50")
 	lines(x=c(-100,100), y=c(0, 0), lty=3, col="gray50")
 	# text(pcaAll$x[,pc_h], pcaAll$x[,pc_v], labels=rownames(pcaAll$x), cex=0.5, col= famColors[match(m$family[match(rownames(pcaAll$x), m$species)])
+
 	text(pcaAll$x[,pc_h], pcaAll$x[,pc_v], labels=rownames(pcaAll$x), pos=4, cex=0.3, 
 	     col=famColors[as.character(m$family[match(rownames(pcaAll$x), m$species)], shortFam)])
 	points(pcaAll$x[,pc_h], pcaAll$x[,pc_v], cex=1.0, 
