@@ -1,0 +1,56 @@
+m,j,description,r2,intercept,slope,see,pe,n
+HBL,HBL,head-body length,0.93,-5.04,3.13,46.79,32.12,70
+M3_L,M3_L,M3 length,0.9,0.94,3.12,60.71,39.46,73
+M2_L,M2_L,M2 length,0.89,0.94,3.15,64.24,41.25,73
+M1_L,M1_L,M1 length,0.9,1.17,3.13,58.32,39.78,73
+P4_L,P4_L,P4 length,0.88,1.64,3.12,67.45,42.71,73
+P3_L,P3_L,P3 length,0.8,1.72,3.02,92.85,58.32,73
+P2_L,P2_L,P2 length,0.64,2.15,2.65,144.56,93.5,70
+P1_L,P1_L,P1 length,NA,NA,NA,NA,NA,NA
+m3_l,m3_l,m3 length,0.9,0.51,3.19,59.5,39.42,73
+m2_l,m2_l,m2 length,0.9,0.92,3.21,60.3,39.14,73
+m1_l,m1_l,m1 length,0.89,1.17,3.2,61.08,41.58,73
+p4_l,p4_l,p4 length,0.84,1.38,3.18,81.24,52.93,73
+p3_l,p3_l,p3 length,0.73,1.79,2.92,114.83,73.81,71
+P2_L,p2_l,p2 length,0.68,2.42,2.62,134.01,82.85,68
+M3_W,M3_W,M3 WIDTH,0.78,1.51,2.87,98.59,58.74,73
+M2_W,M2_W,M2 WIDTH,0.8,1.36,2.96,92.47,57.05,73
+M1_W,M1_W,M1 WIDTH,0.86,1.31,3.06,74.11,47.47,73
+P4_W,P4_W,P4 width,0.84,1.7,2.87,79.9,50.61,73
+P3_W,P3_W,P3 width,0.73,2.49,2.28,113.04,78.52,73
+P2_W,P2_W,P2 width,0.67,2.62,2.31,135.65,89.86,70
+P1_W,P1_W,P1 width,NA,NA,NA,NA,NA,NA
+m3_w,m3_w,m3 width,0.84,1.89,2.93,78.52,49.11,73
+m2_w,m2_w,m2 width,0.85,1.84,2.95,75.78,46.21,73
+m1_w,m1_w,m1 width,0.88,1.86,3.02,66.76,43.11,73
+p4_w,p4_w,p4 width,0.84,2.52,2.58,79.61,52.61,73
+p3_w,p3_w,p3 width,0.82,2.72,2.53,87.01,56.09,71
+p2_w,p2_w,p2 width,0.78,2.99,2.55,101.89,66.68,68
+M3_A,M3_A,M3 area,0.89,1.01,1.59,62.67,39.18,73
+M2_A,M2_A,M2 area,0.88,0.99,1.6,65.86,42.47,73
+M1_A,M1_A,M1 area,0.91,1.13,1.6,56.16,38.15,73
+P4_A,P4_A,P4 area,0.87,1.61,1.52,68.22,43,73
+m3_a,m3_a,m3 area,0.9,1.11,1.58,59.91,38.88,73
+m2_a,m2_a,m2 area,0.89,1.32,1.57,61.29,39.06,73
+m1_a,m1_a,m1 area,0.9,1.47,1.58,58.39,38.72,73
+p4_a,p4_a,p4 area,0.86,1.95,1.45,74.64,49.96,73
+M1_3_A,M1-3_A,upperm molar area,0.9,0.23,1.61,59.02,37.94,73
+m1_3_a,m1-3_a,lower molar area,0.91,0.49,1.59,56.64,36.52,73
+M1_2_A,M1-2_A,first and second uppe rmolar area,0.9,0.55,1.6,60.17,39.74,73
+m1_2_a,m1-2_a,first and second lower molar area,0.9,0.9,1.58,58.39,37.67,73
+UpM,M1-3_L,upper molar length,0.91,-0.57,3.19,55.84,35.86,73
+loM,m1-3_L,lower molar length,0.92,-0.8,3.27,53.23,35.24,73
+P4_M3_A,P4-M3_A,upper P4 and molar area,0.9,0.13,1.61,58.96,37.56,73
+p4_m3_a,p4-m3_a,lower p4 AND MOLAR AREA,0.91,0.39,1.58,56.41,36.15,73
+P4_M3_L,P4-M3_L,upper P4 and molar length,0.91,-0.88,3.21,54.14,35.49,73
+p4_m3_l,p4-m3_l,lower p4 and molar length,0.92,-1.2,3.32,51.52,34.56,73
+P4_M2_A,P4-M2_A,upper P4 to M2 area,0.9,0.4,1.6,60.06,39.19,73
+P4_M2_L,P4-M2_L,upper P4 to M2 length,0.89,-0.38,3.08,62.01,39.93,73
+p4_m2_a,p4-m2_a,lower p4 to m2 area,0.9,0.74,1.57,58.09,37.75,73
+p4_m2_l,p4-m2_l,lower p4 to m2 length,0.91,-0.58,3.32,55.1,37.19,73
+P3_M3_A,P3-M3_A,upper P3 to M3 area,0.9,0.07,1.59,59.35,37.58,73
+p3_m3_a,p3_m3_a,lower p3 to m3 area,0.9,0.32,1.58,58.27,37.18,71
+PCRU,PCRU,upper postcanine tooth-row length ,0.92,-1.5,3.32,52.86,34.36,73
+PCRL,PCRL,lower postcanine tooth-row length ,0.9,-1.59,3.34,57.75,37.8,73
+UPCTA,UPCTA,upper postcanine tooth-row area,0.89,0.03,1.59,61.98,38.52,73
+LPCTA,LPCTA,lower postcanine tooth-row area,0.9,0.31,1.57,58.85,37.06,73
