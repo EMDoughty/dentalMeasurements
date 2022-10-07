@@ -15,32 +15,15 @@ source('~/Dropbox/Code/R/dentalMeasurements/src/src_evanproposal.R')
 
 ####################################################################################################################################
 
-  occs <- read.csv("http://paleobiodb.org/data1.2/occs/list.csv?base_name=Mammalia&continent=NOA&max_ma=66&min_ma=0&timerule=overlap&show=full&limit=all", stringsAsFactors=TRUE, strip.white=TRUE)
-  #occs <- read.csv("/Users/emdoughty/Dropbox/Code/Occs_2021_9_5.csv")
-  occs <- occs[!occs$order %in% c("Cetacea", "Desmostylia", "Sirenia"), ]
-  occs <- occs[!occs$family %in% c("Allodelphinidae", "Allodesminae", "Balaenidae", "Balaenopteridae", "Delphinidae", "Desmatophocidae", "Desmostylidae", 
-                                   "Didelphidae","Dugongidae","Enaliarctidae", "Eschrichtiidae","Iniidae", "Kentriodontidae", "Kogiidae", 
-                                   "Odobenidae", "Otariidae", "Paleoparadoxiidae", "Phocidae", "Physeteridae", "Platanistidae", "Pontoporiidae", 
-                                   "Protocetidae", "Squalodontidae", "Ziphiidae"), ]
-  occs <- occs[!occs$genus %in% c("Enaliarctos", "Pteronarctos", "Kolponomos", "Pacificotaria", "Pinnarctidion", "Pteronarctos"), ]
-  occs <- occs[!occs$accepted_name %in% c("Archaeoceti", "Pinnipedia", "Imagotariinae"), ]
-  occs$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = occs$accepted_name)	#replace spaces with underscores
-  
-  #remove duplicate taxa occurrences within same collection; this happens when synonyms 
-  if(this.rank %in% names(occs)) { occs <- occs[!(occs[,this.rank] != "" & duplicated(occs[,c("collection_no", this.rank)])),]
-  } else if (this.rank == "species") {
-    occs <- occs[!(occs$accepted_rank=="species" & duplicated(occs[,c("collection_no", "accepted_name")])),]
-  }
-
 ################################################  
 #Settings
-  run.taxon <- "ungulates"
-  this.rank <- "species" #"genus" "species"
-  interval.type <- "bins" #"nalma" "bins
-  add.Janis2000 <- FALSE
-  add.probo <- FALSE
-  add.mesonychid <- FALSE
-if (do.parallel) require(parallel)
+run.taxon <- "ungulates"
+this.rank <- "species" #"genus" "species"
+interval.type <- "bins" #"nalma" "bins
+add.Janis2000 <- FALSE
+add.probo <- FALSE
+add.mesonychid <- FALSE
+require(parallel)
 #date.save <- paste0("Janis=", add.Janis2000,"_Probo=", add.probo,"_Mesonichid=",add.mesonychid,"_2022_7_15")
 
 bmBreaks_herb <- c(-Inf, 0.69897, 1.39794, 2.176091, 2.69897, Inf) #Janis 2000  max(measure.mat$bodyMass, na.rm=TRUE)
@@ -63,11 +46,28 @@ analysis.toggle <- c("bmHandley") #"taxHandley",
 
 #if you want to load a repIntOccs or repIntTaxa from file put the pathname as this object.  otherwise keep as NUll to make a new repIntOccs and repIntTaxa using the settings below
 repIntLoad <- NULL #"/Users/emdoughty/Dropbox/Code/R/Results/repIntMaster__this.rank=species_timebin=2Mabins_SampleStandardized=TRUE_Reps=10000Jonathans_MBP.lan##------ Fri Mar  4 21:58:08 2022 ------##.Rdata"
-  #NULL 
-  #"/Users/emdoughty/Dropbox/Code/R/Results/repIntMaster__this.rank=species_timebin=nalma_SampleStandardized=TRUE_Reps=10000Jonathans_MBP.lan##------ Thu Mar  3 18:05:02 2022 ------##.Rdata"
-  #NULL
+#NULL 
+#"/Users/emdoughty/Dropbox/Code/R/Results/repIntMaster__this.rank=species_timebin=nalma_SampleStandardized=TRUE_Reps=10000Jonathans_MBP.lan##------ Thu Mar  3 18:05:02 2022 ------##.Rdata"
+#NULL
 
 ################################################
+
+  occs <- read.csv("http://paleobiodb.org/data1.2/occs/list.csv?base_name=Mammalia&continent=NOA&max_ma=66&min_ma=0&timerule=overlap&show=full&limit=all", stringsAsFactors=TRUE, strip.white=TRUE)
+  #occs <- read.csv("/Users/emdoughty/Dropbox/Code/Occs_2021_9_5.csv")
+  occs <- occs[!occs$order %in% c("Cetacea", "Desmostylia", "Sirenia"), ]
+  occs <- occs[!occs$family %in% c("Allodelphinidae", "Allodesminae", "Balaenidae", "Balaenopteridae", "Delphinidae", "Desmatophocidae", "Desmostylidae", 
+                                   "Didelphidae","Dugongidae","Enaliarctidae", "Eschrichtiidae","Iniidae", "Kentriodontidae", "Kogiidae", 
+                                   "Odobenidae", "Otariidae", "Paleoparadoxiidae", "Phocidae", "Physeteridae", "Platanistidae", "Pontoporiidae", 
+                                   "Protocetidae", "Squalodontidae", "Ziphiidae"), ]
+  occs <- occs[!occs$genus %in% c("Enaliarctos", "Pteronarctos", "Kolponomos", "Pacificotaria", "Pinnarctidion", "Pteronarctos"), ]
+  occs <- occs[!occs$accepted_name %in% c("Archaeoceti", "Pinnipedia", "Imagotariinae"), ]
+  occs$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = occs$accepted_name)	#replace spaces with underscores
+  
+  #remove duplicate taxa occurrences within same collection; this happens when synonyms 
+  if(this.rank %in% names(occs)) { occs <- occs[!(occs[,this.rank] != "" & duplicated(occs[,c("collection_no", this.rank)])),]
+  } else if (this.rank == "species") {
+    occs <- occs[!(occs$accepted_rank=="species" & duplicated(occs[,c("collection_no", "accepted_name")])),]
+  }
 
 ######################################################################################################################################################
   #Ungualtes
@@ -164,7 +164,7 @@ if(run.taxon == "ungulates")
   shortFam <- sort(unique(bigList$family[bigList$family %in% focal.family]))	
   
   bigList$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = bigList$accepted_name)
-  #measure.mat <- measure.mat[measure.mat$taxon %in% bigList$accepted_name[bigList$family %in% shortFam], ]
+  measure.mat <- measure.mat[measure.mat$taxon %in% bigList$accepted_name[bigList$family %in% shortFam], ]
 }
 
 #################

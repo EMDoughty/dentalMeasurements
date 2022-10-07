@@ -68,7 +68,14 @@ getBodyMassVectorFromMeasureMatAllMeasures <- function(measure.mat, linked.files
 	if (linked.files) {
 		# regList <- list(ruminantia=read.csv("https://dl.dropbox.com/s/dcd0bs1x5v9e7lh/regRuminantia.csv"), perissodactyla=read.csv("https://dl.dropbox.com/s/04k387q7yh4wp9u/regPerissodactyla.csv"), ungulate=read.csv("https://dl.dropbox.com/s/310ayur1s1dc8sl/regAllUngulates.csv"))
 	} else {
-		regList <- list(ruminantia=read.csv("~/Dropbox/code/R/dentalMeasurements/dat/regRuminantia.csv"), perissodactyla=read.csv("~/Dropbox/code/R/dentalMeasurements/dat/regPerissodactyla.csv"), ungulate=read.csv("~/Dropbox/code/R/dentalMeasurements/dat/regAllUngulates.csv"))
+		regList <- list(ruminantia=read.csv("~/Dropbox/code/R/dentalMeasurements/dat/regRuminantia.csv"), 
+		                perissodactyla=read.csv("~/Dropbox/code/R/dentalMeasurements/dat/regPerissodactyla.csv"), 
+		                ungulate=read.csv("~/Dropbox/code/R/dentalMeasurements/dat/regAllUngulates.csv"), 
+		                ArchaicAllSelenodonts=read.csv("~/Dropbox/Code/R/DentalMeasurements/dat/regArchaicAllSelenodonts.csv"), 
+		                ArchaicNonselenodonts=read.csv("~/Dropbox/Code/R/DentalMeasurements/dat/regArchaicNonselenodonts.csv"), 
+		                ArchaicSelenodontNonBrowsers=read.csv("~/Dropbox/Code/R/DentalMeasurements/dat/regArchaicSelenodontNonBrowsers.csv"), 
+		                ArchaicSelenodontBrowsers=read.csv("~/Dropbox/Code/R/DentalMeasurements/dat/regArchaicSelenodontBrowsers.csv"), 
+		                DasmuthAllUngulates=read.csv("~/Dropbox/Code/R/DentalMeasurements/dat/regAllArchaicUngulates.csv"))
 	}
 	regList <- lapply(regList, appendStDevToReg)
 
@@ -83,7 +90,7 @@ getBodyMassVectorFromMeasureMatAllMeasures <- function(measure.mat, linked.files
 	##### get regression parameters for measurements not in published regression
 	#######################################################################################################################################
 	other_m <- c("P2_L", "P2_W", "P3_L", "P3_W", "P4_L", "P4_W", "M1_L", "M1_W", "M3_L", "M3_W")
-# 	other_m <- colnames(measure.mat[,sapply(measure.mat, is.numeric)])[!colnames(measure.mat[,sapply(measure.mat, is.numeric)]) %in% theseColumns]
+ 	other_m <- colnames(measure.mat[,sapply(measure.mat, is.numeric)])[!colnames(measure.mat[,sapply(measure.mat, is.numeric)]) %in% theseColumns]
 
 	otherReg <- lapply(X=names(regList), FUN=function(this.group) {
 		shortMat <- measure.mat[rownames(measure.mat) %in% rownames(bm) & measure.mat$reg==this.group, other_m]
@@ -130,12 +137,13 @@ fillMissingBodyMasses <- function(measure.mat) {
 ############################################################################################################################################
 
 #Compile and format matrix of all measurements from multiple sources
-appendRegressionCategories <- function(measure.mat, regMat) {
+appendRegressionCategories <- function(measure.mat, regMat, regAuthor = c("Janis")) {
 	
-	uniqTax <- lapply(c("Artiodactyla", "Perissodactyla"), FUN=getTaxonomyForOneBaseTaxon)
-	uniqTax <- rbind(uniqTax[[1]], uniqTax[[2]])
+	uniqTax <- lapply(c("Artiodactyla", "Perissodactyla", "Arctocyonidae", "Hyopsodontidae", "Periptychidae", "Phenacodontidae"), FUN=getTaxonomyForOneBaseTaxon)
+	uniqTax <- rbind(uniqTax[[1]], uniqTax[[2]], uniqTax[[3]], uniqTax[[4]], uniqTax[[5]], uniqTax[[6]])
 	uniqTax$taxon_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = uniqTax$taxon_name)
 	
+
 	#delete unique taxa that lack family and genus
 	measure.mat$family <- uniqTax$family[match(x=rownames(measure.mat), table=uniqTax$taxon_name)]
 	# measure.mat$family <- sapply(measure.mat$family, as.character)
@@ -152,6 +160,10 @@ appendRegressionCategories <- function(measure.mat, regMat) {
 	# reg.vec <- array(dim=nrow(measure.mat))
 	# apply(measure.mat, 1, function(x) {
 		# if (!is.na(x["family"]) & x["family"] %in% regMat$family) 
+	
+	#set whichever regression system to be the column reg
+	if(regAuthor == "Janis") regMat$reg <- regMat$JanReg
+	if(regAuthor == "Damuth") regMat$reg <- regMat$DamReg
 	
 	family.names <- uniqTax$family[match(x=rownames(measure.mat), table=uniqTax$taxon_name)]
 	reg.vec <- regMat$reg[!is.na(regMat$family)][match(family.names, regMat$family[!is.na(regMat$family)])]  # this is the regression "labels" for the species from measure.mat in the correct order, based on family name

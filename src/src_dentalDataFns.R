@@ -172,9 +172,33 @@ getMeasureMatWithBodyMasses <- function() {
 	tax.vec <- tax.vec[!tax.vec %in% rownames(measure.mat)]
 	measure.mat <- appendMissingPaleoDBSpecies(measure.mat, tax.vec)
 
-	measure.mat <- appendRegressionCategories(measure.mat = measure.mat, regMat = read.csv(file="~/Dropbox/code/R/dentalMeasurements/dat/regressionLabelsJDM.csv"))
+	measure.mat <- appendRegressionCategories(measure.mat = measure.mat, regMat = read.csv(file="~/Dropbox/code/R/dentalMeasurements/dat/regressionLabelsJDM.csv"), regAuthor = "Janis")
 	measure.mat <- approxBodyMass(measure.mat = measure.mat)
 	measure.mat <- measure.mat[is.finite(measure.mat$bodyMass),]		#### clears taxa without body mass estimate
 
 	return(measure.mat)
 }
+
+findDuplicateEntries <- function(measure.mat)
+{
+ 
+ #get numeric portion of cataog numbers to compare 
+  regexp <- "[[:digit:]]+"
+  catalog.num <- str_extract(measure.mat$Catalog.Number, regexp)
+  
+  catalog.num.target  <- unique(catalog.num[duplicated(catalog.num)])
+  
+  test <- measure.mat[catalog.num %in% catalog.num.target & !measure.mat$Catalog.Number %in% "Accepted Names PBDB", c(1:8,63:64)]
+  
+  test$catalog.numOnly <- str_extract(test$Catalog.Number, regexp)
+  test[order(test$catalog.numOnly),]
+  
+  #need to find rows that overlap in terms of filled columns.  could use index to find those that are filled and compare if redundant and return those lines
+  ###this is done to avoid lines that are duplicate catalog numbers but seperate elements
+  
+  
+  return()
+}
+  
+
+

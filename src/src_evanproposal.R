@@ -51,10 +51,11 @@ get.speciesMeans <- function(data,
   return(species.Mat)
 }
 
-data.coverage <- function(collected.dat,  
-                          occs.list, 
-                          taxon.vec, 
-                          column.taxon,
+
+data.coverage <- function(collected.dat = archaic.merg,   #data.coverage(archaic.merg, bigList.check, focal.archaic, "family")
+                          occs.list = bigList.check, 
+                          taxon.vec = focal.archaic, 
+                          column.taxon = "family",
                           this.rank)
 {
   #remove genus only from occs
@@ -63,7 +64,7 @@ data.coverage <- function(collected.dat,
   occs.list <- occs.list[occs.list$accepted_rank %in% this.rank,]
   total.cov <- length(unique(occs.list$accepted_name[occs.list[,column.taxon] %in% taxon.vec]))
   
-  total.sampled <- length(unique(collected.dat$taxon[collected.dat[,column.taxon] %in% taxon.vec]))
+  total.sampled <- length(unique(collected.dat$accepted_name[collected.dat[,column.taxon] %in% taxon.vec]))
   
   print(paste("Total Coverage: ",paste(total.sampled,total.cov, sep = "/")))
   
@@ -89,17 +90,18 @@ getMeasureMatCondylarths<- function(data.raw,
 {
   archaic.ung <- data.raw
   
-  meta.colnames <- c("taxon","Order","Suborder","Family", "Subfamily", "Accepted.Genus","Accepted.Species")
+  meta.colnames <- c("taxon","Order","Family", "Accepted.Genus","Accepted.Species")
   measure.colnames <- c("P2_L","P2_W","P3_L","P3_W","P4_L","P4_W","M1_L","M1_W","M2_L","M2_W","M3_L","M3_W",
                         "p2_l","p2_w","p3_l","p3_w","p4_l","p4_w","m1_l","m1_w","m2_l","m2_w","m3_l","m3_w")
   
   #remove genus only entries
   ##indet specimens will be fine due sp. designation
-  archaic.ung <- archaic.ung[!archaic.ung$Accepted.Species %in% "",]
+  archaic.ung <- archaic.ung[!archaic.ung$Verbatim.Species %in% "",]
   
-  archaic.ung$taxon <- paste(archaic.ung$Accepted.Genus, archaic.ung$Accepted.Species, sep=" ")
+  archaic.ung$taxon <- paste(archaic.ung$Verbatim.Genus, archaic.ung$Verbatim.Species, sep=" ")
   
   archaic.ung$taxon <- getCurrentTaxa(tax.vec = archaic.ung$taxon)
+  
   
   #need to clean function of fam.name and other sorting aspects====make a it a general aggregation function
   archaic.Mat <- get.speciesMeans(data = archaic.ung, measure.colnames = measure.colnames, meta.colnames = meta.colnames, 
@@ -153,7 +155,7 @@ getMeasureMatCondylarths<- function(data.raw,
   
   #total vs per family coverage
   
-  #data.coverage(archaic.merg,bigList.check,focal.archaic,"family")
+ # data.coverage(archaic.merg,bigList.check,focal.archaic,"family")
   
   colnames(archaic.merg)[colnames(archaic.merg) %in% "accepted_name"] <- "taxon"
   rownames(archaic.merg) <- archaic.merg$taxon
@@ -476,7 +478,7 @@ getDateTaxa <- function(measure.mat, occs, this.rank = "species")
   return(measure.mat)
 }
 
-shoulderPlot <- function(measure.mat, plot.y, intervals, occs, bigList, shortFam, repIntTaxa, quants = NULL,
+shoulderPlot <- function(measure.mat, plot.y, intervals, occs, bigList, shortFam, repIntTaxa = NULL, quants = NULL,
                          optList_bm_median = NULL, specOcc.col = "gray0", specOcc.alpha = 0.5,
                          plot.breaks = FALSE, manual.breaks = NULL, break.text = TRUE, break.col = "firebrick4",
                          this.rank = "species",
@@ -1362,3 +1364,273 @@ jon_archicBodyMassEstim_edited <- function()
   
   return(dat.condy)
 }
+
+getCurrentHigherTaxonomy <- function(archaic.ung, save.file=NULL) { #this function is meant to update the .csv files (or dataframe) of dental measures and update the taxonomy so that the accepted genus and species and higher taxonomy is correct (as much as possible).  Made for use with my Conylarth dental measurement sheet.
+  require(stringr)
+  #remove question marks and quotes form verbatim names temporarily
+  
+  Verbatim.Genus <- gsub("\"", "", archaic.ung$Verbatim.Genus)
+  Verbatim.Species<- gsub("\"", "", archaic.ung$Verbatim.Species)
+  
+  Verbatim.Genus <- gsub("[?]", "", Verbatim.Genus)
+  Verbatim.Species<- gsub("[?]", "", Verbatim.Species)
+  
+  Verbatim.Genus <- gsub("cf. ", "", Verbatim.Genus)
+  Verbatim.Species<- gsub("cf. ", "", Verbatim.Species)
+  
+  Verbatim.Genus <- gsub("aff. ", "", Verbatim.Genus)
+  Verbatim.Species<- gsub("aff. ", "", Verbatim.Species)
+  
+  archaic.ung$Verbatim.taxon <- paste(Verbatim.Genus, Verbatim.Species, sep=" ")
+ # archaic.ung$Verbatim.taxon <- paste(archaic.ung$Verbatim.Genus, archaic.ung$Verbatim.Species, sep=" ")
+  
+  Accepted.Name <- getCurrentTaxa(tax.vec = archaic.ung$Verbatim.taxon) #this does not work on most Genus sp. designations or entries that are in quotes.  Is hit or miss on entries with question marks
+  
+  Accepted.Genus <- str_split_fixed(string = Accepted.Name, " ", n = Inf)[,1]
+  Accepted.Species <- paste0(str_split_fixed(string = Accepted.Name, " ", n = Inf)[,2],str_split_fixed(string = Accepted.Name, " ", n = Inf)[,3])
+  
+  archaic.ung$Accepted.Name <- Accepted.Name
+  archaic.ung$Accepted.Name <- gsub(pattern = "[[:space:]]", replacement = "_", x = archaic.ung$Accepted.Name)
+  
+  archaic.ung$Accepted.Genus <- Accepted.Genus
+  archaic.ung$Accepted.Species <- Accepted.Species
+  
+  uniqTax <- lapply(c("Mammalia"), FUN=getTaxonomyForOneBaseTaxon_AcceptedName)
+  uniqTax <- rbind(uniqTax[[1]])
+  uniqTax$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = uniqTax$accepted_name)
+  
+  archaic.ung$Family <- uniqTax$family[match(x=archaic.ung$Accepted.Name, table=uniqTax$accepted_name)]
+  archaic.ung$Family[is.na(archaic.ung$Family)] <- uniqTax$family[match(x=archaic.ung$Accepted.Genus[is.na(archaic.ung$Family)], table=uniqTax$taxon_name)]
+
+  archaic.ung$Order <- uniqTax$order[match(x=archaic.ung$Accepted.Name, table=uniqTax$accepted_name)]
+  archaic.ung$Order[is.na(archaic.ung$Order)] <- uniqTax$order[match(x=archaic.ung$Accepted.Genus[is.na(archaic.ung$Order)], table=uniqTax$taxon_name)]
+  
+  
+  if(!is.null(save.file)) write.csv(archaic.ung, file = save.file)
+     
+  return(archaic.ung)
+}
+
+getTaxaInClade <- function(clades, occs, save.file=NULL) {
+  uniqTax <- lapply(c(clades), FUN=getTaxonomyForOneBaseTaxon_AcceptedName)
+  if(length(uniqTax) == 1) { uniqTax <- rbind(uniqTax[[1]])
+    }
+  if(length(uniqTax) == 2) { uniqTax <- rbind(uniqTax[[1]], uniqTax[[2]])
+  }
+  if(length(uniqTax) > 2) { 
+    taxaMat <- rbind(uniqTax[[1]], uniqTax[[2]])
+    for(xx in seq(3, length(uniqTax),1))
+    {
+      taxaMat <- rbind(taxaMat, uniqTax[[xx]])
+    }
+    uniqTax <- taxaMat
+  }
+  
+  uniqTax$accepted_species <- str_split_fixed(string = uniqTax$accepted_name, " ", n = Inf)[,2]
+  
+  uniqTax$verbatim_genus <- str_split_fixed(string = uniqTax$taxon_name, " ", n = Inf)[,1]
+  uniqTax$verbatim_species <- str_split_fixed(string = uniqTax$taxon_name, " ", n = Inf)[,2]
+  
+  uniqTax <- uniqTax[,c("phylum", "class", "order", "family", "genus", "accepted_species", "verbatim_genus", "verbatim_species","accepted_name", "taxon_name")]
+  
+  if(!is.null(save.file)) write.csv(uniqTax, file = save.file)
+  
+  return(uniqTax)
+}
+
+getTaxonomyForOneBaseTaxon_AcceptedName <- function(this.taxon) {
+  this.URL <- URLencode(paste0(server, "taxa/list.csv?base_name=", this.taxon, "&taxon_status=all&show=class"))
+  this.names <- getStuffWithoutWarnings(this.URL)
+  this.names[,c("phylum", "class", "order", "family", "genus", "accepted_name","taxon_name")]
+}
+
+getTargetTaxa<- function(measure.mat, uniqTax, occs, save.file = NULL){ # get a list of taxa that indicates #occs it has and whether its in North America if it does
+  
+  uniqTax$NoOccs <- 0 
+  
+  uniqTax$InNorAmer <- FALSE
+  
+  uniqTax$DataCollected <- 0
+  
+  measure.mat$accepted_name <- paste(measure.mat$Accepted.Genus, measure.mat$Accepted.Species, sep = " ")
+  
+  dental.col <-  c("P2_L", "P2_W", "P3_L", "P3_W", "P4_L", "P4_W", "M1_L", "M1_W", "M2_L", "M2_W", "M3_L", "M3_W",
+  "p2_l", "p2_w", "p3_l", "p3_w", "p4_l", "p4_w", "m1_l", "m1_w", "m2_l", "m2_w", "m3_l", "m3_w")
+  
+  for(xx in uniqTax$accepted_name)
+  {
+    uniqTax$NoOccs[uniqTax$accepted_name %in% xx] <- nrow(occs[occs$accepted_name %in% xx,])
+    
+
+    if(!uniqTax$NoOccs[uniqTax$accepted_name %in% xx] <= 0) 
+    {
+      if(any(occs$cc[occs$accepted_name %in% xx] %in% c("US", "CA", "MX"))) uniqTax$InNorAmer[uniqTax$accepted_name %in% xx] <- TRUE
+    }
+    
+    #remove blank rows so they are not skwing the target list.  This will remove entries that are present due to images only or compilation measures of the tooth row.  Likely make sthe Accepted name portion of line below redundant
+    measure.mat <- measure.mat[!apply(measure.mat[,dental.col] == "", 1, all),]
+    #get number of entries present in measure.mat
+    uniqTax$DataCollected[uniqTax$accepted_name %in% xx] <- nrow(measure.mat[measure.mat$accepted_name %in% xx & !measure.mat$Catalog.Number %in% "Accepted Names PBDB",])
+  }
+ 
+  #likely need to use the higher taxonomy columns to get actual counts for occurences in families and genera.  the for loop above only grabs those entered into the database at the family or generic level.
+
+  if(!is.null(save.file)) write.csv(uniqTax, file = save.file)
+}
+
+data.coverage_v2 <- function(clades, clade.level = "family", data.mat, occs, measure.colnames, save.file = NULL)
+{
+  output.list <- list(AllTaxa = NA, OccsOnly = NA, MissingTaxa = NA) #, NoOccs = NA)
+  
+  #need this function to 
+  ##1) read in a given taxon and then collate the genera and species within
+  uniqTax <- lapply(c(clades), FUN=getTaxonomyForOneBaseTaxon_AcceptedName)
+  if(length(uniqTax) == 1) { uniqTax <- rbind(uniqTax[[1]])
+  }
+  if(length(uniqTax) == 2) { uniqTax <- rbind(uniqTax[[1]], uniqTax[[2]])
+  }
+  if(length(uniqTax) > 2) { 
+    taxaMat <- rbind(uniqTax[[1]], uniqTax[[2]])
+    for(xx in seq(3, length(uniqTax),1))
+    {
+      taxaMat <- rbind(taxaMat, uniqTax[[xx]])
+    }
+    uniqTax <- taxaMat
+  }
+  
+  tax.mat <- uniqTax[uniqTax$taxon_name %in% clades, c("order","family")]
+  
+  tax.mat$Percent.Species <- tax.mat$No.Species <- tax.mat$Sampled.Species <- tax.mat$Percent.Genera <- tax.mat$No.Genera <- tax.mat$Sampled.Genera  <-  NA
+  
+  for(xx in tax.mat$family)
+  {
+    uniqTax.temp <- uniqTax[uniqTax$family %in% xx,]
+    tax.mat$No.Genera[tax.mat$family %in% xx] <- length(unique(uniqTax.temp$genus[uniqTax.temp$family %in% xx])) - 1 #-1 is used to remove the entry for blank genera (usually from higher level taxa in database)
+                                                                
+    tax.mat$No.Species[tax.mat$family %in% xx] <- length(unique(uniqTax.temp$accepted_name[uniqTax.temp$genus != "" & uniqTax.temp$accepted_name != uniqTax.temp$genus]))
+  }
+  
+  ##2) compare that list versus a list for the taxa that I have measurements for individual teeth (excludes image only or specimens with tooth row measurements but not individual teeth)
+  #### cleanup the data.mat to remove extra columns
+  data.mat <- data.mat[, colnames(data.mat)[1:66]]
+  data.mat <- data.mat[!data.mat$Catalog.Number %in% "Accepted Names PBDB",]
+  
+  data.mat$accepted_name <- paste(data.mat$Accepted.Genus, data.mat$Accepted.Species, sep = " ")
+  
+  ####remove rows that lack measurements
+  data.mat <- data.mat[!apply(is.na(data.mat[,measure.colnames]) | data.mat[,measure.colnames] == "", 1, all),]
+ 
+  sample.genera <- unique(data.mat$Accepted.Genus)
+  
+  sample.species <- unique(data.mat$accepted_name[!gsub(pattern = "[[:space:]]", replacement = "", x = data.mat$accepted_name) %in% data.mat$Accepted.Genus])
+ 
+  for(xx in tax.mat$family)
+  {
+    uniqTax.temp <- uniqTax[uniqTax$family %in% xx,]
+    tax.mat$Sampled.Genera[tax.mat$family %in% xx] <- length(unique(uniqTax.temp$genus[uniqTax.temp$genus %in% sample.genera]))-1
+    
+    tax.mat$Sampled.Species[tax.mat$family %in% xx] <- length(unique(uniqTax.temp$accepted_name[uniqTax.temp$accepted_name %in% sample.species]))
+  }
+
+  tax.mat$Percent.Genera <- (tax.mat$Sampled.Genera/tax.mat$No.Genera)*100
+  tax.mat$Percent.Species <- (tax.mat$Sampled.Species/tax.mat$No.Species)*100
+  
+  output.list$AllTaxa <- tax.mat
+  
+  ###########################################################################################################################################################################
+  ##3) Generate a table for species with occs in database
+  tax.mat$Percent.Species <- tax.mat$No.Species <- tax.mat$Sampled.Species <- tax.mat$Percent.Genera <- tax.mat$No.Genera <- tax.mat$Sampled.Genera  <-  NA
+  
+  for(xx in tax.mat$family)
+  {
+    uniqTax.temp <- uniqTax[uniqTax$family %in% xx & (uniqTax$accepted_name %in% occs$accepted_name | uniqTax$accepted_name %in% occs$genus),]
+    tax.mat$No.Genera[tax.mat$family %in% xx] <- length(unique(uniqTax.temp$genus[uniqTax.temp$family %in% xx])) #-1 is used to remove the entry for blank genera (usually from higher level taxa in database)
+    
+    tax.mat$No.Species[tax.mat$family %in% xx] <- length(unique(uniqTax.temp$accepted_name[uniqTax.temp$genus != "" & uniqTax.temp$accepted_name != uniqTax.temp$genus]))
+  }
+   
+  sample.genera <- unique(data.mat$Accepted.Genus[data.mat$accepted_name %in% occs$accepted_name])
+  
+  sample.species <- unique(data.mat$accepted_name[!gsub(pattern = "[[:space:]]", replacement = "", x = data.mat$accepted_name) %in% data.mat$Accepted.Genus])
+  sample.species <- sample.species[sample.species %in% occs$accepted_name]
+  
+  for(xx in tax.mat$family)
+  {
+    uniqTax.temp <- uniqTax[uniqTax$family %in% xx & (uniqTax$accepted_name %in% occs$accepted_name | uniqTax$accepted_name %in% occs$genus),]
+    tax.mat$Sampled.Genera[tax.mat$family %in% xx] <- length(unique(uniqTax.temp$genus[uniqTax.temp$genus %in% sample.genera]))
+    
+    tax.mat$Sampled.Species[tax.mat$family %in% xx] <- length(unique(uniqTax.temp$accepted_name[uniqTax.temp$accepted_name %in% sample.species]))
+  }
+  
+  tax.mat$Percent.Genera <- (tax.mat$Sampled.Genera/tax.mat$No.Genera)*100
+  tax.mat$Percent.Species <- (tax.mat$Sampled.Species/tax.mat$No.Species)*100
+  
+  output.list$OccsOnly <- tax.mat
+  
+  #get taxa that are missing
+  
+  UnSampled.Taxa<- list()
+  
+  for(xx in tax.mat$family)
+  {
+    uniqTax.temp <- uniqTax[uniqTax$family %in% xx & (uniqTax$accepted_name %in% occs$accepted_name) & !(uniqTax$accepted_name %in% data.mat$accepted_name | uniqTax$accepted_name %in% data.mat$Accepted.Genus),]
+    UnSampled.Genera <- uniqTax.temp[!uniqTax.temp$genus %in% unique(sample.genera),]
+    
+    UnSampled.Species <- uniqTax.temp[!uniqTax.temp$accepted_name %in% unique(sample.species),]
+    
+    UnSampled.Taxa[[xx]] <- unique(rbind(UnSampled.Genera, UnSampled.Species))
+  }
+  
+  if(length(UnSampled.Taxa) == 1) { UnSampled.Taxa <- rbind(UnSampled.Taxa[[1]])
+  }
+  if(length(UnSampled.Taxa) == 2) { UnSampled.Taxa <- rbind(UnSampled.Taxa[[1]], UnSampled.Taxa[[2]])
+  }
+  if(length(UnSampled.Taxa) > 2) { 
+    taxaMat <- rbind(UnSampled.Taxa[[1]], UnSampled.Taxa[[2]])
+    for(xx in seq(3, length(UnSampled.Taxa),1))
+    {
+      taxaMat <- rbind(taxaMat, UnSampled.Taxa[[xx]])
+    }
+    UnSampled.Taxa <- taxaMat
+  }
+  
+  if(!is.null(save.file)) write.csv(UnSampled.Taxa, file = save.file)
+  
+  output.list$MissingTaxa <- UnSampled.Taxa
+  
+  ###########################################################################################################################################################################
+  ##4) Generate a table for species without occs in database
+ # tax.mat$Percent.Species <- tax.mat$No.Species <- tax.mat$Sampled.Species <- tax.mat$Percent.Genera <- tax.mat$No.Genera <- tax.mat$Sampled.Genera  <-  NA
+  
+#  for(xx in tax.mat$family)
+#  {
+#    prev.uniqTax.temp <- uniqTax[uniqTax$family %in% xx & (uniqTax$accepted_name %in% occs$accepted_name | uniqTax$accepted_name %in% occs$genus),]
+#    uniqTax.temp <- uniqTax[uniqTax$family %in% xx & !(uniqTax$accepted_name %in% occs$accepted_name | uniqTax$accepted_name %in% occs$genus) & !(uniqTax$genus %in% prev.uniqTax.temp$genus),]
+    
+#    tax.mat$No.Genera[tax.mat$family %in% xx] <- length(unique(uniqTax.temp$genus[uniqTax.temp$family %in% xx])) #-1 is used to remove the entry for blank genera (usually from higher level taxa in database)
+    
+#    tax.mat$No.Species[tax.mat$family %in% xx] <- length(unique(uniqTax.temp$accepted_name[uniqTax.temp$genus != "" & uniqTax.temp$accepted_name != uniqTax.temp$genus]))
+#  }
+  
+#  sample.genera <- unique(data.mat$Accepted.Genus[!data.mat$accepted_name %in% occs$accepted_name])
+  
+#  sample.species <- unique(data.mat$accepted_name[!gsub(pattern = "[[:space:]]", replacement = "", x = data.mat$accepted_name) %in% data.mat$Accepted.Genus])
+#  sample.species <- sample.species[!sample.species %in% occs$accepted_name]
+  
+#  for(xx in tax.mat$family)
+#  {
+#    uniqTax.temp <- uniqTax[uniqTax$family %in% xx,]
+#    tax.mat$Sampled.Genera[tax.mat$family %in% xx] <- length(unique(uniqTax.temp$genus[uniqTax.temp$genus %in% sample.genera]))
+    
+#    tax.mat$Sampled.Species[tax.mat$family %in% xx] <- length(unique(uniqTax.temp$accepted_name[uniqTax.temp$accepted_name %in% sample.species]))
+ # }
+  
+#  tax.mat$Percent.Genera <- (tax.mat$Sampled.Genera/tax.mat$No.Genera)*100
+#  tax.mat$Percent.Species <- (tax.mat$Sampled.Species/tax.mat$No.Species)*100
+  
+#  output.list$NoOccs <- tax.mat
+  
+  return(output.list)
+}
+
+
