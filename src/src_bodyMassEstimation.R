@@ -89,28 +89,28 @@ getBodyMassVectorFromMeasureMatAllMeasures <- function(measure.mat, linked.files
 	#######################################################################################################################################
 	##### get regression parameters for measurements not in published regression
 	#######################################################################################################################################
-	other_m <- c("P2_L", "P2_W", "P3_L", "P3_W", "P4_L", "P4_W", "M1_L", "M1_W", "M3_L", "M3_W")
- 	other_m <- colnames(measure.mat[,sapply(measure.mat, is.numeric)])[!colnames(measure.mat[,sapply(measure.mat, is.numeric)]) %in% theseColumns]
+#	other_m <- c("P2_L", "P2_W", "P3_L", "P3_W", "P4_L", "P4_W", "M1_L", "M1_W", "M3_L", "M3_W")
+# 	other_m <- colnames(measure.mat[,sapply(measure.mat, is.numeric)])[!colnames(measure.mat[,sapply(measure.mat, is.numeric)]) %in% theseColumns]
 
-	otherReg <- lapply(X=names(regList), FUN=function(this.group) {
-		shortMat <- measure.mat[rownames(measure.mat) %in% rownames(bm) & measure.mat$reg==this.group, other_m]
-		short.bm <- bm[rownames(bm) %in% rownames(shortMat),]
-		apply(log10(shortMat), MARGIN=2, FUN=function(x, bm) {
-			lm(bm ~ x) } , bm=short.bm ) 
-		} )
+#	otherReg <- lapply(X=names(regList), FUN=function(this.group) {
+#		shortMat <- measure.mat[rownames(measure.mat) %in% rownames(bm) & measure.mat$reg==this.group, other_m]
+#		short.bm <- bm[rownames(bm) %in% rownames(shortMat),]
+#		apply(log10(shortMat), MARGIN=2, FUN=function(x, bm) {
+#			lm(bm ~ x) } , bm=short.bm ) 
+#		} )
 
-	names(otherReg) <- names(regList)
+#	names(otherReg) <- names(regList)
 
-	otherList <- lapply(otherReg, function(thisReg) t(sapply(thisReg, function(x) c(coef(x), summary(x)$sigma))))
+#	otherList <- lapply(otherReg, function(thisReg) t(sapply(thisReg, function(x) c(coef(x), summary(x)$sigma))))
 	
 	#######################################################################################################################################
 	##### merge regression parameters for unpublished measurements (otherList) with those from published (regList)
 	#######################################################################################################################################
-	for (i in seq_along(regList)) {
-		colnames(otherList[[i]]) <- c("intercept", "slope", "stdev")
-		otherList[[i]] <- data.frame(m=rownames(otherList[[i]]), otherList[[i]], stringsAsFactors=FALSE)
-		regList[[i]] <- merge(regList[[i]], otherList[[i]], all=TRUE, sort=FALSE)
-	}
+#	for (i in seq_along(regList)) {
+#		colnames(otherList[[i]]) <- c("intercept", "slope", "stdev")
+#		otherList[[i]] <- data.frame(m=rownames(otherList[[i]]), otherList[[i]], stringsAsFactors=FALSE)
+#		regList[[i]] <- merge(regList[[i]], otherList[[i]], all=TRUE, sort=FALSE)
+#	}
 
 	#######################################################################################################################################
 	##### recalculate body masses of all taxa with all (merged) measurements

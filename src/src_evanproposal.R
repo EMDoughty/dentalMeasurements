@@ -1520,7 +1520,8 @@ data.coverage_v2 <- function(clades, clade.level = "family", data.mat, occs, mea
   ####remove rows that lack measurements
   data.mat <- data.mat[!apply(is.na(data.mat[,measure.colnames]) | data.mat[,measure.colnames] == "", 1, all),]
  
-  sample.genera <- unique(data.mat$Accepted.Genus)
+  sample.genera <- unique(c(data.mat$Accepted.Genus, 
+                          data.mat$Accepted.Genus[!gsub(pattern = "[[:space:]]", replacement = "", x = data.mat$accepted_name) %in% data.mat$Accepted.Genus]))
   
   sample.species <- unique(data.mat$accepted_name[!gsub(pattern = "[[:space:]]", replacement = "", x = data.mat$accepted_name) %in% data.mat$Accepted.Genus])
  
