@@ -7,10 +7,11 @@ get.speciesMeans <- function(data,
                              reg.vec = NA, 
                              bodyMass = NA, 
                              col = NA, 
-                             fam.symbol = 1, 
+                             fam.symbol = 1,
+                             append.Mat <- FALSE,
                              complete = TRUE)
 {
-  append.Mat <- FALSE
+ 
   if(!is.na(species.Mat)) append.mat <- TRUE
   
   uniq.sp <- unique(data$taxon)
@@ -98,15 +99,18 @@ getMeasureMatCondylarths<- function(data.raw,
   ##indet specimens will be fine due sp. designation
   archaic.ung <- archaic.ung[!archaic.ung$Verbatim.Species %in% "",]
   
-  archaic.ung$taxon <- paste(archaic.ung$Verbatim.Genus, archaic.ung$Verbatim.Species, sep=" ")
+ # archaic.ung$taxon <- paste(archaic.ung$Verbatim.Genus, archaic.ung$Verbatim.Species, sep=" ")
   
-  archaic.ung$taxon <- getCurrentTaxa(tax.vec = archaic.ung$taxon)
+ #  archaic.ung$taxon <- getCurrentTaxa(tax.vec = archaic.ung$taxon)
   
   
   #need to clean function of fam.name and other sorting aspects====make a it a general aggregation function
-  archaic.Mat <- get.speciesMeans(data = archaic.ung, measure.colnames = measure.colnames, meta.colnames = meta.colnames, 
-                                  species.Mat = NA, fam.name = c("Arctocyonidae", "Chriacidae", "Hyopsodontidae","Periptychidae","Phenacodontidae") , col = "darkgreen", 
-                                  fam.symbol = 25, complete = FALSE)
+ # archaic.Mat <- get.speciesMeans(data = archaic.ung, measure.colnames = measure.colnames, meta.colnames = meta.colnames, 
+ #                                species.Mat = NA, fam.name = c("Arctocyonidae", "Chriacidae", "Hyopsodontidae","Periptychidae","Phenacodontidae"), 
+ #                                 col = "darkgreen", 
+#                                fam.symbol = 25, complete = FALSE)
+  
+  arhcaic.Mat <- getSingleSpeciesMatrix_Archaic(archaic.ung)
   
   rownames(archaic.Mat) <- gsub(pattern = "[[:space:]]", replacement = "_", x = rownames(archaic.Mat))
   
@@ -1634,4 +1638,48 @@ data.coverage_v2 <- function(clades, clade.level = "family", data.mat, occs, mea
   return(output.list)
 }
 
+getSingleSpeciesMatrix_Archaic <- function(specimen.mat = NULL) {
+  #compile and label dental measurments for specimens
+ 
+  specimen.mat$species <- paste(specimen.mat$Accepted.Genus, specimen.mat$Accepted.Species, sep= " ")
+  
+  #need to drop duplicate entries from the dataset
+  specimen.mat <- specimen.mat[!specimen.mat$Include %in% FALSE,]
+  
+  specimen.mat[sapply(specimen.mat, is.nan)] <- NA
+  specimen.mat$species <- getCurrentTaxa(tax.vec = specimen.mat$species)
+  specimen.mat$species <- gsub(pattern = "[[:space:]]", replacement = "_", x = specimen.mat$species)
+  
+  upLabels <- c("P2_L", "P2_TrigW", "P2_TalW", "P2_W", 
+                "P3_L", "P3_TrigW", "P3_TalW", "P3_W", 
+                "P4_L","P4_TrigW", "P4_TalW", "P4_W", 
+                "M1_L", "M1_TrigW", "M1_TalW","M1_W", 
+                "M2_L", "M2_TrigW", "M2_TalW", "M2_W", 
+                "M3_L", "M3_TrigW", "M3_TalW", "M3_W") #\P2_L\",\"P2_W\","
+  loLabels <- casefold(upLabels)
+  
+  #remove symbols from measurement section (?, *, etc.)
+  for(xx in c(upLabels, loLabels))
+  {
+    specimen.mat[,xx] <- as.numeric(gsub("\\*", "",  as.character(specimen.mat[,xx])))
+    specimen.mat[,xx] <- as.numeric(gsub("*", "",  as.character(specimen.mat[,xx])))
+    specimen.mat[,xx] <- as.numeric(str_remove(as.character(specimen.mat[,xx]),"\\*"))
+    specimen.mat[,xx] <- as.numeric(gsub("\\?", "",  as.character(specimen.mat[,xx])))
+  }
+  
+  ############################
+  #### note that specimens are aggregated by their medians, so as to minimize the effect of outlier measurements
+  ############################
+  
+  # measure.mat <- aggregate(specimen.mat[, c(upLabels, loLabels)], by = list(taxon = specimen.mat$species), mean, na.rm = TRUE)
+  measure.mat <- aggregate(specimen.mat[, c(upLabels, loLabels)], by = list(taxon = specimen.mat$species), median, na.rm = TRUE)
+  
+  #measure.mat[, sapply(measure.mat, is.numeric)] <- measure.mat[, sapply(measure.mat, is.numeric)]#/10 #converts mm measurements to cm for compatibility with Janis regressions
+  #measure.mat <- transform(measure.mat, p4_a = p4_l * p4_w, m1_a = m1_l * m1_w, m2_a = m2_l * m2_w, m3_a = m3_l * m3_w, M2_A = M2_L * M2_W)
+  measure.mat[sapply(measure.mat, is.nan)] <- NA
+  
+  rownames(measure.mat) <- measure.mat$taxon
+  
+  return(measure.mat)
+}
 
