@@ -1641,17 +1641,77 @@ getSingleSpeciesMatrix_Archaic <- function(specimen.mat = NULL) {
   return(measure.mat)
 }
 
-sensitivity.numberReps <- function(countCube = NULL, number.reps = 1000)
+sensitivity.numberReps <- function(countCube_herb = NULL, countCube_pred = NULL, number.reps = 1000)
 {
   
-  for(xx in seq(number.reps,dim(countCube)[3], number.reps))
+  #look at how # reps alters
+  ##1) the number of species in each category per bin
+  ##2) the variance of occs in bin when doing subsampling
+  ##3) how the correlation coef. of the median assemblage changes with reps
+  
+  
+  countBox <- list()
+  prop <- list()
+  
+  rep.test <- seq(number.reps,dim(countCube_herb)[3], number.reps)
+  
+  for(xx in seq(1, length(rep.test), 1))
   {
-    prop_herb <- t(apply(countCube[,,c(1:xx)], c(1,2), median, na.rm=TRUE))
+    countBox_herb <- apply(countCube_herb[,,c(1,rep.test[xx])], c(1,2), quantile, probs=c(0.025, 0.5, 0.975), na.rm=TRUE) 
+    countBox_pred <- apply(countCube_pred[,,c(1,rep.test[xx])], c(1,2), quantile, probs=c(0.025, 0.5, 0.975), na.rm=TRUE) 
+    
+    singleBox <- list(herb=countBox_herb, pred=countBox_pred)
+    
+    countBox[[xx]] <- singleBox
+    
+    ##############################################################
+    prop_herb <- t(apply(countCube_herb[,,c(1,rep.test[xx])], c(1,2), median, na.rm=TRUE))
     colnames(prop_herb)[colnames(prop_herb)==""] <- "indeterminate"
     
-    countBox_herb <- apply(countCube_herb, c(1,2), quantile, probs=c(0.025, 0.5, 0.975), na.rm=TRUE) 
+    prop_pred <- t(apply(countCube_pred[,,c(1,rep.test[xx])], c(1,2), median, na.rm=TRUE))
+    colnames(prop_pred)[colnames(prop_pred)==""] <- "indeterminate"
+    
+    singleProp <- list(herb=prop_herb, pred=prop_pred)
+    
+    prop[[xx]] <- singleProp
   }
-  countCube
+  
+  ### raw
+  par(mfrow = c(1,2))
+  ungulates <- prop_herb
+  predators <- prop_pred
+  
+  corr.results.both <- cor(predators, ungulates, method = "spearman")
+ 
+ #1st Dif
+  pred.prey.DivFirstDiff <- getDiversity1stDiff(data.mat = t(prop_pred), intervals = intervals)
+  UngualteBMGroupDiv_FirstDiff <- getDiversity1stDiff(data.mat = t(prop_herb), intervals = intervals)
+  
+  ungulates <- t(as.matrix(UngualteBMGroupDiv_FirstDiff))
+  predators <- t(as.matrix(pred.prey.DivFirstDiff))
+
+  corr.results.both <- cor(predators, ungulates, method = "spearman")
+  
+  
+  
+   
+  return()
+}
+
+sensitivity.temporalBinning <- function() {
   
   return()
 }
+
+sensitivity.bodyMassBinning <- function() {
+  
+  return()
+}
+
+estiamteMissingDiversity_Alroy <- function() {
+  
+  return()
+}
+
+
+
