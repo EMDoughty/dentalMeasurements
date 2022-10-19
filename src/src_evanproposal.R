@@ -99,18 +99,7 @@ getMeasureMatCondylarths<- function(data.raw,
   ##indet specimens will be fine due sp. designation
   archaic.ung <- archaic.ung[!archaic.ung$Verbatim.Species %in% "",]
   
- # archaic.ung$taxon <- paste(archaic.ung$Verbatim.Genus, archaic.ung$Verbatim.Species, sep=" ")
-  
- #  archaic.ung$taxon <- getCurrentTaxa(tax.vec = archaic.ung$taxon)
-  
-  
-  #need to clean function of fam.name and other sorting aspects====make a it a general aggregation function
- # archaic.Mat <- get.speciesMeans(data = archaic.ung, measure.colnames = measure.colnames, meta.colnames = meta.colnames, 
- #                                species.Mat = NA, fam.name = c("Arctocyonidae", "Chriacidae", "Hyopsodontidae","Periptychidae","Phenacodontidae"), 
- #                                 col = "darkgreen", 
-#                                fam.symbol = 25, complete = FALSE)
-  
-  arhcaic.Mat <- getSingleSpeciesMatrix_Archaic(archaic.ung)
+  archaic.Mat <- getSingleSpeciesMatrix_Archaic(archaic.ung)
   
   rownames(archaic.Mat) <- gsub(pattern = "[[:space:]]", replacement = "_", x = rownames(archaic.Mat))
   
@@ -123,29 +112,11 @@ getMeasureMatCondylarths<- function(data.raw,
   bigList.check <- bigList.check[order(bigList.check$order, bigList.check$family, bigList.check$genus, bigList.check$accepted_name),]
   shortFam <- sort(unique(bigList.check$family[bigList.check$family %in% focal.archaic]))	
   
-  #write.csv(bigList.check, "/Users/emdoughty/Dropbox/Code/PBDB_Condylartha.csv")
-  
-  #bigList.check$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = bigList.check$accepted_name)
-  
-  #compare .mat with occs
-  #determine if I have species not in PBDB
-  
-  #complete cases
-  
-  #no. species per dental measure
-  #no. species no current measures
-  
-  #what species am i missing measures for
-  #bigList.check$accepted_name[!bigList.check$accepted_name %in% rownames(archaic.Mat)]
-  #rownames(archaic.Mat)[!rownames(archaic.Mat) %in% bigList.check$accepted_name]
-  #set so only those with full species name is listed
   
   archaic.Mat <- as.data.frame(archaic.Mat)
   archaic.Mat$accepted_name<- rownames(archaic.Mat)
   
-  #match(rownames(archaic.Mat), bigList.check$accepted_name)
-  
-  archaic.merg <- merge(archaic.Mat, bigList.check, by = "accepted_name", all.x = TRUE) #not sure what this line is for
+  archaic.merg <- merge(archaic.Mat, bigList.check, by = "accepted_name", all.x = TRUE, sort = FALSE) #not sure what this line is for
   
   
   order.col.name <- c("accepted_name", "order", "family", "genus", 
@@ -162,6 +133,7 @@ getMeasureMatCondylarths<- function(data.raw,
  # data.coverage(archaic.merg,bigList.check,focal.archaic,"family")
   
   colnames(archaic.merg)[colnames(archaic.merg) %in% "accepted_name"] <- "taxon"
+  order.col.name[order.col.name %in% "accepted_name"] <- "taxon"
   rownames(archaic.merg) <- archaic.merg$taxon
   
   archaic.merg <- getDasmuthMeasures(measure.mat = archaic.merg) # function gets area measurements so Dasmuth 1990 regressions work
@@ -174,28 +146,14 @@ getMeasureMatCondylarths<- function(data.raw,
   archaic.merg <- approxBodyMassDasmuth(measure.mat = archaic.merg, fill.missing = FALSE)
   #}
   
-#  archaic.merg$col <- archaic.merg$family
-#  archaic.merg$symbol <- archaic.merg$family
-  
-#  archaic.merg$col <- gsub("Phenacodontidae","darkgreen", archaic.merg$col)
-#  archaic.merg$col <- gsub("Arctocyonidae","magenta", archaic.merg$col)
-#  archaic.merg$col <- gsub("Periptychidae","darkblue", archaic.merg$col)
-#  archaic.merg$col <- gsub("Hyopsodontidae","darkgrey", archaic.merg$col)
-  
-#  archaic.merg$symbol <- gsub("Phenacodontidae",8, archaic.merg$symbol)
-#  archaic.merg$symbol <- gsub("Arctocyonidae", 8, archaic.merg$symbol)
-#  archaic.merg$symbol <- gsub("Periptychidae", 8, archaic.merg$symbol)
-#  archaic.merg$symbol <- gsub("Hyopsodontidae",8, archaic.merg$symbol)
-  
   #measure.culled <- merge(measure.culled, plot.det, by = "family", all = FALSE, no.dups = TRUE)
+  #archaic.merg <- archaic.merg[,c(order.col.name, "reg.vec", "bodyMass")]
+  
   archaic.merg <- archaic.merg[,col.order]
   rownames(archaic.merg) <- archaic.merg$taxon
-  log.colnames <- c("P2_L","P2_W","P3_L","P3_W","P4_L","P4_W","M1_L","M1_W","M2_L","M2_W","M3_L","M3_W",
-                    "p2_l","p2_w","p3_l","p3_w","p4_l","p4_w","m1_l","m1_w","m2_l","m2_w","m3_l","m3_w", 
-                    "p4_a", "m1_a", "m2_a", "m3_a", "M2_A")
- 
-  #archaic.temp[,log.colnames] <- log10(archaic.temp[,log.colnames])
-  archaic.merg[,log.colnames] <- archaic.merg[,log.colnames]/10 #get dental measures into centimeters
+  
+  #log.colnames <- measure.colnames 
+  #archaic.merg[,log.colnames] <- archaic.merg[,log.colnames]#/10 #get dental measures into centimeters
   
  # archaic.temp[,"bodyMass"] <- log10(archaic.temp[,"bodyMass"])
   
@@ -1683,3 +1641,17 @@ getSingleSpeciesMatrix_Archaic <- function(specimen.mat = NULL) {
   return(measure.mat)
 }
 
+sensitivity.numberReps <- function(countCube = NULL, number.reps = 1000)
+{
+  
+  for(xx in seq(number.reps,dim(countCube)[3], number.reps))
+  {
+    prop_herb <- t(apply(countCube[,,c(1:xx)], c(1,2), median, na.rm=TRUE))
+    colnames(prop_herb)[colnames(prop_herb)==""] <- "indeterminate"
+    
+    countBox_herb <- apply(countCube_herb, c(1,2), quantile, probs=c(0.025, 0.5, 0.975), na.rm=TRUE) 
+  }
+  countCube
+  
+  return()
+}
