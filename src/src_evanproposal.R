@@ -1649,16 +1649,18 @@ sensitivity.numberReps <- function(countCube_herb = NULL, countCube_pred = NULL,
   ##2) the variance of occs in bin when doing subsampling
   ##3) how the correlation coef. of the median assemblage changes with reps
   
-  
   countBox <- list()
   prop <- list()
   
   rep.test <- seq(number.reps,dim(countCube_herb)[3], number.reps)
   
+  plot(rowMeans(intervals), prop_herb[,1], col = "red", type = "n", ylim = c(0,50),
+       xlab = "Time (Ma)", ylab = "Number of Taxa", main = "Median Number of Taxa Per Time Bin")
+  
   for(xx in seq(1, length(rep.test), 1))
   {
-    countBox_herb <- apply(countCube_herb[,,c(1,rep.test[xx])], c(1,2), quantile, probs=c(0.025, 0.5, 0.975), na.rm=TRUE) 
-    countBox_pred <- apply(countCube_pred[,,c(1,rep.test[xx])], c(1,2), quantile, probs=c(0.025, 0.5, 0.975), na.rm=TRUE) 
+    countBox_herb <- apply(countCube_herb[,,c(1,rep.test[xx])], c(1,2), quantile, probs=c(0, 0.025, 0.5, 0.975, 1), na.rm=TRUE) 
+    countBox_pred <- apply(countCube_pred[,,c(1,rep.test[xx])], c(1,2), quantile, probs=c(0, 0.025, 0.5, 0.975, 1), na.rm=TRUE) 
     
     singleBox <- list(herb=countBox_herb, pred=countBox_pred)
     
@@ -1674,44 +1676,64 @@ sensitivity.numberReps <- function(countCube_herb = NULL, countCube_pred = NULL,
     singleProp <- list(herb=prop_herb, pred=prop_pred)
     
     prop[[xx]] <- singleProp
+    
+    lines(rowMeans(intervals), prop_herb[,1], col = alphaColor("red", 0.05))
+    lines(rowMeans(intervals), prop_herb[,2], col = alphaColor("orange", 0.05))
+    lines(rowMeans(intervals), prop_herb[,3], col = alphaColor("green", 0.05))
+    lines(rowMeans(intervals), prop_herb[,4], col = alphaColor("blue", 0.05))
+    lines(rowMeans(intervals), prop_herb[,5], col = alphaColor("purple", 0.05))
   }
   
-  ### raw
-  par(mfrow = c(1,2))
-  ungulates <- prop_herb
-  predators <- prop_pred
+  #median across all replicates
+  lines(rowMeans(intervals), prop_herb[,1], col = alphaColor("red",1))
+  lines(rowMeans(intervals), prop_herb[,2], col = alphaColor("orange", 1))
+  lines(rowMeans(intervals), prop_herb[,3], col = alphaColor("green", 1))
+  lines(rowMeans(intervals), prop_herb[,4], col = alphaColor("blue", 1))
+  lines(rowMeans(intervals), prop_herb[,5], col = alphaColor("purple", 1))
   
-  corr.results.both <- cor(predators, ungulates, method = "spearman")
- 
- #1st Dif
-  pred.prey.DivFirstDiff <- getDiversity1stDiff(data.mat = t(prop_pred), intervals = intervals)
-  UngualteBMGroupDiv_FirstDiff <- getDiversity1stDiff(data.mat = t(prop_herb), intervals = intervals)
+  #variance in correl coef over different rep nvalues
+  ##show that variance stabilizes
+  corr.results.both <- vector()
+  var.corr <- vector()
   
-  ungulates <- t(as.matrix(UngualteBMGroupDiv_FirstDiff))
-  predators <- t(as.matrix(pred.prey.DivFirstDiff))
-
-  corr.results.both <- cor(predators, ungulates, method = "spearman")
+  #x-axis is number of reps
+  #y-axis is the variance in correlation coef
+  plot(0, 0, type = "n", xlim = c(0, dim(countCube_herb)[3]), ylim = c(-0.005,0.005),
+       main = "Variance of Spearmen Correlation Coefficient for Antelope and Wolf categories", xlab = "Number of Replicates", ylab = "Variance of Correlation Coefficient")
   
+  for(xx in seq(1, length(rep.test), 1))
+  {
+    ##############################################################
+    prop_herb <- t(apply(countCube_herb[,,c(1,rep.test[xx])], c(1,2), median, na.rm=TRUE))
+    colnames(prop_herb)[colnames(prop_herb)==""] <- "indeterminate"
+    
+    prop_pred <- t(apply(countCube_pred[,,c(1,rep.test[xx])], c(1,2), median, na.rm=TRUE))
+    colnames(prop_pred)[colnames(prop_pred)==""] <- "indeterminate"
+    
+    ungulates <- prop_herb
+    predators <- prop_pred
+    
+    all.val <- cbind(predators, ungulates)
+    
+    corr.results.both[xx] <- cor(predators, ungulates, method = "spearman")[4,3] #for antelope vs wolf sized critters
+    
+    var.corr[xx] <- var(corr.results.both)
+    
+  }
+  #plot(seq(1, dim(countCube_herb)[3],1), corr.results.both, col = alphaColor("black",0.1))
+  #abline(h=median(corr.results.both))
   
-  
-   
-  return()
-}
-
-sensitivity.temporalBinning <- function() {
-  
-  return()
-}
-
-sensitivity.bodyMassBinning <- function() {
+  plot(seq(1, dim(countCube_herb)[3],1), var.corr, col = alphaColor("green",0.5))
+  lines(seq(1, dim(countCube_herb)[3],1), var.corr, col = "darkgreen")
   
   return()
 }
 
 estiamteMissingDiversity_Alroy <- function() {
+  getThreeTimerRichnessFromOneOccList()
+  getThreeTimerRatesFromCounts()
   
   return()
 }
-
 
 
