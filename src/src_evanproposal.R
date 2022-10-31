@@ -1641,91 +1641,150 @@ getSingleSpeciesMatrix_Archaic <- function(specimen.mat = NULL) {
   return(measure.mat)
 }
 
-sensitivity.numberReps <- function(countCube_herb = NULL, countCube_pred = NULL, number.reps = 1000)
+sensitivity.numberReps <- function(countCube_herb = NULL, countCube_pred = NULL, number.reps = 1000, 
+                                   type = c("medianRichnessInBin","var.CorrelCoef.Single", "var.CorrelCoef.All"), var.CorrelCoef.Single = c(1,1),
+                                   ylim = c(-1,1))
 {
   
   #look at how # reps alters
   ##1) the number of species in each category per bin
   ##2) the variance of occs in bin when doing subsampling
   ##3) how the correlation coef. of the median assemblage changes with reps
-  
-  countBox <- list()
-  prop <- list()
-  
   rep.test <- seq(number.reps,dim(countCube_herb)[3], number.reps)
   
-  plot(rowMeans(intervals), prop_herb[,1], col = "red", type = "n", ylim = c(0,50),
-       xlab = "Time (Ma)", ylab = "Number of Taxa", main = "Median Number of Taxa Per Time Bin")
-  
-  for(xx in seq(1, length(rep.test), 1))
+  if(type %in% "medianRichnessInBin")
   {
-    countBox_herb <- apply(countCube_herb[,,c(1,rep.test[xx])], c(1,2), quantile, probs=c(0, 0.025, 0.5, 0.975, 1), na.rm=TRUE) 
-    countBox_pred <- apply(countCube_pred[,,c(1,rep.test[xx])], c(1,2), quantile, probs=c(0, 0.025, 0.5, 0.975, 1), na.rm=TRUE) 
+    countBox <- list()
+    prop <- list()
     
-    singleBox <- list(herb=countBox_herb, pred=countBox_pred)
+
     
-    countBox[[xx]] <- singleBox
+    plot(rowMeans(intervals), prop_herb[,1], col = "red", type = "n", ylim = c(0,50),
+         xlab = "Time (Ma)", ylab = "Number of Taxa", main = "Median Number of Taxa Per Time Bin")
     
-    ##############################################################
-    prop_herb <- t(apply(countCube_herb[,,c(1,rep.test[xx])], c(1,2), median, na.rm=TRUE))
-    colnames(prop_herb)[colnames(prop_herb)==""] <- "indeterminate"
+    for(xx in seq(1, length(rep.test), 1))
+    {
+      countBox_herb <- apply(countCube_herb[,,c(1,rep.test[xx])], c(1,2), quantile, probs=c(0, 0.025, 0.5, 0.975, 1), na.rm=TRUE) 
+      countBox_pred <- apply(countCube_pred[,,c(1,rep.test[xx])], c(1,2), quantile, probs=c(0, 0.025, 0.5, 0.975, 1), na.rm=TRUE) 
+      
+      singleBox <- list(herb=countBox_herb, pred=countBox_pred)
+      
+      countBox[[xx]] <- singleBox
+      
+      ##############################################################
+      prop_herb <- t(apply(countCube_herb[,,c(1,rep.test[xx])], c(1,2), median, na.rm=TRUE))
+      colnames(prop_herb)[colnames(prop_herb)==""] <- "indeterminate"
+      
+      prop_pred <- t(apply(countCube_pred[,,c(1,rep.test[xx])], c(1,2), median, na.rm=TRUE))
+      colnames(prop_pred)[colnames(prop_pred)==""] <- "indeterminate"
+      
+      singleProp <- list(herb=prop_herb, pred=prop_pred)
+      
+      prop[[xx]] <- singleProp
+      
+      lines(rowMeans(intervals), prop_herb[,1], col = alphaColor("red", 0.05))
+      lines(rowMeans(intervals), prop_herb[,2], col = alphaColor("orange", 0.05))
+      lines(rowMeans(intervals), prop_herb[,3], col = alphaColor("green", 0.05))
+      lines(rowMeans(intervals), prop_herb[,4], col = alphaColor("blue", 0.05))
+      lines(rowMeans(intervals), prop_herb[,5], col = alphaColor("purple", 0.05))
+    }
     
-    prop_pred <- t(apply(countCube_pred[,,c(1,rep.test[xx])], c(1,2), median, na.rm=TRUE))
-    colnames(prop_pred)[colnames(prop_pred)==""] <- "indeterminate"
+    #median across all replicates
+    lines(rowMeans(intervals), prop_herb[,1], col = alphaColor("red",1))
+    lines(rowMeans(intervals), prop_herb[,2], col = alphaColor("orange", 1))
+    lines(rowMeans(intervals), prop_herb[,3], col = alphaColor("green", 1))
+    lines(rowMeans(intervals), prop_herb[,4], col = alphaColor("blue", 1))
+    lines(rowMeans(intervals), prop_herb[,5], col = alphaColor("purple", 1))
     
-    singleProp <- list(herb=prop_herb, pred=prop_pred)
-    
-    prop[[xx]] <- singleProp
-    
-    lines(rowMeans(intervals), prop_herb[,1], col = alphaColor("red", 0.05))
-    lines(rowMeans(intervals), prop_herb[,2], col = alphaColor("orange", 0.05))
-    lines(rowMeans(intervals), prop_herb[,3], col = alphaColor("green", 0.05))
-    lines(rowMeans(intervals), prop_herb[,4], col = alphaColor("blue", 0.05))
-    lines(rowMeans(intervals), prop_herb[,5], col = alphaColor("purple", 0.05))
   }
-  
-  #median across all replicates
-  lines(rowMeans(intervals), prop_herb[,1], col = alphaColor("red",1))
-  lines(rowMeans(intervals), prop_herb[,2], col = alphaColor("orange", 1))
-  lines(rowMeans(intervals), prop_herb[,3], col = alphaColor("green", 1))
-  lines(rowMeans(intervals), prop_herb[,4], col = alphaColor("blue", 1))
-  lines(rowMeans(intervals), prop_herb[,5], col = alphaColor("purple", 1))
-  
   #variance in correl coef over different rep nvalues
   ##show that variance stabilizes
   corr.results.both <- vector()
   var.corr <- vector()
   
-  #x-axis is number of reps
-  #y-axis is the variance in correlation coef
-  plot(0, 0, type = "n", xlim = c(0, dim(countCube_herb)[3]), ylim = c(-0.005,0.005),
-       main = "Variance of Spearmen Correlation Coefficient for Antelope and Wolf categories", xlab = "Number of Replicates", ylab = "Variance of Correlation Coefficient")
-  
-  for(xx in seq(1, length(rep.test), 1))
+  if(type %in% "var.CorrelCoef.Single")
   {
-    ##############################################################
-    prop_herb <- t(apply(countCube_herb[,,c(1,rep.test[xx])], c(1,2), median, na.rm=TRUE))
-    colnames(prop_herb)[colnames(prop_herb)==""] <- "indeterminate"
+  #  plot(0, 0, type = "n", xlim = c(0, dim(countCube_herb)[3]), ylim = c(-0.005,0.005),
+  #      main = "Variance of Spearmen Correlation Coefficient for Antelope and Wolf categories", xlab = "Number of Replicates", ylab = "Variance of Correlation Coefficient")
     
-    prop_pred <- t(apply(countCube_pred[,,c(1,rep.test[xx])], c(1,2), median, na.rm=TRUE))
-    colnames(prop_pred)[colnames(prop_pred)==""] <- "indeterminate"
+    for(xx in seq(1, length(rep.test), 1))
+    {
+      ##############################################################
+      prop_herb <- t(apply(countCube_herb[,,c(1,rep.test[xx])], c(1,2), median, na.rm=TRUE))
+      colnames(prop_herb)[colnames(prop_herb)==""] <- "indeterminate"
+      
+      prop_pred <- t(apply(countCube_pred[,,c(1,rep.test[xx])], c(1,2), median, na.rm=TRUE))
+      colnames(prop_pred)[colnames(prop_pred)==""] <- "indeterminate"
+      
+      ungulates <- prop_herb
+      predators <- prop_pred
+      
+      all.val <- cbind(predators, ungulates)
+      
+      corr.results.both[xx] <- cor(predators, ungulates, method = "spearman")[var.CorrelCoef.Single[1],var.CorrelCoef.Single[2]] #for antelope vs wolf sized critters
+      
+      var.corr[xx] <- var(corr.results.both)
+      
+    }
+    #plot(seq(1, dim(countCube_herb)[3],1), corr.results.both, col = alphaColor("black",0.1))
+    #abline(h=median(corr.results.both))
     
-    ungulates <- prop_herb
-    predators <- prop_pred
-    
-    all.val <- cbind(predators, ungulates)
-    
-    corr.results.both[xx] <- cor(predators, ungulates, method = "spearman")[4,3] #for antelope vs wolf sized critters
-    
-    var.corr[xx] <- var(corr.results.both)
-    
+    plot(seq(1, dim(countCube_herb)[3],1), var.corr, col = alphaColor("gray75",0.5),
+         xlab = "Cumulative Number of Replicates", ylab = "Variance of Correlation Coefficient of Median Assemblage")
+    lines(seq(1, dim(countCube_herb)[3],1), var.corr, col = "black")
   }
-  #plot(seq(1, dim(countCube_herb)[3],1), corr.results.both, col = alphaColor("black",0.1))
-  #abline(h=median(corr.results.both))
   
-  plot(seq(1, dim(countCube_herb)[3],1), var.corr, col = alphaColor("green",0.5))
-  lines(seq(1, dim(countCube_herb)[3],1), var.corr, col = "darkgreen")
-  
+  if(type %in% "var.CorrelCoef.All")
+  {
+    corr.results.both <- array(numeric(0),dim=c(nrow(countBox_herb),nrow(countBox_pred),dim(countCube_herb)[3]))
+    for(zz in seq(1, length(rep.test), 1))
+    {
+      ##############################################################
+      prop_herb <- t(apply(countCube_herb[,,c(1,rep.test[zz])], c(1,2), median, na.rm=TRUE))
+      colnames(prop_herb)[colnames(prop_herb)==""] <- "indeterminate"
+      
+      prop_pred <- t(apply(countCube_pred[,,c(1,rep.test[zz])], c(1,2), median, na.rm=TRUE))
+      colnames(prop_pred)[colnames(prop_pred)==""] <- "indeterminate"
+      
+      ungulates <- prop_herb
+      predators <- prop_pred
+      
+      all.val <- cbind(predators, ungulates)
+      
+      corr.results.both[,,zz] <- cor(predators, ungulates, method = "spearman") #for antelope vs wolf sized critters
+      
+    }
+    
+    par(mfrow=c(nrow(countCube_herb),nrow(countCube_pred)), mar = c(1,1,0,0), oma = c(4,3,3,3))
+      for(xx in seq(1, nrow(countCube_herb),1))
+      {
+        for(yy in seq(1, nrow(countCube_pred),1))
+        {
+          
+          for(zz in seq(1, length(rep.test), 1))
+          {
+            var.corr[zz] <- var(corr.results.both[xx,yy,c(seq(1,zz,1))])
+            
+          }
+          plot(0, 0, type = "n", xlim = c(0, dim(countCube_herb)[3]), ylim = ylim,
+               main = NULL, xlab = NULL, ylab = NULL, axes= FALSE)
+            
+          axis(2, labels = FALSE)
+          axis(1, labels = FALSE)
+          if(yy == 1) axis(2, labels = TRUE)
+          if(xx == max(nrow(countBox_pred))) axis(1, labels = TRUE)
+          
+          points(seq(1, dim(countCube_herb)[3],1), var.corr, col = alphaColor("gray75",0.5))
+          lines(seq(1, dim(countCube_herb)[3],1), var.corr, col = "black")
+          
+          if(yy == 1 & xx == ceiling(nrow(countCube_pred)/2)){ mtext("Variance of Correlation Coefficient of Cumulative Median Assemblage", side = 2, line = 3, cex = 1)}
+          if(yy == ceiling(nrow(countCube_herb)/2) & xx == max(nrow(countCube_pred))){ mtext("Number of Replicates", side = 1, line = 2, cex = 1)}
+          if(xx == 1) { mtext(rownames(countCube_herb)[yy], side = 3, line = 1, cex = 0.5)}
+          if(yy == 1) { mtext(rownames(countCube_pred)[xx], side = 2, line = 2, cex = 0.5)}
+        }
+      }
+    }
+      
   return()
 }
 
