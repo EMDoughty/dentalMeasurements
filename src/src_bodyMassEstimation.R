@@ -21,9 +21,17 @@ getMendozaBodyMasses <- function (this) {
 }
 
 appendStDevToReg <- function(thisReg) {
-	cbind(thisReg, array((log10(100 + thisReg["see"]) - 2), dimnames=list(rownames(thisReg), "stdev")))
-	# cbind(thisReg, array((log10(100 + thisReg["see"]) - 2) * sqrt(thisReg["n"]), dimnames=list(rownames(thisReg), "stdev")))
-	# thisReg["see"]=(2+see)	
+	thisReg.StDev <- cbind(thisReg, (log10(100 + thisReg["see"]) - 2))
+  colnames(thisReg.StDev) <- c(colnames(thisReg),"stdev")
+  
+ # rownames(thisReg) <- thisReg$m
+	
+#  cbind(thisReg, array((log10(100 + thisReg["see"]) - 2), dimnames=list("stdev")))   #can't get this to cbind correctly dwspite fixing the dim[2] issues of lkine below
+#  cbind(thisReg, array((log10(100 + thisReg["see"]) - 2), dimnames=list(rownames(thisReg), "stdev"))) #11/30/2022 this is currently causing an error as dimanmes is anot proper length.  rownames are currently 1-n rather than any string.
+  # cbind(thisReg, array((log10(100 + thisReg["see"]) - 2) * sqrt(thisReg["n"]), dimnames=list(rownames(thisReg), "stdev")))
+	# thisReg["see"]=(2+see)
+  
+  return(thisReg.StDev)
 }
 
 getLikelihoodOneBodyMassFromMeasurementAndReg <- function(bm, this, thisReg) {
@@ -84,7 +92,7 @@ getBodyMassVectorFromMeasureMatAllMeasures <- function(measure.mat, linked.files
 	#######################################################################################################################################
 	measure.mat$reg[measure.mat$reg==""] <- NA
 	theseColumns <- c(as.character(regList[[1]]$m)[-which(as.character(regList[[1]]$m) %in% c("loP", "loM"))], "reg") # theseColumns is the names of columns that are also in reg - published measuremnts
-	bm <- getMLBodyMasses_compiled(measure.mat[complete.cases(measure.mat[,theseColumns]), theseColumns], regList, best.only=FALSE)
+	bm <- getMLBodyMasses_compiled(measure.mat = measure.mat[complete.cases(measure.mat[,theseColumns]), theseColumns], regList = regList, best.only=FALSE)
 	
 	#######################################################################################################################################
 	##### get regression parameters for measurements not in published regression
@@ -193,7 +201,7 @@ approxBodyMass <- function(measure.mat, fill.missing=TRUE) {
 	#Approximate body mass
 	print("Building body mass estimates...")
 	measure.mat[!is.na(measure.mat$family) & measure.mat$family=="Entelodontidae", c("P2_L", "P3_L", "p2_w", "m2_w", "m3_w")] <- NA	### entelodont tooth widths were generating >5 ton body masses, so not used for body mass estimation, here.
-	measure.mat[,"bodyMass"] <- getBodyMassVectorFromMeasureMatAllMeasures(measure.mat, linked.files=FALSE)
+	measure.mat[,"bodyMass"] <- getBodyMassVectorFromMeasureMatAllMeasures(measure.mat = measure.mat, linked.files=FALSE)
 	if (fill.missing) measure.mat <- fillMissingBodyMasses(measure.mat)	# this fills taxa missing their body mass with the average body mass of its cogeners
 	# sort(unique(measure.mat[!sapply(measure.mat, function(x) is.character(x) | is.finite(x) | is.na(x))])) <- NA
 	return(measure.mat)

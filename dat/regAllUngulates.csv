@@ -20,4 +20,4 @@ M2_W,SUMW,second upper molar width,0.919,1.469,3.004,57.8,38.9,137
 M2_A,SUMA,second upper molar area,0.939,1.277,1.568,48.6,32.7,137
 loP,LPRL,lower premolar row length,0.799,0.438,2.673,105,171,137
 loM,LMRL,lower molar row length,0.94,-0.552,3.285,47.9,32.8,137
-,LMRLA,lower molar row length (without suines),0.941,-0.536,3.265,45.9,31.9,137
+loMa,LMRLA,lower molar row length (without suines),0.941,-0.536,3.265,45.9,31.9,137

@@ -145,7 +145,9 @@ if(run.taxon == "ungulates")
   focal.order <- c("Artiodactyla", "Perissodactyla", 
                    "Proboscidea", 
                    "Dinocerata", 
-                   "Tillodontia")
+                   "Tillodontia",
+                   "Taenodontia",
+                   "Pantodonta")
   focal.family <- unique(occs[occs$order %in% focal.order,]$family)
   #search through those without order
   add.family <- c("Arctocyonidae", "Chriacidae", "Hyopsodontidae","Periptychidae","Phenacodontidae") #, #, #Condylarths
@@ -271,7 +273,7 @@ if(is.null(repIntLoad))
 {
   do.parallel <- TRUE
   	if (do.parallel) require(parallel)
-  reps <- 10
+  reps <- 1000
   do.subsample <- TRUE
   quota <- 0.4
   do.disparity <- FALSE

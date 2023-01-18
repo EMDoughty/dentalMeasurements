@@ -8,7 +8,7 @@ get.speciesMeans <- function(data,
                              bodyMass = NA, 
                              col = NA, 
                              fam.symbol = 1,
-                             append.Mat <- FALSE,
+                             append.Mat = FALSE,
                              complete = TRUE)
 {
  
@@ -1375,11 +1375,13 @@ getCurrentHigherTaxonomy <- function(archaic.ung, save.file=NULL) { #this functi
 
 getTaxaInClade <- function(clades, occs, save.file=NULL) {
   uniqTax <- lapply(c(clades), FUN=getTaxonomyForOneBaseTaxon_AcceptedName)
-  if(length(uniqTax) == 1) { uniqTax <- rbind(uniqTax[[1]])
+  uniq.len <- length(uniqTax)
+ if(length(uniq.len) == 1) { uniqTax <- rbind(uniqTax[[1]])
     }
-  if(length(uniqTax) == 2) { uniqTax <- rbind(uniqTax[[1]], uniqTax[[2]])
+  if(length(uniq.len) == 2) { uniqTax <- rbind(uniqTax[[1]], uniqTax[[2]])
   }
-  if(length(uniqTax) > 2) { 
+  if(length(uniq.len) > 2) 
+  { 
     taxaMat <- rbind(uniqTax[[1]], uniqTax[[2]])
     for(xx in seq(3, length(uniqTax),1))
     {
@@ -1388,6 +1390,7 @@ getTaxaInClade <- function(clades, occs, save.file=NULL) {
     uniqTax <- taxaMat
   }
   
+ # uniqTax$accepted_species <- str_split_fixed(string = uniqTax[,"accepted_name"], " ", n = Inf)[,2]
   uniqTax$accepted_species <- str_split_fixed(string = uniqTax$accepted_name, " ", n = Inf)[,2]
   
   uniqTax$verbatim_genus <- str_split_fixed(string = uniqTax$taxon_name, " ", n = Inf)[,1]
@@ -1406,7 +1409,7 @@ getTaxonomyForOneBaseTaxon_AcceptedName <- function(this.taxon) {
   this.names[,c("phylum", "class", "order", "family", "genus", "accepted_name","taxon_name")]
 }
 
-getTargetTaxa<- function(measure.mat, uniqTax, occs, save.file = NULL){ # get a list of taxa that indicates #occs it has and whether its in North America if it does
+getTargetTaxa<- function(measure.mat, uniqTax, occs, uniqOnly = FALSE, species.only = FALSE, save.file = NULL){ # get a list of taxa that indicates #occs it has and whether its in North America if it does
   
   uniqTax$NoOccs <- 0 
   
@@ -1418,6 +1421,9 @@ getTargetTaxa<- function(measure.mat, uniqTax, occs, save.file = NULL){ # get a 
   
   dental.col <-  c("P2_L", "P2_W", "P3_L", "P3_W", "P4_L", "P4_W", "M1_L", "M1_W", "M2_L", "M2_W", "M3_L", "M3_W",
   "p2_l", "p2_w", "p3_l", "p3_w", "p4_l", "p4_w", "m1_l", "m1_w", "m2_l", "m2_w", "m3_l", "m3_w")
+  
+  if(uniqOnly == TRUE) uniqTax <- unique(uniqTax[,c(1:6,9)])
+  if(species.only == TRUE) uniqTax <- uniqTax[uniqTax$accepted_name %in% occs$accepted_name[occs$accepted_rank %in% "species"],]
   
   for(xx in uniqTax$accepted_name)
   {
@@ -1795,4 +1801,98 @@ estiamteMissingDiversity_Alroy <- function() {
   return()
 }
 
+get.repIntOccs <- function(intervals = NULL,
+                           occs = NULL,
+                           measure.mat = NULL,
+                           do.parallel = TRUE, 
+                           reps = 1000,
+                           do.subsample = TRUE,
+                           quota = 0.4,
+                           do.disparity = FALSE,
+                           bootstrapSpecimens = FALSE,
+                           bootstrapSpecies = FALSE,
+                           bootstrapSpeciesWithinIntervals = FALSE,
+                           plotHist = FALSE,
+                           do.heuristic = TRUE,
+                           extra.intvs = 0,
+                           do.rangethrough = TRUE,
+                           get.repIntTaxa = TRUE,
+                           save.pathname = NULL,
+                           save.path.bins = NULL)
+{
+  if (do.parallel) require(parallel)
+  
+  if (bootstrapSpecies) holderMat <- measure.mat
+  
+  if (plotHist) {
+    quartz("Guild Histograms")
+    par(mfrow=c((nrow(intervals)), 3), mar=c(0,0,0.75,0), cex.axis=0.5, cex.main=0.75)
+  }
+  
+  repIntOccs <- list()
+  
+  ################################################################################################################################################
+  #### get species within intervals
+  ################################################################################################################################################
+  
+  for (rep in seq_len(reps)) {
+    cat("Beginning Rep", rep, "of", reps, "...\r")
+    ##################################################We need to update this sbootstrap section
+    if (bootstrapSpecimens) {
+      measure.mat <- specimenMat[sample.int(nrow(specimenMat), size=nrow(specimenMat), replace=TRUE),]
+      measure.mat <- aggregate(measure.mat, by=list(taxon=specimenMat$taxon), mean, na.rm=TRUE)
+      # measure.mat <- measure.mat[,apply(!sapply(measure.mat, is.na), 2, any)]
+      rownames(measure.mat) <- measure.mat$taxon
+      measure.mat[sapply(measure.mat, is.nan)] <- NA
+      # measure.mat<-cbind(measure.mat, cbind(FO=vector(length=nrow(measure.mat), mode="numeric"), LO=vector(length=nrow(measure.mat), mode="numeric")))
+      measure.mat[,"reg"] <- as.character(famList$reg[match(measure.mat$taxon,famList$taxon)])
+      measure.mat[,"bodyMass"] <- makeBodyMasses(measure.mat, regList, best.only=TRUE)
+      # measure.mat[,"PC2"] <- pcVec[match(measure.mat$taxon, names(pcVec))]
+      # measure.mat[,"PC3"] <- pcaLo$x[match(measure.mat$taxon, rownames(pcaLo$x)),3]
+    }
+    if (bootstrapSpecies) measure.mat <- holderMat[sample.int(n=nrow(measure.mat), size=nrow(measure.mat), replace=TRUE),]
+    
+    col.dates <- getCollectionAgesFromOccs(occs=occs[, c("collection_no", "max_ma", "min_ma")], random=TRUE)
+    occDates <- col.dates$collection_age[match(occs$collection_no, col.dates$collection_no)]
+    intOccs <- apply(intervals, 1, function(thisIntv) occs$occurrence_no[occDates > thisIntv[1] & occDates <= thisIntv[2]]) # greater than ageTop, less than or equal to ageBase
+    # intTaxa <- sapply(intOccs, function(x) unique(occs$accepted_name[occs$occurrence_no %in% x]))
+    # x <- intOccs
+    # intSp <- sapply(intOccs, function(x) match(sort(unique(gsub(pattern = "[[:space:]]", replacement = "_", x = occs$accepted_name[occs$accepted_rank  == "species" & occs$occurrence_no %in% x]))), measure.mat$taxon))
+    # intSp <- sapply(intOccs, function(x) match(sort(unique(occs$accepted_name[occs$accepted_rank  %in% c("genus", "species") & occs$occurrence_no %in% x]))), measure.mat$taxon))
+    # intSp <- sapply(intOccs, function(x) sort(unique(as.character(occs$accepted_name[occs$occurrence_no %in% x]))))
+    
+    #which(occs$occurrence_no %in% x == TRUE) # none are being returned as TRUE
+    
+    if (do.subsample) { 
+      nOccs <- sapply(intOccs, length)
+      # nTaxa <- sapply(intSp, length)			### if you want to set the quota no lower than the maximum number of SIB taxa; intSp is required for this to work, so has to be done above
+      nTaxa <- 0									### set to zero to simply set the quota to the minimum number of occurrences
+      quota <- max(c(max(nTaxa), min(nOccs)))		### quota is either the maximum number of observed taxa, or the minimum number of occurrences
+      cat("Subsampling quota set to", quota, "occurrences")
+      
+      intOccs <- lapply(X=intOccs, FUN=sample, size=quota)
+    }
+    
+    repIntOccs[[rep]] <- intOccs 
+  }
+  
+  if(get.repIntTaxa) {
+    repIntTaxa.species <- getRepIntTaxaFromRepIntOccs(repIntOccs, this.rank = "species", do.rangethrough=do.rangethrough)
+    repIntTaxa.genus <- getRepIntTaxaFromRepIntOccs(repIntOccs, this.rank = "species", do.rangethrough=do.rangethrough)
+  }
+  
+  print("Completed getting taxa with intervals")
+  
+  ###################################################################################################################################
+  save(repIntTaxa.species, repIntTaxa.genus, repIntOccs, intervals, reps, do.subsample, quota,do.disparity, 
+       bootstrapSpecimens,bootstrapSpecies,bootstrapSpeciesWithinIntervals ,
+       plotHist,do.heuristic,extra.intvs,do.rangethrough, save.path.bins,
+       file=paste0(save.pathname,"repIntMaster_",
+                   # "_this.rank=", this.rank,
+                   "_timebin=", save.path.bins,
+                   "_SmpleStnd=", do.subsample, "_Rngethrgh=", do.rangethrough, 
+                   "_Reps=", reps, gsub("-","_",Sys.info()["nodename"]),
+                   timestamp(),".Rdata"))
+  return()
+}
 
