@@ -1896,3 +1896,263 @@ get.repIntOccs <- function(intervals = NULL,
   return()
 }
 
+
+pred_herb_correl <- function(prop_herb = NULL, prop_pred = NULL, output.filename = NULL)
+{
+  png(output.filename, width = 7, height = 3, units = "in", res = 200)
+  par(mfrow = c(1,2))
+  
+  all.val <- cbind(prop_pred, prop_herb)
+  
+  corr.results.both <- cor(prop_pred, prop_herb, method = "spearman")
+  cor.p <- cor.mtest(all.val)$p
+  
+  cor.p.culled <- cor.p[,colnames(cor.p) %in% colnames(prop_herb)]
+  cor.p.culled <- cor.p.culled[rownames(cor.p.culled) %in% colnames(prop_pred),]
+  
+  corrplot::corrplot(corr.results.both,  mar = c(0,0,0,0), p.mat = cor.p.culled,
+                     cl.align.text = 'l', 
+                     #addCoef.col = 'black',
+                     addgrid.col = 'black',
+                     method = "color",
+                     na.label = "-",
+                     sig.level = c(0.05, 0.01, 0.001), insig = 'label_sig', 
+                     pch.cex = 1,
+                     tl.pos = c("lt"), tl.offset = 1, tl.cex = 1) -> p1
+  
+  #First Differences Spearman Correlation
+  pred.prey.DivFirstDiff <- getDiversity1stDiff(data.mat = t(prop_pred), intervals = intervals)
+  
+  UngualteBMGroupDiv_FirstDiff <- getDiversity1stDiff(data.mat = t(prop_herb), intervals = intervals)
+  
+  ungulates <- t(as.matrix(UngualteBMGroupDiv_FirstDiff))
+  predators <- t(as.matrix(pred.prey.DivFirstDiff))
+  
+  all.val <- cbind(predators, ungulates)
+  
+  corr.results.both <- cor(predators, ungulates, method = "spearman")
+  cor.p <- cor.mtest(all.val)$p
+  
+  cor.p.culled <- cor.p[,colnames(cor.p) %in% colnames(ungulates)]
+  cor.p.culled <- cor.p.culled[rownames(cor.p.culled) %in% colnames(predators),]
+  
+  corrplot::corrplot(corr.results.both,  mar = c(0,0,0,0), p.mat = cor.p.culled,
+                     cl.align.text = 'l', 
+                     #addCoef.col = 'black',
+                     addgrid.col = 'black',
+                     method = "color",
+                     na.label = "-",
+                     sig.level = c(0.05, 0.01, 0.001), insig = 'label_sig', 
+                     pch.cex = 1,
+                     tl.pos = c("lt"), tl.offset = 1, tl.cex = 1) -> p1
+  
+  dev.off()
+}
+
+do.predDietAnalysesChapt1 <- function(measure.mat, pred.data, intervals, repIntTaxa, bmBreaks_pred)
+{
+  
+  intervals.34Ma <- intervals[intervals$ageBase <= 34,]
+  repIntTaxa.34Ma <- lapply(repIntTaxa, function(this.rep) {this.rep[rownames(intervals.34Ma)]})
+  
+  ######################################################################################################################
+  
+  pred.diet <- read.csv("/Users/emdoughty/Dropbox/Proposal/Proposal/Diet Data PPP CJ.csv")
+  pred.diet$MASTER_LIST <- gsub(pattern = "[[:space:]]", replacement = "_", x = pred.diet$MASTER_LIST)
+  
+  pred.data.master  <- pred.data
+  
+  pred.data <- pred.data[pred.data$taxon %in% pred.diet$MASTER_LIST,]
+  pred.data$Diet <- pred.diet[pred.diet$MASTER_LIST %in% pred.data$taxon, "PPP_diet_2"]
+  
+  pred.data.hyper <- pred.data[pred.data$Diet %in% "hypercarnivore",]
+  pred.data.meso <- pred.data[pred.data$Diet %in% "mesocarnivore",]
+  pred.data.hypo <- pred.data[pred.data$Diet %in% "hypocarnivore",]
+  pred.data.hyper.meso <- pred.data[pred.data$Diet %in% c("hypercarnivore","mesocarnivore"),]
+  pred.data.hyper.hypo <- pred.data[pred.data$Diet %in% c("hypercarnivore","hypocarnivore"),]
+  pred.data.meso.hypo <- pred.data[pred.data$Diet %in% c("mesocarnivore","hypocarnivore"),]
+
+  ######################################################################################################################
+  
+  rem.col <- c("family","genus","reg.vec")
+  measure.mat <- measure.mat[,!colnames(measure.mat) %in% rem.col]
+  
+  pred.data.hyper <- pred.data.hyper[,!colnames(pred.data.hyper) %in% rem.col]
+  
+  countCube_pred_hyper <- sapply(repIntTaxa.34Ma, function(this.rep) {
+    sapply(this.rep, function(this.intv, this.rep) {
+      hist(pred.data.hyper[,"bodyMass"][match(this.intv, pred.data.hyper$taxon)], 
+           breaks= bmBreaks_pred, plot=FALSE)$counts
+    }, this.rep=this.rep)
+  }, simplify = "array")
+  
+  #countCube <- countCube[,,1]
+  
+  dimnames(countCube_pred_hyper) <- list(sizecateg, rownames(intervals.34Ma), NULL)
+  
+  
+  pred.data.meso <- pred.data.meso[,!colnames(pred.data.meso) %in% rem.col]
+  
+  countCube_pred_meso <- sapply(repIntTaxa.34Ma, function(this.rep) {
+    sapply(this.rep, function(this.intv, this.rep) {
+      hist(pred.data.meso[,"bodyMass"][match(this.intv, pred.data.meso$taxon)], 
+           breaks= bmBreaks_pred, plot=FALSE)$counts
+    }, this.rep=this.rep)
+  }, simplify = "array")
+  
+  #countCube <- countCube[,,1]
+  
+  dimnames(countCube_pred_meso) <- list(sizecateg, rownames(intervals.34Ma), NULL)
+  
+  
+  pred.data.hypo <- pred.data.hypo[,!colnames(pred.data.hypo) %in% rem.col]
+  
+  countCube_pred_hypo <- sapply(repIntTaxa.34Ma, function(this.rep) {
+    sapply(this.rep, function(this.intv, this.rep) {
+      hist(pred.data.hypo[,"bodyMass"][match(this.intv, pred.data.hypo$taxon)], 
+           breaks= bmBreaks_pred, plot=FALSE)$counts
+    }, this.rep=this.rep)
+  }, simplify = "array")
+  
+  #countCube <- countCube[,,1]
+  
+  dimnames(countCube_pred_hypo) <- list(sizecateg, rownames(intervals.34Ma), NULL)
+  
+  pred.data.hyper.meso <- pred.data.hyper.meso[,!colnames(pred.data.hyper.meso) %in% rem.col]
+  
+  countCube_pred_hyper.meso <- sapply(repIntTaxa.34Ma, function(this.rep) {
+    sapply(this.rep, function(this.intv, this.rep) {
+      hist(pred.data.hyper.meso[,"bodyMass"][match(this.intv, pred.data.hyper.meso$taxon)], 
+           breaks= bmBreaks_pred, plot=FALSE)$counts
+    }, this.rep=this.rep)
+  }, simplify = "array")
+  
+  #countCube <- countCube[,,1]
+  
+  dimnames(countCube_pred_hyper.meso) <- list(sizecateg, rownames(intervals.34Ma), NULL)
+  
+  pred.data.hyper.hypo<- pred.data.hyper.hypo[,!colnames(pred.data.hyper.hypo) %in% rem.col]
+  
+  countCube_pred_hyper.hypo <- sapply(repIntTaxa.34Ma, function(this.rep) {
+    sapply(this.rep, function(this.intv, this.rep) {
+      hist(pred.data.hyper.hypo[,"bodyMass"][match(this.intv, pred.data.hyper.hypo$taxon)], 
+           breaks= bmBreaks_pred, plot=FALSE)$counts
+    }, this.rep=this.rep)
+  }, simplify = "array")
+  
+  #countCube <- countCube[,,1]
+  
+  dimnames(countCube_pred_hyper.hypo) <- list(sizecateg, rownames(intervals.34Ma), NULL)
+  
+  pred.data.meso.hypo<- pred.data.meso.hypo[,!colnames(pred.data.meso.hypo) %in% rem.col]
+  
+  countCube_pred_meso.hypo <- sapply(repIntTaxa.34Ma, function(this.rep) {
+    sapply(this.rep, function(this.intv, this.rep) {
+      hist(pred.data.meso.hypo[,"bodyMass"][match(this.intv, pred.data.meso.hypo$taxon)], 
+           breaks= bmBreaks_pred, plot=FALSE)$counts
+    }, this.rep=this.rep)
+  }, simplify = "array")
+  
+  #countCube <- countCube[,,1]
+  
+  dimnames(countCube_pred_meso.hypo) <- list(sizecateg, rownames(intervals.34Ma), NULL)
+  
+  prop_pred_hyper <- t(apply(countCube_pred_hyper, c(1,2), median, na.rm=TRUE))
+  colnames(prop_pred_hyper)[colnames(prop_pred_hyper)==""] <- "indeterminate"
+  
+  prop_pred_meso <- t(apply(countCube_pred_meso, c(1,2), median, na.rm=TRUE))
+  colnames(prop_pred_meso)[colnames(prop_pred_meso)==""] <- "indeterminate"
+  
+  prop_pred_hypo <- t(apply(countCube_pred_hypo, c(1,2), median, na.rm=TRUE))
+  colnames(prop_pred_hypo)[colnames(prop_pred_hypo)==""] <- "indeterminate"
+  
+  prop_pred_hyper.meso <- t(apply(countCube_pred_hyper.meso, c(1,2), median, na.rm=TRUE))
+  colnames(prop_pred_hyper.meso)[colnames(prop_pred_hyper.meso)==""] <- "indeterminate"
+  
+  prop_pred_hyper.hypo <- t(apply(countCube_pred_hyper.hypo, c(1,2), median, na.rm=TRUE))
+  colnames(prop_pred_hyper.hypo)[colnames(prop_pred_hyper.hypo)==""] <- "indeterminate"
+  
+  prop_pred_meso.hypo <- t(apply(countCube_pred_meso.hypo, c(1,2), median, na.rm=TRUE))
+  colnames(prop_pred_meso.hypo)[colnames(prop_pred_meso.hypo)==""] <- "indeterminate"
+  
+  png(paste0(output.filepath, "RichnessThroughTimePlots_Diet", this.rank, "_",save.path.bins, "_SmpleStnd=", do.subsample, "_rngethrgh=", do.rangethrough,"_", timestamp(),".png"),
+      width = 15, height = 9, units = "in", res = 200)
+
+  par(mfrow = c(3,3), mar=c(1,4,1.6,0), mgp=c(2.5, 1,0), oma = c(4,2,2,2), bg=NA)
+  plotStackedRichness(this.box=prop_pred_hyper, intervals=intervals.34Ma, reorder.taxa = FALSE, do.log=FALSE, 
+                      numbers.only=FALSE, add.legend=FALSE, 
+                      col.axis = "white", col.lab = "white", xaxt = 'n', yaxt = 'n',
+                      cex.axis = 1.5, cex.lab = 1, las = 1,
+                      ylab = "",# "Proportion of Subtaxa",
+                      xlim = c(34,  min(intervals, na.rm=TRUE)), ylim = c(0, max(rowSums(prop_pred)+10)), xaxp = c(65, 0, 13), yaxp = c(0, 30, 6),
+                      overlay.labels = FALSE, overlay.color = TRUE, do.subepochs = TRUE, thisAlpha.text = 0.75, borderCol = "black", invertTime = FALSE, scale.cex = 1.25, scale.headers = 0.90, text.offset = 0.05)
+  axis(1,col.ticks="white", col.axis = "white", cex.axis =2, labels = FALSE, at = c(seq(0,35,by = 5)), lwd = 2, tck = -0.05, las = 1, padj = 0.75)
+  axis(2,col.ticks="white", col.axis = "white", cex.axis =2, labels = TRUE, at = c(seq(0,40,by = 5)), lwd = 2, tck = -0.05, las = 1,  hadj = 1.5)
+  
+  plot(1, type = "n", 
+       xlab = "",
+       ylab = "", 
+       xlim = c(34,  min(intervals, na.rm=TRUE)), 
+       ylim = c(0, 35))
+  plot(1, type = "n", 
+       xlab = "",
+       ylab = "", 
+       xlim = c(34,  min(intervals, na.rm=TRUE)), 
+       ylim = c(0, 35))
+  
+  plotStackedRichness(this.box=prop_pred_meso, intervals=intervals.34Ma, reorder.taxa = FALSE, do.log=FALSE, 
+                      numbers.only=FALSE, add.legend=FALSE, 
+                      col.axis = "white", col.lab = "white", xaxt = 'n', yaxt = 'n',
+                      cex.axis = 1.5, cex.lab = 1, las = 1,
+                      ylab = "",# "Proportion of Subtaxa",
+                      xlim = c(34,  min(intervals, na.rm=TRUE)), ylim = c(0, max(rowSums(prop_pred)+10)), xaxp = c(65, 0, 13), yaxp = c(0, 30, 6),
+                      overlay.labels = FALSE, overlay.color = TRUE, do.subepochs = TRUE, thisAlpha.text = 0.75, borderCol = "black", invertTime = FALSE, scale.cex = 1.25, scale.headers = 0.90, text.offset = 0.05)
+  axis(1,col.ticks="white", col.axis = "white", cex.axis =2, labels = FALSE, at = c(seq(0,35,by = 5)), lwd = 2, tck = -0.05, las = 1, padj = 0.75)
+  axis(2,col.ticks="white", col.axis = "white", cex.axis =2, labels = TRUE, at = c(seq(0,40,by = 5)), lwd = 2, tck = -0.05, las = 1,  hadj = 1.5)
+  
+  plot(1, type = "n", 
+       xlab = "",
+       ylab = "", 
+       xlim = c(34,  min(intervals, na.rm=TRUE)), 
+       ylim = c(0, max(rowSums(prop_pred)+10)))
+  
+  plot(1, type = "n", 
+       xlab = "",
+       ylab = "", 
+       xlim = c(34,  min(intervals, na.rm=TRUE)), 
+       ylim = c(0, max(rowSums(prop_pred)+10)))
+  
+  plotStackedRichness(this.box=prop_pred_hypo, intervals=intervals.34Ma, reorder.taxa = FALSE, do.log=FALSE, 
+                      numbers.only=FALSE, add.legend=FALSE, 
+                      col.axis = "white", col.lab = "white", xaxt = 'n', yaxt = 'n',
+                      cex.axis = 1.5, cex.lab = 1, las = 1,
+                      ylab = "",# "Proportion of Subtaxa",
+                      xlim = c(34,  min(intervals, na.rm=TRUE)), ylim = c(0, max(rowSums(prop_pred)+10)), xaxp = c(65, 0, 13), yaxp = c(0, 30, 6), 
+                      overlay.labels = FALSE, overlay.color = TRUE, do.subepochs = TRUE, thisAlpha.text = 0.75, borderCol = "black", invertTime = FALSE, scale.cex = 1.25, scale.headers = 0.90, text.offset = 0.05)
+  axis(1,col.ticks="white", col.axis = "white", cex.axis =2, labels = TRUE, at = c(seq(0,35,by = 5)), lwd = 2, tck = -0.05, las = 1, padj = 0.75)
+  axis(2,col.ticks="white", col.axis = "white", cex.axis =2, labels = TRUE, at = c(seq(0,40,by = 5)), lwd = 2, tck = -0.05, las = 1,  hadj = 1.5)
+  
+  plot(1, type = "n", 
+       xlab = "",
+       ylab = "", 
+       xlim = c(34,  min(intervals, na.rm=TRUE)), 
+       ylim = c(0, max(rowSums(prop_pred)+10)))
+  
+  plot(1, type = "n", 
+       xlab = "",
+       ylab = "", 
+       xlim = c(34,  min(intervals, na.rm=TRUE)), 
+       ylim = c(0, max(rowSums(prop_pred)+10)))
+  
+  dev.off()
+  ##############################################################################################################################################################################
+  
+  png(paste0(output.filepath, "Correlation Matrices All predator_", this.rank, "_",save.path.bins, "_SmpleStnd=", do.subsample, "_rngethrgh=", do.rangethrough,"_", timestamp(),".png"),
+      width = 7, height = 3, units = "in", res = 200)
+  par(mfrow = c(1,2))
+  
+  pred_herb_correl(prop_herb = prop_herb, prop_pred = prop_pred, output.filename = correl_filename)
+  
+  
+  return()
+}
