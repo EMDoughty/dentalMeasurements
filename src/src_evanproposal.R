@@ -1162,7 +1162,7 @@ getBigList <- function(focal.order = NULL, focal.family.manual = NULL)
   return(bigList)
 }
 
-getDiversity1stDiff <- function(data.mat,intervals)
+getDiversity1stDiff <- function(data.mat, output.rownames = NULL)
 {
   div.diff <- matrix(nrow = nrow(data.mat), ncol = ncol(data.mat)-1)
   for(xx in seq(1, nrow(data.mat),1))
@@ -1170,13 +1170,13 @@ getDiversity1stDiff <- function(data.mat,intervals)
     div.diff[xx,] <- diff(data.mat[xx,], lag = 1)
   }
   
-  NALMA_rownames <- vector()
-  for(xx in seq(1, nrow(intervals),1))
+  dat.rownames <- vector()
+  for(xx in seq(1, length(output.rownames),1))
   {
-    NALMA_rownames[xx] <- paste(rownames(intervals)[xx], 
-                                rownames(intervals)[xx + 1], sep="-")
+   dat.rownames[xx] <- paste(output.rownames[xx], 
+                             output.rownames[xx + 1], sep="-")
   }
-  colnames(div.diff) <- NALMA_rownames[1:length(NALMA_rownames)-1]
+  colnames(div.diff) <- dat.rownames[1:length(dat.rownames)-1]
   rownames(div.diff) <- rownames(data.mat)
   
   return(div.diff)
@@ -1647,71 +1647,38 @@ getSingleSpeciesMatrix_Archaic <- function(specimen.mat = NULL) {
   return(measure.mat)
 }
 
-sensitivity.numberReps <- function(countCube_herb = NULL, countCube_pred = NULL, number.reps = 1000, 
-                                   type = c("medianRichnessInBin","var.CorrelCoef.Single", "var.CorrelCoef.All"), var.CorrelCoef.Single = c(1,1),
-                                   ylim = c(-1,1))
+sensitivity.numberReps <- function(countCube_herb = NULL, countCube_pred = NULL, intervals = NULL, number.reps = 1000, 
+                                   analysis.type = c("medianRichnessInBin","var.CorrelCoef.Single", "var.CorrelCoef.All"), var.CorrelCoef.Single = c(1,1),
+                                   ylim = c(-1,1),
+                                   output.filename = NULL, output.filepath = NULL)
 {
-  
+  if(!is.null(output.filename)) { png(output.filename, width = 10, height = 6, units = "in", res = 200)
+    } else {png(paste0(output.filepath, analysis.type,"_", number.reps, "reps_", timestamp(),".png"), width = 10, height = 6, units = "in", res = 200)}
+ 
   #look at how # reps alters
   ##1) the number of species in each category per bin
-  ##2) the variance of occs in bin when doing subsampling
+  ##2) the variance of occs in bin when doing sub sampling
   ##3) how the correlation coef. of the median assemblage changes with reps
   rep.test <- seq(number.reps,dim(countCube_herb)[3], number.reps)
   
-  if(type %in% "medianRichnessInBin")
+  if(analysis.type %in% "medianRichnessInBin")
   {
-    countBox <- list()
-    prop <- list()
+    par(mfrow = c(2,1), mar = c(0.5,1,1,1), oma = c(3,2,0,0))
     
-
-    
-    plot(rowMeans(intervals), prop_herb[,1], col = "red", type = "n", ylim = c(0,50),
-         xlab = "Time (Ma)", ylab = "Number of Taxa", main = "Median Number of Taxa Per Time Bin")
-    
-    for(xx in seq(1, length(rep.test), 1))
-    {
-      countBox_herb <- apply(countCube_herb[,,c(1,rep.test[xx])], c(1,2), quantile, probs=c(0, 0.025, 0.5, 0.975, 1), na.rm=TRUE) 
-      countBox_pred <- apply(countCube_pred[,,c(1,rep.test[xx])], c(1,2), quantile, probs=c(0, 0.025, 0.5, 0.975, 1), na.rm=TRUE) 
-      
-      singleBox <- list(herb=countBox_herb, pred=countBox_pred)
-      
-      countBox[[xx]] <- singleBox
-      
-      ##############################################################
-      prop_herb <- t(apply(countCube_herb[,,c(1,rep.test[xx])], c(1,2), median, na.rm=TRUE))
-      colnames(prop_herb)[colnames(prop_herb)==""] <- "indeterminate"
-      
-      prop_pred <- t(apply(countCube_pred[,,c(1,rep.test[xx])], c(1,2), median, na.rm=TRUE))
-      colnames(prop_pred)[colnames(prop_pred)==""] <- "indeterminate"
-      
-      singleProp <- list(herb=prop_herb, pred=prop_pred)
-      
-      prop[[xx]] <- singleProp
-      
-      lines(rowMeans(intervals), prop_herb[,1], col = alphaColor("red", 0.05))
-      lines(rowMeans(intervals), prop_herb[,2], col = alphaColor("orange", 0.05))
-      lines(rowMeans(intervals), prop_herb[,3], col = alphaColor("green", 0.05))
-      lines(rowMeans(intervals), prop_herb[,4], col = alphaColor("blue", 0.05))
-      lines(rowMeans(intervals), prop_herb[,5], col = alphaColor("purple", 0.05))
-    }
-    
-    #median across all replicates
-    lines(rowMeans(intervals), prop_herb[,1], col = alphaColor("red",1))
-    lines(rowMeans(intervals), prop_herb[,2], col = alphaColor("orange", 1))
-    lines(rowMeans(intervals), prop_herb[,3], col = alphaColor("green", 1))
-    lines(rowMeans(intervals), prop_herb[,4], col = alphaColor("blue", 1))
-    lines(rowMeans(intervals), prop_herb[,5], col = alphaColor("purple", 1))
-    
+    plot.medianRichnessInBin(countCube = countCube_herb, rep.test = rep.test,
+                             xlim = c(66,0), ylim = ylim, xaxt = "n", xlab = "", ylab = "Number of Taxa", main = "Median Number of Taxa Per Time Bin",
+                             axis.label = FALSE)
+    plot.medianRichnessInBin(countCube = countCube_pred, rep.test = rep.test,
+                             xlim = c(66,0), ylim = ylim, xlab = "Time (Ma)", ylab = "Number of Taxa", main = "")
+    dev.off()
   }
+  
   #variance in correl coef over different rep nvalues
   ##show that variance stabilizes
-  corr.results.both <- vector()
-  var.corr <- vector()
-  
-  if(type %in% "var.CorrelCoef.Single")
+  if(analysis.type %in% "var.CorrelCoef.Single")
   {
-  #  plot(0, 0, type = "n", xlim = c(0, dim(countCube_herb)[3]), ylim = c(-0.005,0.005),
-  #      main = "Variance of Spearmen Correlation Coefficient for Antelope and Wolf categories", xlab = "Number of Replicates", ylab = "Variance of Correlation Coefficient")
+    corr.results.both <- vector()
+    var.corr <- vector()
     
     for(xx in seq(1, length(rep.test), 1))
     {
@@ -1721,28 +1688,26 @@ sensitivity.numberReps <- function(countCube_herb = NULL, countCube_pred = NULL,
       
       prop_pred <- t(apply(countCube_pred[,,c(1,rep.test[xx])], c(1,2), median, na.rm=TRUE))
       colnames(prop_pred)[colnames(prop_pred)==""] <- "indeterminate"
-      
+    
       ungulates <- prop_herb
       predators <- prop_pred
-      
+        
       all.val <- cbind(predators, ungulates)
-      
+        
       corr.results.both[xx] <- cor(predators, ungulates, method = "spearman")[var.CorrelCoef.Single[1],var.CorrelCoef.Single[2]] #for antelope vs wolf sized critters
-      
+        
       var.corr[xx] <- var(corr.results.both)
-      
     }
-    #plot(seq(1, dim(countCube_herb)[3],1), corr.results.both, col = alphaColor("black",0.1))
-    #abline(h=median(corr.results.both))
-    
     plot(seq(1, dim(countCube_herb)[3],1), var.corr, col = alphaColor("gray75",0.5),
          xlab = "Cumulative Number of Replicates", ylab = "Variance of Correlation Coefficient of Median Assemblage")
     lines(seq(1, dim(countCube_herb)[3],1), var.corr, col = "black")
+    
+    dev.off()
   }
   
-  if(type %in% "var.CorrelCoef.All")
+  if(analysis.type %in% "var.CorrelCoef.All")
   {
-    corr.results.both <- array(numeric(0),dim=c(nrow(countBox_herb),nrow(countBox_pred),dim(countCube_herb)[3]))
+    corr.results.both <- array(numeric(0),dim=c(nrow(countCube_herb),nrow(countCube_pred),dim(countCube_herb)[3]))
     for(zz in seq(1, length(rep.test), 1))
     {
       ##############################################################
@@ -1761,10 +1726,12 @@ sensitivity.numberReps <- function(countCube_herb = NULL, countCube_pred = NULL,
       
     }
     
+    if(length(ylim) == 2) ylim <- array(c(rep(ylim[1], times = nrow(countCube_pred)), rep(ylim[2],times = nrow(countCube_pred))), dim = c(nrow(countCube_pred), 2, nrow(countCube_herb))) # = c(2, nrow(countCube_pred), nrow(countCube_herb)))
+    
     par(mfrow=c(nrow(countCube_herb),nrow(countCube_pred)), mar = c(1,1,0,0), oma = c(4,3,3,3))
-      for(xx in seq(1, nrow(countCube_herb),1))
+      for(xx in seq(1, nrow(countCube_pred),1))
       {
-        for(yy in seq(1, nrow(countCube_pred),1))
+        for(yy in seq(1, nrow(countCube_herb),1))
         {
           
           for(zz in seq(1, length(rep.test), 1))
@@ -1772,13 +1739,13 @@ sensitivity.numberReps <- function(countCube_herb = NULL, countCube_pred = NULL,
             var.corr[zz] <- var(corr.results.both[xx,yy,c(seq(1,zz,1))])
             
           }
-          plot(0, 0, type = "n", xlim = c(0, dim(countCube_herb)[3]), ylim = ylim,
+          plot(0, 0, type = "n", xlim = c(0, dim(countCube_herb)[3]), ylim = ylim[yy,,xx],
                main = NULL, xlab = NULL, ylab = NULL, axes= FALSE)
             
           axis(2, labels = FALSE)
           axis(1, labels = FALSE)
           if(yy == 1) axis(2, labels = TRUE)
-          if(xx == max(nrow(countBox_pred))) axis(1, labels = TRUE)
+          if(xx == max(nrow(countCube_pred))) axis(1, labels = TRUE)
           
           points(seq(1, dim(countCube_herb)[3],1), var.corr, col = alphaColor("gray75",0.5))
           lines(seq(1, dim(countCube_herb)[3],1), var.corr, col = "black")
@@ -1787,10 +1754,13 @@ sensitivity.numberReps <- function(countCube_herb = NULL, countCube_pred = NULL,
           if(yy == ceiling(nrow(countCube_herb)/2) & xx == max(nrow(countCube_pred))){ mtext("Number of Replicates", side = 1, line = 2, cex = 1)}
           if(xx == 1) { mtext(rownames(countCube_herb)[yy], side = 3, line = 1, cex = 0.5)}
           if(yy == 1) { mtext(rownames(countCube_pred)[xx], side = 2, line = 2, cex = 0.5)}
+          
+          print(paste0(xx," ",yy," ",zz))
         }
       }
     }
       
+  dev.off()
   return()
 }
 
@@ -1921,9 +1891,9 @@ pred_herb_correl <- function(prop_herb = NULL, prop_pred = NULL, output.filename
                      tl.pos = c("lt"), tl.offset = 1, tl.cex = 1) -> p1
   
   #First Differences Spearman Correlation
-  pred.prey.DivFirstDiff <- getDiversity1stDiff(data.mat = t(prop_pred), intervals = intervals)
+  pred.prey.DivFirstDiff <- getDiversity1stDiff(data.mat = t(prop_pred), output.rownames = rownames(prop_pred))
   
-  UngualteBMGroupDiv_FirstDiff <- getDiversity1stDiff(data.mat = t(prop_herb), intervals = intervals)
+  UngualteBMGroupDiv_FirstDiff <- getDiversity1stDiff(data.mat = t(prop_herb), output.rownames = rownames(prop_herb))
   
   ungulates <- t(as.matrix(UngualteBMGroupDiv_FirstDiff))
   predators <- t(as.matrix(pred.prey.DivFirstDiff))
@@ -1949,210 +1919,29 @@ pred_herb_correl <- function(prop_herb = NULL, prop_pred = NULL, output.filename
   dev.off()
 }
 
-do.predDietAnalysesChapt1 <- function(measure.mat, pred.data, intervals, repIntTaxa, bmBreaks_pred)
+plot.medianRichnessInBin <- function(countCube = NULL, rep.test = 1, 
+                                     xlim = c(66,0), ylim = c(0,50), xaxt = "s", xlab = "Time (Ma)", ylab = "Number of Taxa", main = "Median Number of Taxa Per Time Bin",
+                                     axis.label = TRUE)
 {
+  plot(0,0, col = "red", type = "n", xaxt = xaxt, xlim = c(66,0), ylim = ylim,
+       xlab = xlab, ylab = ylab, main = main)
+  axis(side = 1, at = seq(xlim[2], xlim[1], 5), labels = axis.label)
   
-  intervals.34Ma <- intervals[intervals$ageBase <= 34,]
-  repIntTaxa.34Ma <- lapply(repIntTaxa, function(this.rep) {this.rep[rownames(intervals.34Ma)]})
-  
-  ######################################################################################################################
-  
-  pred.diet <- read.csv("/Users/emdoughty/Dropbox/Proposal/Proposal/Diet Data PPP CJ.csv")
-  pred.diet$MASTER_LIST <- gsub(pattern = "[[:space:]]", replacement = "_", x = pred.diet$MASTER_LIST)
-  
-  pred.data.master  <- pred.data
-  
-  pred.data <- pred.data[pred.data$taxon %in% pred.diet$MASTER_LIST,]
-  pred.data$Diet <- pred.diet[pred.diet$MASTER_LIST %in% pred.data$taxon, "PPP_diet_2"]
-  
-  pred.data.hyper <- pred.data[pred.data$Diet %in% "hypercarnivore",]
-  pred.data.meso <- pred.data[pred.data$Diet %in% "mesocarnivore",]
-  pred.data.hypo <- pred.data[pred.data$Diet %in% "hypocarnivore",]
-  pred.data.hyper.meso <- pred.data[pred.data$Diet %in% c("hypercarnivore","mesocarnivore"),]
-  pred.data.hyper.hypo <- pred.data[pred.data$Diet %in% c("hypercarnivore","hypocarnivore"),]
-  pred.data.meso.hypo <- pred.data[pred.data$Diet %in% c("mesocarnivore","hypocarnivore"),]
-
-  ######################################################################################################################
-  
-  rem.col <- c("family","genus","reg.vec")
-  measure.mat <- measure.mat[,!colnames(measure.mat) %in% rem.col]
-  
-  pred.data.hyper <- pred.data.hyper[,!colnames(pred.data.hyper) %in% rem.col]
-  
-  countCube_pred_hyper <- sapply(repIntTaxa.34Ma, function(this.rep) {
-    sapply(this.rep, function(this.intv, this.rep) {
-      hist(pred.data.hyper[,"bodyMass"][match(this.intv, pred.data.hyper$taxon)], 
-           breaks= bmBreaks_pred, plot=FALSE)$counts
-    }, this.rep=this.rep)
-  }, simplify = "array")
-  
-  #countCube <- countCube[,,1]
-  
-  dimnames(countCube_pred_hyper) <- list(sizecateg, rownames(intervals.34Ma), NULL)
-  
-  
-  pred.data.meso <- pred.data.meso[,!colnames(pred.data.meso) %in% rem.col]
-  
-  countCube_pred_meso <- sapply(repIntTaxa.34Ma, function(this.rep) {
-    sapply(this.rep, function(this.intv, this.rep) {
-      hist(pred.data.meso[,"bodyMass"][match(this.intv, pred.data.meso$taxon)], 
-           breaks= bmBreaks_pred, plot=FALSE)$counts
-    }, this.rep=this.rep)
-  }, simplify = "array")
-  
-  #countCube <- countCube[,,1]
-  
-  dimnames(countCube_pred_meso) <- list(sizecateg, rownames(intervals.34Ma), NULL)
-  
-  
-  pred.data.hypo <- pred.data.hypo[,!colnames(pred.data.hypo) %in% rem.col]
-  
-  countCube_pred_hypo <- sapply(repIntTaxa.34Ma, function(this.rep) {
-    sapply(this.rep, function(this.intv, this.rep) {
-      hist(pred.data.hypo[,"bodyMass"][match(this.intv, pred.data.hypo$taxon)], 
-           breaks= bmBreaks_pred, plot=FALSE)$counts
-    }, this.rep=this.rep)
-  }, simplify = "array")
-  
-  #countCube <- countCube[,,1]
-  
-  dimnames(countCube_pred_hypo) <- list(sizecateg, rownames(intervals.34Ma), NULL)
-  
-  pred.data.hyper.meso <- pred.data.hyper.meso[,!colnames(pred.data.hyper.meso) %in% rem.col]
-  
-  countCube_pred_hyper.meso <- sapply(repIntTaxa.34Ma, function(this.rep) {
-    sapply(this.rep, function(this.intv, this.rep) {
-      hist(pred.data.hyper.meso[,"bodyMass"][match(this.intv, pred.data.hyper.meso$taxon)], 
-           breaks= bmBreaks_pred, plot=FALSE)$counts
-    }, this.rep=this.rep)
-  }, simplify = "array")
-  
-  #countCube <- countCube[,,1]
-  
-  dimnames(countCube_pred_hyper.meso) <- list(sizecateg, rownames(intervals.34Ma), NULL)
-  
-  pred.data.hyper.hypo<- pred.data.hyper.hypo[,!colnames(pred.data.hyper.hypo) %in% rem.col]
-  
-  countCube_pred_hyper.hypo <- sapply(repIntTaxa.34Ma, function(this.rep) {
-    sapply(this.rep, function(this.intv, this.rep) {
-      hist(pred.data.hyper.hypo[,"bodyMass"][match(this.intv, pred.data.hyper.hypo$taxon)], 
-           breaks= bmBreaks_pred, plot=FALSE)$counts
-    }, this.rep=this.rep)
-  }, simplify = "array")
-  
-  #countCube <- countCube[,,1]
-  
-  dimnames(countCube_pred_hyper.hypo) <- list(sizecateg, rownames(intervals.34Ma), NULL)
-  
-  pred.data.meso.hypo<- pred.data.meso.hypo[,!colnames(pred.data.meso.hypo) %in% rem.col]
-  
-  countCube_pred_meso.hypo <- sapply(repIntTaxa.34Ma, function(this.rep) {
-    sapply(this.rep, function(this.intv, this.rep) {
-      hist(pred.data.meso.hypo[,"bodyMass"][match(this.intv, pred.data.meso.hypo$taxon)], 
-           breaks= bmBreaks_pred, plot=FALSE)$counts
-    }, this.rep=this.rep)
-  }, simplify = "array")
-  
-  #countCube <- countCube[,,1]
-  
-  dimnames(countCube_pred_meso.hypo) <- list(sizecateg, rownames(intervals.34Ma), NULL)
-  
-  prop_pred_hyper <- t(apply(countCube_pred_hyper, c(1,2), median, na.rm=TRUE))
-  colnames(prop_pred_hyper)[colnames(prop_pred_hyper)==""] <- "indeterminate"
-  
-  prop_pred_meso <- t(apply(countCube_pred_meso, c(1,2), median, na.rm=TRUE))
-  colnames(prop_pred_meso)[colnames(prop_pred_meso)==""] <- "indeterminate"
-  
-  prop_pred_hypo <- t(apply(countCube_pred_hypo, c(1,2), median, na.rm=TRUE))
-  colnames(prop_pred_hypo)[colnames(prop_pred_hypo)==""] <- "indeterminate"
-  
-  prop_pred_hyper.meso <- t(apply(countCube_pred_hyper.meso, c(1,2), median, na.rm=TRUE))
-  colnames(prop_pred_hyper.meso)[colnames(prop_pred_hyper.meso)==""] <- "indeterminate"
-  
-  prop_pred_hyper.hypo <- t(apply(countCube_pred_hyper.hypo, c(1,2), median, na.rm=TRUE))
-  colnames(prop_pred_hyper.hypo)[colnames(prop_pred_hyper.hypo)==""] <- "indeterminate"
-  
-  prop_pred_meso.hypo <- t(apply(countCube_pred_meso.hypo, c(1,2), median, na.rm=TRUE))
-  colnames(prop_pred_meso.hypo)[colnames(prop_pred_meso.hypo)==""] <- "indeterminate"
-  
-  png(paste0(output.filepath, "RichnessThroughTimePlots_Diet", this.rank, "_",save.path.bins, "_SmpleStnd=", do.subsample, "_rngethrgh=", do.rangethrough,"_", timestamp(),".png"),
-      width = 15, height = 9, units = "in", res = 200)
-
-  par(mfrow = c(3,3), mar=c(1,4,1.6,0), mgp=c(2.5, 1,0), oma = c(4,2,2,2), bg=NA)
-  plotStackedRichness(this.box=prop_pred_hyper, intervals=intervals.34Ma, reorder.taxa = FALSE, do.log=FALSE, 
-                      numbers.only=FALSE, add.legend=FALSE, 
-                      col.axis = "white", col.lab = "white", xaxt = 'n', yaxt = 'n',
-                      cex.axis = 1.5, cex.lab = 1, las = 1,
-                      ylab = "",# "Proportion of Subtaxa",
-                      xlim = c(34,  min(intervals, na.rm=TRUE)), ylim = c(0, max(rowSums(prop_pred)+10)), xaxp = c(65, 0, 13), yaxp = c(0, 30, 6),
-                      overlay.labels = FALSE, overlay.color = TRUE, do.subepochs = TRUE, thisAlpha.text = 0.75, borderCol = "black", invertTime = FALSE, scale.cex = 1.25, scale.headers = 0.90, text.offset = 0.05)
-  axis(1,col.ticks="white", col.axis = "white", cex.axis =2, labels = FALSE, at = c(seq(0,35,by = 5)), lwd = 2, tck = -0.05, las = 1, padj = 0.75)
-  axis(2,col.ticks="white", col.axis = "white", cex.axis =2, labels = TRUE, at = c(seq(0,40,by = 5)), lwd = 2, tck = -0.05, las = 1,  hadj = 1.5)
-  
-  plot(1, type = "n", 
-       xlab = "",
-       ylab = "", 
-       xlim = c(34,  min(intervals, na.rm=TRUE)), 
-       ylim = c(0, 35))
-  plot(1, type = "n", 
-       xlab = "",
-       ylab = "", 
-       xlim = c(34,  min(intervals, na.rm=TRUE)), 
-       ylim = c(0, 35))
-  
-  plotStackedRichness(this.box=prop_pred_meso, intervals=intervals.34Ma, reorder.taxa = FALSE, do.log=FALSE, 
-                      numbers.only=FALSE, add.legend=FALSE, 
-                      col.axis = "white", col.lab = "white", xaxt = 'n', yaxt = 'n',
-                      cex.axis = 1.5, cex.lab = 1, las = 1,
-                      ylab = "",# "Proportion of Subtaxa",
-                      xlim = c(34,  min(intervals, na.rm=TRUE)), ylim = c(0, max(rowSums(prop_pred)+10)), xaxp = c(65, 0, 13), yaxp = c(0, 30, 6),
-                      overlay.labels = FALSE, overlay.color = TRUE, do.subepochs = TRUE, thisAlpha.text = 0.75, borderCol = "black", invertTime = FALSE, scale.cex = 1.25, scale.headers = 0.90, text.offset = 0.05)
-  axis(1,col.ticks="white", col.axis = "white", cex.axis =2, labels = FALSE, at = c(seq(0,35,by = 5)), lwd = 2, tck = -0.05, las = 1, padj = 0.75)
-  axis(2,col.ticks="white", col.axis = "white", cex.axis =2, labels = TRUE, at = c(seq(0,40,by = 5)), lwd = 2, tck = -0.05, las = 1,  hadj = 1.5)
-  
-  plot(1, type = "n", 
-       xlab = "",
-       ylab = "", 
-       xlim = c(34,  min(intervals, na.rm=TRUE)), 
-       ylim = c(0, max(rowSums(prop_pred)+10)))
-  
-  plot(1, type = "n", 
-       xlab = "",
-       ylab = "", 
-       xlim = c(34,  min(intervals, na.rm=TRUE)), 
-       ylim = c(0, max(rowSums(prop_pred)+10)))
-  
-  plotStackedRichness(this.box=prop_pred_hypo, intervals=intervals.34Ma, reorder.taxa = FALSE, do.log=FALSE, 
-                      numbers.only=FALSE, add.legend=FALSE, 
-                      col.axis = "white", col.lab = "white", xaxt = 'n', yaxt = 'n',
-                      cex.axis = 1.5, cex.lab = 1, las = 1,
-                      ylab = "",# "Proportion of Subtaxa",
-                      xlim = c(34,  min(intervals, na.rm=TRUE)), ylim = c(0, max(rowSums(prop_pred)+10)), xaxp = c(65, 0, 13), yaxp = c(0, 30, 6), 
-                      overlay.labels = FALSE, overlay.color = TRUE, do.subepochs = TRUE, thisAlpha.text = 0.75, borderCol = "black", invertTime = FALSE, scale.cex = 1.25, scale.headers = 0.90, text.offset = 0.05)
-  axis(1,col.ticks="white", col.axis = "white", cex.axis =2, labels = TRUE, at = c(seq(0,35,by = 5)), lwd = 2, tck = -0.05, las = 1, padj = 0.75)
-  axis(2,col.ticks="white", col.axis = "white", cex.axis =2, labels = TRUE, at = c(seq(0,40,by = 5)), lwd = 2, tck = -0.05, las = 1,  hadj = 1.5)
-  
-  plot(1, type = "n", 
-       xlab = "",
-       ylab = "", 
-       xlim = c(34,  min(intervals, na.rm=TRUE)), 
-       ylim = c(0, max(rowSums(prop_pred)+10)))
-  
-  plot(1, type = "n", 
-       xlab = "",
-       ylab = "", 
-       xlim = c(34,  min(intervals, na.rm=TRUE)), 
-       ylim = c(0, max(rowSums(prop_pred)+10)))
-  
-  dev.off()
-  ##############################################################################################################################################################################
-  
-  png(paste0(output.filepath, "Correlation Matrices All predator_", this.rank, "_",save.path.bins, "_SmpleStnd=", do.subsample, "_rngethrgh=", do.rangethrough,"_", timestamp(),".png"),
-      width = 7, height = 3, units = "in", res = 200)
-  par(mfrow = c(1,2))
-  
-  pred_herb_correl(prop_herb = prop_herb, prop_pred = prop_pred, output.filename = correl_filename)
-  
-  
-  return()
+  for(xx in seq(1, length(rep.test), 1))
+  {
+    prop <- t(apply(countCube[,,c(1,rep.test[xx])], c(1,2), median, na.rm=TRUE))
+    colnames(prop)[colnames(prop)==""] <- "indeterminate"
+    
+    lines(rowMeans(intervals), prop[,1], col = alphaColor("red", 0.05))
+    lines(rowMeans(intervals), prop[,2], col = alphaColor("orange", 0.05))
+    lines(rowMeans(intervals), prop[,3], col = alphaColor("green", 0.05))
+    lines(rowMeans(intervals), prop[,4], col = alphaColor("blue", 0.05))
+    lines(rowMeans(intervals), prop[,5], col = alphaColor("purple", 0.05))
+  }
+  #median across all replicates
+  lines(rowMeans(intervals), prop[,1], col = alphaColor("red",1))
+  lines(rowMeans(intervals), prop[,2], col = alphaColor("orange", 1))
+  lines(rowMeans(intervals), prop[,3], col = alphaColor("green", 1))
+  lines(rowMeans(intervals), prop[,4], col = alphaColor("blue", 1))
+  lines(rowMeans(intervals), prop[,5], col = alphaColor("purple", 1))
 }
