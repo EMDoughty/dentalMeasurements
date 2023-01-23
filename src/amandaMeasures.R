@@ -4,16 +4,21 @@ source('~/Dropbox/code/R/dentalMeasurements/src/src_dentalDataFns.R', chdir = TR
 #### read occurrence data
 ####################################################################################################################################
 
-  occs <- read.csv("http://paleobiodb.org/data1.2/occs/list.csv?base_name=Mammalia&continent=NOA&show=full&limit=all", stringsAsFactors=TRUE, strip.white=TRUE)
-  occs <- occs[!occs$order %in% c("Cetacea", "Desmostylia", "Sirenia"), ]
-  occs <- occs[!occs$family %in% c("Allodelphinidae", "Balaenidae", "Balaenopteridae", "Delphinidae", "Desmatophocidae", "Desmostylidae", "Didelphidae","Dugongidae","Enaliarctidae", "Eschrichtiidae","Iniidae", "Kentriodontidae", "Kogiidae", "Odobenidae", "Otariidae", "Paleoparadoxiidae", "Phocidae", "Physeteridae", "Platanistidae", "Pontoporiidae", "Protocetidae", "Squalodontidae", "Ziphiidae"), ]
-  occs$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = occs$accepted_name)	#replace spaces with underscores
+  # occs <- read.csv("http://paleobiodb.org/data1.2/occs/list.csv?base_name=Mammalia&continent=NOA&max_ma=66&min_ma=0&timerule=overlap&lngmin=-125.98&lngmax=-93.40&latmin=27&latmax=55.7&show=full&limit=all", stringsAsFactors=TRUE, strip.white=TRUE)
+	 occs <- read.csv("http://paleobiodb.org/data1.2/occs/list.csv?base_name=Mammalia&continent=NOA&show=full&limit=all", stringsAsFactors=TRUE, strip.white=TRUE)
+	  occs <- occs[!occs$order %in% c("Cetacea", "Desmostylia", "Sirenia"), ]
+	  occs <- occs[!occs$family %in% c("Allodelphinidae", "Allodesminae", "Balaenidae", "Balaenopteridae", "Delphinidae", "Desmatophocidae", "Desmostylidae", "Didelphidae","Dugongidae","Enaliarctidae", "Eschrichtiidae","Iniidae", "Kentriodontidae", "Kogiidae", "Odobenidae", "Otariidae", "Paleoparadoxiidae", "Phocidae", "Physeteridae", "Platanistidae", "Pontoporiidae", "Protocetidae", "Squalodontidae", "Ziphiidae"), ]
+	  occs <- occs[!occs$genus %in% c("Enaliarctos", "Pteronarctos", "Kolponomos", "Pacificotaria", "Pinnarctidion", "Pteronarctos"), ]
+	  occs <- occs[!occs$accepted_name %in% c("Archaeoceti", "Pinnipedia", "Imagotariinae"), ]
+	  occs$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = occs$accepted_name)	#replace spaces with underscores
+
 
 ####################################################################################################################################
 #### read measurement data
 ####################################################################################################################################
 
-	measure.mat <- getSingleSpeciesMatrix()
+	settings$focal.tax$order <- c("Artiodactyla", "Perissodactyla")
+	measure.mat <- getMeasureMatWithBodyMasses(settings)
 	measure.mat <- measure.mat[-which(measure.mat$taxon=="Merycoidodon_(Merycoidodon)_presidioensis"),]		### this is a big outlier on PC2 x PC3 plot
 	measure.mat <- measure.mat[-which(measure.mat$taxon=="Cephalophus_silvicultor"),]						### this is a big outlier on PC2 x PC3 plot
 	
@@ -75,8 +80,8 @@ source('~/Dropbox/code/R/dentalMeasurements/src/src_dentalDataFns.R', chdir = TR
 	lines(x=c(-100,100), y=c(0, 0), lty=3, col="gray50")
 	# text(pcaAll$x[,pc_h], pcaAll$x[,pc_v], labels=rownames(pcaAll$x), cex=0.5, col= famColors[match(m$family[match(rownames(pcaAll$x), m$species)])
 	text(pcaAll$x[,pc_h], pcaAll$x[,pc_v], labels=rownames(pcaAll$x), pos=4, cex=0.3, col=famColors[as.character(m$family[match(rownames(pcaAll$x), m$species)], shortFam)])
-	points(pcaAll$x[,pc_h], pcaAll$x[,pc_v], cex=1.0, pch=symbolVec[match(m$family[match(rownames(pcaAll$x), m$species)], col=famColors[match(m$family[match(rownames(pcaAll$x), m$species)])
-	legend("bottomright", legend=shortFam[shortFam%in%bigList[bigList$accepted_name %in% rownames(pcaAll$x),2]], pch=symbolVec[shortFam%in%bigList[bigList$genus%in%rownames(pcaAll$x),2]], col=famColors[shortFam%in%bigList[bigList$genus%in%rownames(pcaAll$x),2]], box.col="gray50", bg="white", cex=0.55)
+	points(pcaAll $x[,pc_h], pcaAll $x[,pc_v], cex=0.5, pch=symbolVec[match(bigList[match(rownames(pcaAll $x), bigList$accepted_name),2], shortFam)], col=famColors[match(bigList[match(rownames(pcaAll $x), bigList$accepted_name),2], shortFam)])
+	legend("bottomright", legend=shortFam[shortFam %in% bigList[bigList$accepted_name %in% rownames(pcaAll $x),2]], pch=symbolVec[shortFam %in% bigList[bigList$accepted_name %in% rownames(pcaAll $x),2]], col=famColors[shortFam%in%bigList[bigList$accepted_name %in% rownames(pcaAll $x),2]], box.col="gray50", bg="white", cex=0.55)
 	
 # # # # # pcaAll$rotation
 

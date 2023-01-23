@@ -17,41 +17,57 @@ source("~/Dropbox/code/R/common_src/occFns.R")
 source("~/Dropbox/code/R/common_src/sampling.R") 
 source("~/Dropbox/code/R/common_src/utils_marcot.R")
 source("~/Dropbox/code/R/common_src/CzTimescale.R") 
-
 source('~/Dropbox/code/R/dentalMeasurements/src/src_dentalDataFns.R', chdir = TRUE)
 source('~/Dropbox/code/R/dentalMeasurements/src/src_bodyMassEstimation.R', chdir = TRUE)
+source('~/Dropbox/code/R/dentalMeasurements/src/src_makeRepIntOccs.R', chdir = TRUE)
 source('~/Dropbox/code/R/dentalMeasurements/src/src_ecologyAnalysisFns.R', chdir = TRUE)
 
 ####################################################################################################################################
+settings <- list()
+settings$this.rank <- "species"
 
-  occs <- read.csv("http://paleobiodb.org/data1.2/occs/list.csv?base_name=Mammalia&continent=NOA&max_ma=66&min_ma=0&timerule=overlap&lngmin=-125.98&lngmax=-93.40&latmin=27&latmax=55.7&show=full&limit=all", stringsAsFactors=TRUE, strip.white=TRUE)
-  occs <- occs[!occs$order %in% c("Cetacea", "Desmostylia", "Sirenia"), ]
-  occs <- occs[!occs$family %in% c("Allodelphinidae", "Balaenidae", "Balaenopteridae", "Delphinidae", "Desmatophocidae", "Desmostylidae", "Didelphidae","Dugongidae","Enaliarctidae", "Eschrichtiidae","Iniidae", "Kentriodontidae", "Kogiidae", "Odobenidae", "Otariidae", "Paleoparadoxiidae", "Phocidae", "Physeteridae", "Platanistidae", "Pontoporiidae", "Protocetidae", "Squalodontidae", "Ziphiidae"), ]
-  occs$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = occs$accepted_name)	#replace spaces with underscores
+	options(timeout=300)
+  # occs <- read.csv("http://paleobiodb.org/data1.2/occs/list.csv?base_name=Mammalia&continent=NOA&max_ma=66&min_ma=0&timerule=overlap&lngmin=-125.98&lngmax=-93.40&latmin=27&latmax=55.7&show=full&limit=all", stringsAsFactors=TRUE, strip.white=TRUE)
+	 occs <- read.csv("http://paleobiodb.org/data1.2/occs/list.csv?base_name=Mammalia&continent=NOA&show=full&limit=all", stringsAsFactors=TRUE, strip.white=TRUE)
+	  occs <- occs[!occs$order %in% c("Cetacea", "Desmostylia", "Sirenia"), ]
+	  occs <- occs[!occs$family %in% c("Allodelphinidae", "Allodesminae", "Balaenidae", "Balaenopteridae", "Delphinidae", "Desmatophocidae", "Desmostylidae", "Didelphidae","Dugongidae","Enaliarctidae", "Eschrichtiidae","Iniidae", "Kentriodontidae", "Kogiidae", "Odobenidae", "Otariidae", "Paleoparadoxiidae", "Phocidae", "Physeteridae", "Platanistidae", "Pontoporiidae", "Protocetidae", "Squalodontidae", "Ziphiidae"), ]
+	  occs <- occs[!occs$genus %in% c("Enaliarctos", "Pteronarctos", "Kolponomos", "Pacificotaria", "Pinnarctidion", "Pteronarctos"), ]
+	  occs <- occs[!occs$accepted_name %in% c("Archaeoceti", "Pinnipedia", "Imagotariinae"), ]
+	  occs$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = occs$accepted_name)	#replace spaces with underscores
+
+	if (settings$this.rank %in% names(occs)) { occs <- occs[!(occs[, settings$this.rank] != "" & duplicated(occs[,c("collection_no", settings$this.rank)])),]
+	} else if (settings$this.rank == "species") {
+		occs <- occs[!(occs$accepted_rank=="species" & duplicated(occs[,c("collection_no", "accepted_name")])),]
+	}
 
 ####################################################################################################################################
 
-measure.mat <- getMeasureMatWithBodyMasses()
-this.rank <- "genus"
-if (this.rank=="genus") measure.mat <- makeOneGenusMatFromSpecimenMat(measure.mat)
+settings$focal.tax$order <- c("Artiodactyla", "Perissodactyla", "Dinocerata")
+settings$focal.tax$family <- c("Arctocyonidae", "Hyopsodontidae", "Phenacodontidae", "Periptychidae")
+measure.mat <- getMeasureMatWithBodyMasses(settings)
+if (settings$this.rank =="genus") measure.mat <- makeOneGenusMatFromSpecimenMat(measure.mat)
 
 ####################################################################################################################################
 #### reduces matrix to just the focal order(s)
 ####################################################################################################################################
 
-# focal.order <- "Artiodactyla"
-# focal.order <- "Perissodactyla"
-focal.order <- c("Artiodactyla", "Perissodactyla")
-bigList <- unique(occs[((occs$accepted_rank =="species" | occs$accepted_rank =="genus") & occs$order %in% focal.order), c("order","family", "genus", "accepted_name")])
+# settings$focal.tax$order <- "Artiodactyla"
+# settings$focal.tax$order <- "Perissodactyla"
+# bigList <- unheadique(occs[((occs$accepted_rank =="species" | occs$accepted_rank =="genus") & occs$order %in% settings$focal.tax$order), c("order","family", "genus", "accepted_name")])
+bigList <- unique(occs[(occs$accepted_rank =="species" & (occs$order %in% settings$focal.tax$order | occs$family %in% settings$focal.tax$family)), c("order","family", "genus", "accepted_name")])
 bigList <- bigList[order(bigList$order, bigList$family, bigList$genus, bigList$accepted_name),]
 # bigList[order(bigList$family, bigList$accepted_name),]
-shortFam <- sort(unique(bigList$family[bigList$order %in% focal.order]))	
+shortFam <- sort(unique(bigList$family[bigList$order %in% settings$focal.tax$order]))
+if (any(shortFam == "NO_FAMILY_SPECIFIED")) shortFam <- shortFam[-which(shortFam == "NO_FAMILY_SPECIFIED")]
 
 bigList$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = bigList$accepted_name)
+ all.taxa <- sort(unique(bigList$accepted_name))
 
-# matrix(measure.mat$taxon[!measure.mat$taxon %in% bigList$accepted_name[bigList$order %in% focal.order]], ncol=1)
-# matrix(bigList$accepted_name[bigList$order %in% focal.order][! bigList$accepted_name[bigList$order %in% focal.order] %in% measure.mat$taxon], ncol=1)
-measure.mat <- measure.mat[measure.mat$taxon %in% bigList$accepted_name[bigList$order %in% focal.order], ]
+# matrix(measure.mat$taxon[!measure.mat$taxon %in% bigList$accepted_name], ncol=1)
+# matrix(measure.mat$taxon[(!measure.mat$taxon %in% bigList$accepted_name[bigList$order %in% settings$focal.tax$order]) & measure.mat$taxon %in% as.character(occs$identified_name)], ncol=1)
+# matrix(sort(bigList$accepted_name[bigList$order %in% settings$focal.tax$order][! bigList$accepted_name[bigList$order %in% settings$focal.tax$order] %in% measure.mat$taxon]), ncol=1)
+# matrix(sort(bigList$accepted_name[!bigList$accepted_name %in% measure.mat$taxon]), ncol=1)
+measure.mat <- measure.mat[measure.mat$taxon %in% bigList$accepted_name, ]
 
 ####################################################################################################################################
 
@@ -74,139 +90,92 @@ measure.mat <- measure.mat[measure.mat$taxon %in% bigList$accepted_name[bigList$
 
 ####################################################################################################################################
 
-int_length <- 2
-intervals <- makeIntervals(1, 56, int_length)
+settings <- list()
+settings$int_length <- 2
+intervals <- makeIntervals(1, 56, settings$int_length)
 intList <- listifyMatrixByRow(intervals)
 
-do.parallel <- FALSE
-	if (do.parallel) require(parallel)
-reps <- 1000
-do.subsample <- TRUE
-quota <- 0.4
-do.disparity <- FALSE
-bootstrapSpecimens <- FALSE
-bootstrapSpecies <- FALSE
-bootstrapSpeciesWithinIntervals <- FALSE
-plotHist <- FALSE
-do.heuristic <- TRUE
-	extra.intvs <- 0
-do.rangethrough <- TRUE
+settings$n.reps <- 3
+settings$do.subsample <- FALSE
+settings$quota <- 0.4
 
-if (bootstrapSpecies) holderMat <- measure.mat
+settings$bootstrapSpecimens <- FALSE
+settings$bootstrapSpecies <- FALSE
+settings$bootstrapSpeciesWithinIntervals <- FALSE
+settings$plotHist <- FALSE
 
-if (plotHist) {
-	quartz("Guild Histograms")
-	par(mfrow=c((nrow(intervals)), 3), mar=c(0,0,0.75,0), cex.axis=0.5, cex.main=0.75)
-}
+settings$do.rangethrough <- TRUE
+settings$save.to.file <- TRUE
 
-repIntOccs <- list()
-
-################################################################################################################################################
-#### get species within intervals
-################################################################################################################################################
-
-for (rep in seq_len(reps)) {
-	cat("Beginning Rep", rep, "of", reps, "...\r")
-	##################################################We need to update this sbootstrap section
-	if (bootstrapSpecimens) {
-		measure.mat <- specimenMat[sample.int(nrow(specimenMat), size=nrow(specimenMat), replace=TRUE),]
-		measure.mat <- aggregate(measure.mat, by=list(taxon=specimenMat$taxon), mean, na.rm=TRUE)
-		# measure.mat <- measure.mat[,apply(!sapply(measure.mat, is.na), 2, any)]
-		rownames(measure.mat) <- measure.mat$taxon
-		measure.mat[sapply(measure.mat, is.nan)] <- NA
-		# measure.mat<-cbind(measure.mat, cbind(FO=vector(length=nrow(measure.mat), mode="numeric"), LO=vector(length=nrow(measure.mat), mode="numeric")))
-		measure.mat[,"reg"] <- as.character(famList$reg[match(measure.mat$taxon,famList$taxon)])
-		measure.mat[,"bodyMass"] <- makeBodyMasses(measure.mat, regList, best.only=TRUE)
-		# measure.mat[,"PC2"] <- pcVec[match(measure.mat$taxon, names(pcVec))]
-		# measure.mat[,"PC3"] <- pcaLo$x[match(measure.mat$taxon, rownames(pcaLo$x)),3]
-	}
-	if (bootstrapSpecies) measure.mat <- holderMat[sample.int(n=nrow(measure.mat), size=nrow(measure.mat), replace=TRUE),]
-
-	col.dates <- getCollectionAgesFromOccs(occs=occs[, c("collection_no", "max_ma", "min_ma")], random=TRUE)
-	occDates <- col.dates$collection_age[match(occs$collection_no, col.dates$collection_no)]
-	intOccs <- apply(intervals, 1, function(thisIntv) occs$occurrence_no[occDates > thisIntv[1] & occDates <= thisIntv[2]]) # greater than ageTop, less than or equal to ageBase
-	# intTaxa <- sapply(intOccs, function(x) unique(occs$accepted_name[occs$occurrence_no %in% x]))
-	# x <- intOccs
-	# intSp <- sapply(intOccs, function(x) match(sort(unique(gsub(pattern = "[[:space:]]", replacement = "_", x = occs$accepted_name[occs$accepted_rank  == "species" & occs$occurrence_no %in% x]))), measure.mat$taxon))
-	# intSp <- sapply(intOccs, function(x) match(sort(unique(occs$accepted_name[occs$accepted_rank  %in% c("genus", "species") & occs$occurrence_no %in% x]))), measure.mat$taxon))
-	# intSp <- sapply(intOccs, function(x) sort(unique(as.character(occs$accepted_name[occs$occurrence_no %in% x]))))
-
-	#which(occs$occurrence_no %in% x == TRUE) # none are being returned as TRUE
-	
-	if (do.subsample) { 
-		nOccs <- sapply(intOccs, length)
-	 	# nTaxa <- sapply(intSp, length)			### if you want to set the quota no lower than the maximum number of SIB taxa; intSp is required for this to work, so has to be done above
-	 	nTaxa <- 0									### set to zero to simply set the quota to the minimum number of occurrences
-		quota <- max(c(max(nTaxa), min(nOccs)))		### quota is either the maximum number of observed taxa, or the minimum number of occurrences
-		cat("Subsampling quota set to", quota, "occurrences")
-
-		intOccs <- lapply(X=intOccs, FUN=sample, size=quota)
+	if (settings$plotHist) {
+		quartz("Guild Histograms")
+		par(mfrow=c((nrow(intervals)), 3), mar=c(0,0,0.75,0), cex.axis=0.5, cex.main=0.75)
 	}
 	
-	repIntOccs[[rep]] <- intOccs 
-}
+	repIntOccs <- getRepIntOccs(n.reps=settings$n.reps, do.subsample=settings$do.subsample, quota=settings$do.subsample, bootstrapSpecimens=settings$bootstrapSpecimens, bootstrapSpecies=settings$bootstrapSpecies, bootstrapSpeciesWithinIntervals=settings$bootstrapSpeciesWithinIntervals, measurem.mat=measurem.mat, intervals=intervals)
 
-repIntTaxa <- getRepIntTaxaFromRepIntOccs(repIntOccs, this.rank=this.rank, do.rangethrough=do.rangethrough)
 
-print("Completed getting taxa with intervals")
-
-###################################################################################################################################
-
-	if(Sys.info()["sysname"] == "Darwin"){
-		save(repIntTaxa, repIntOccs, file=paste0("~/Dropbox/ungulate_RA/EcologyResults/repIntTaxa_SampleStandardized=", do.subsample, timestamp(),".Rdata"))
-		#load('~/Dropbox/ungulate_RA/EcologyResults/allUngulates/handleyResult##------ Thu Nov  9 02:12:20 2017 ------##_allUngulates.Rdata')
-	} else if(Sys.info()["sysname"] == "Windows"){
-		save(repIntTaxa, repIntOccs, file=paste0("C:/Users/Blaire/Dropbox/ungulate_RA/EcologyResults/repIntTaxa_SampleStandardized=", do.subsample, timestamp(),".Rdata"))
-		# load('~/Dropbox/ungulate_RA/EcologyResults/allUngulates/handleyResult##------ Thu Nov  9 02:12:20 2017 ------##_allUngulates.Rdata')
-	}
+	print("Completed getting taxa with intervals")
 
 ####################################################################################################################################
 ### Handley analysis of taxonomic distributions
 print("Beginning median taxonomic Handley analysis...")
 
-# bigList <- bigList[bigList$order %in% focal.order,]
-# shortFam <- sort(unique(bigList$family))
+do.parallel <- TRUE
+	if (do.parallel) require(parallel)
+extra.intvs <- 0
+do.disparity <- FALSE
+do.heuristic <- FALSE
 
-taxCube <- sapply(repIntTaxa, function(y) sapply(y, function(x) tabulate(match(bigList$family[as.character(bigList$accepted_name) %in% x], shortFam), nbins=length(shortFam)), simplify="array"), simplify="array")
-dimnames(taxCube) <- list(shortFam, rownames(intervals), NULL)
-med.n <- median(sapply(repIntTaxa, function(x) length(unique(unlist(sapply(x, function(y) y))))))
-optList_tax_median <- doHandleyTest(thisCounts=apply(taxCube, c(1,2), median, na.rm=TRUE), n=med.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)	
+class.vec.tax <- sort(unique(unlist(repIntTaxa)))
+class.vec.tax <- class.vec.tax[class.vec.tax %in% as.character(bigList$accepted_name)]
+# this.class[this.class=="NO_FAMILY_SPECIFIED"] <- NA
+class.vec.tax <- factor(sapply(class.vec.tax, function(this.taxon) shortFam[match(bigList$family[as.character(bigList$accepted_name) %in% this.taxon], shortFam)], simplify="array"), exclude="NO_FAMILY_SPECIFIED")
 
-print("Beginning taxonomic Handley analysis for all reps...")
+range.mat.median <- apply(taxRangeBox, c(1,2), function(x) as.logical(round(median(x, na.rm=TRUE))))
+
+optList_tax_median <- doHandleyTest(master.class.list=class.vec.tax, master.range.mat=range.mat.median, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)
+
+print("Beginning taxonomic Handley analysis for all n.reps...")
 optList_tax_allReps <- list()
-for (this.rep in seq_len(reps)) {
-	taxCube <- sapply(repIntTaxa, function(y) sapply(y, function(x) tabulate(match(bigList$family[as.character(bigList$accepted_name) %in% x], shortFam), nbins=length(shortFam)), simplify="array"), simplify="array")
-	this.n <- length(unique(unlist(sapply(repIntTaxa [[this.rep]], function(x) x))))
-	optList_tax_allReps[[this.rep]] <- doHandleyTest(taxCube[,,this.rep], n=this.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)	
-	if(this.rep %% 100 == 0) cat("Taxonomic Handley Rep:", this.rep, "\n")
+for (this.rep in seq_len(settings$n.reps)) {
+	optList_tax_allReps[[this.rep]] <- doHandleyTest(master.class.list=class.vec.tax, master.range.mat=taxRangeBox[,,this.rep], do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)
+	if (this.rep %% 100 == 0) cat("Taxonomic Handley Rep:", this.rep, "\n")
 }
 
 ####################################################################################################################################
-if(Sys.info()["sysname"] == "Darwin"){
-	save(repIntTaxa, repIntOccs, optList_tax_median, optList_tax_allReps, file=paste0("~/Dropbox/ungulate_RA/EcologyResults/Taxon_handleyResult_SampleStandardized=", do.subsample, timestamp(),".Rdata"))
-	#load('~/Dropbox/ungulate_RA/EcologyResults/allUngulates/handleyResult##------ Thu Nov  9 02:12:20 2017 ------##_allUngulates.Rdata')
-} else if(Sys.info()["sysname"] == "Windows"){
-	save(repIntTaxa, repIntOccs, optList_tax_median, optList_tax_allReps, file=paste0("C:/Users/Blaire/Dropbox/ungulate_RA/EcologyResults/Taxon_handleyResult_SampleStandardized=", do.subsample, timestamp(),".Rdata"))
-	# load('~/Dropbox/ungulate_RA/EcologyResults/allUngulates/handleyResult##------ Thu Nov  9 02:12:20 2017 ------##_allUngulates.Rdata')
-}
+# if(Sys.info()["sysname"] == "Darwin"){
+	save(repIntTaxa, repIntOccs, optList_tax_median, optList_tax_allReps, file=paste0("~/Desktop/EcologyResults/Taxon_handleyResult_SampleStandardized=", settings$do.subsample, timestamp(),".Rdata"))
+	# save(repIntTaxa, repIntOccs, optList_tax_median, optList_tax_allReps, file=paste0("~/Dropbox/ungulate_RA/EcologyResults/Taxon_handleyResult_SampleStandardized=", settings$do.subsample, timestamp(),".Rdata"))
+	# #load('~/Dropbox/ungulate_RA/EcologyResults/allUngulates/handleyResult##------ Thu Nov  9 02:12:20 2017 ------##_allUngulates.Rdata')
+# } else if(Sys.info()["sysname"] == "Windows"){
+	# save(repIntTaxa, repIntOccs, optList_tax_median, optList_tax_allReps, file=paste0("C:/Users/Blaire/Dropbox/ungulate_RA/EcologyResults/Taxon_handleyResult_SampleStandardized=", settings$do.subsample, timestamp(),".Rdata"))
+	# # load('~/Dropbox/ungulate_RA/EcologyResults/allUngulates/handleyResult##------ Thu Nov  9 02:12:20 2017 ------##_allUngulates.Rdata')
+# }
 
 ####################################################################################################################################
 ### Handley analysis of body mass distributions
 print("Beginning median body mass Handley analysis...")
 
-bmBreaks <- c(-Inf, 0.69897, 1.39794, 2.176091, 2.69897, 3.0, Inf) #Janis 2000  max(measure.mat$bodyMass, na.rm=TRUE)
+# bmBreaks <- c(-Inf, 0.69897, 1.39794, 2.176091, 2.69897, 3.0, Inf) #Janis 2000  max(measure.mat$bodyMass, na.rm=TRUE)
+bmBreaks <- c(-Inf, 0.69897, 1.39794, 2.176091, 2.69897, Inf) #Janis 2000  max(measure.mat$bodyMass, na.rm=TRUE)
+break.mat <- sapply(bmBreaks, function(x) x + runif(n=length(repIntOccs), min=-0.2, max=0.2))
+class.vec.bm <- apply(break.mat, 1, function(this.bm.breaks) array(sapply(measure.mat$bodyMass, function(x) as.integer(max(which(x > this.bm.breaks)))), dimnames=list(rownames(measure.mat))))
+
 # bmBreaks <- c(-Inf, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, Inf) #Badgely and Fox 2000
 # bmBreaks <- hist(measure.mat$bodyMass, plot=FALSE)$breaks
 
-countCube <- sapply(repIntTaxa, function(this.rep) {
-	sapply(this.rep, function(this.intv, this.rep) {
-		hist(measure.mat$bodyMass[match(this.intv, measure.mat$taxon)], breaks=bmBreaks, plot=FALSE)$counts
-		}, this.rep=this.rep)
-	}, simplify = "array")
+# countCube <- sapply(repIntTaxa, function(this.rep) {
+	# sapply(this.rep, function(this.intv, this.rep) {
+		# hist(measure.mat$bodyMass[match(this.intv, measure.mat$taxon)], breaks=bmBreaks, plot=FALSE)$counts
+		# }, this.rep=this.rep)
+	# }, simplify = "array")
+# dimnames(countCube)[[1]] <- 1:(length(bmBreaks)-1)
 	
-countBox <- apply(countCube, c(1,2), quantile, probs=c(0.025, 0.5, 0.975), na.rm=TRUE) 
+# countBox <- apply(countCube, c(1,2), quantile, probs=c(0.025, 0.5, 0.975), na.rm=TRUE) 
+optList_bm_median <- doHandleyTest(master.class.list=as.factor(apply(class.vec.bm, 1, median, na.rm=TRUE)), master.range.mat=range.mat.median, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)
 
-optList_bm_median <- doHandleyTest(countBox[2,,], n=nrow(measure.mat), do.heuristic=do.heuristic, extra.intvs=extra.intvs)
+# optList_bm_median <- doHandleyTest(this.counts=countBox[2,,], this.range.frame=appendBMToOneRanges(this.ranges=apply(taxRangeCube, c(1,2), median, na.rm=TRUE)), intervals=intervals, do.heuristic=do.heuristic, extra.intvs=extra.intvs)
 	# quartz(width=3.3, height=9.8)
 	# par(mfrow=c(ncol(countBox[2,,])/2,2), mar=c(0,3,0.5, 0.5), mfg=c(2,1))
 	# for (i in seq(from=1, to=ncol(countBox[2,,]), by=1)) barplot(countBox[2,,][,i], width=c(0.68897, 0.68897, 0.778151, 0.522879, 1.18786),space=0, cex.axis=0.5, ylim=c(0,30))
@@ -214,25 +183,27 @@ optList_bm_median <- doHandleyTest(countBox[2,,], n=nrow(measure.mat), do.heuris
 	# quartz()
 	# thisTab <- table(unlist(sapply (optList_bm_allReps, function(x) x[[(length(x) - 1)]]$optBreaks)))
 	# thisTab <- array(thisTab[match(seq_len(nrow(intervals)), names(thisTab))], dimnames=list(rownames(intervals)))
-	# barplot(rev(thisTab)/reps, cex.names=0.5, ylim=c(0,1))
+	# barplot(rev(thisTab)/settings$n.reps, cex.names=0.5, ylim=c(0,1))
 	# abline(h=c(0.95, 0.75, 0.5), lty=3, col="gray50")
 
-print("Beginning body mass Handley analysis for all reps...")
+class.vec.bm <- data.frame(apply(class.vec.bm, 2, function(x) as.factor(array(x[dimnames(taxRangeBox)[[1]]], dimnames=list(dimnames(taxRangeBox)[[1]])))), stringsAsFactors=TRUE)
+print("Beginning body mass Handley analysis for all n.reps...")
 optList_bm_allReps <- list()
-for (this.rep in seq_len(reps)) {
-	this.n <- length(unique(unlist(sapply(repIntTaxa [[this.rep]], function(x) x))))
-	optList_bm_allReps[[this.rep]] <- doHandleyTest(countCube[,,this.rep], n=this.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)
-	if(this.rep %% 100 == 0) cat("Body Mass Handley Rep:",this.rep, "\n")
+for (this.rep in seq(from=1, to=100)) {
+	# optList_bm_allReps[[this.rep]] <- doHandleyTest(this.counts=countCube[,,this.rep], this.range.frame=appendBMToOneRanges(this.ranges=taxRangeCube[,,this.rep]), intervals=intervals, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)
+	optList_bm_allReps[[this.rep]] <- doHandleyTest(master.class.list=class.vec.bm[,this.rep], master.range.mat=taxRangeBox[,,this.rep], do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)
+	if (this.rep %% 100 == 0) cat("Body Mass Handley Rep:",this.rep, "\n")
 }
 
 ####################################################################################################################################
 if(Sys.info()["sysname"] == "Darwin"){
-	save(repIntTaxa, repIntOccs, optList_bm_median, optList_bm_allReps, file=paste0("~/Dropbox/ungulate_RA/EcologyResults/BM_handleyResult_SampleStandardized=", do.subsample, timestamp(),".Rdata"))
+	save(repIntTaxa, repIntOccs, optList_bm_median, optList_bm_allReps, file=paste0("~/Desktop/EcologyResults/BM_handleyResult_SampleStandardized=", settings$do.subsample, timestamp(),".Rdata"))
+	# save(repIntTaxa, repIntOccs, optList_bm_median, optList_bm_allReps, file=paste0("~/Dropbox/ungulate_RA/EcologyResults/BM_handleyResult_SampleStandardized=", settings$do.subsample, timestamp(),".Rdata"))
 	#load('~/Dropbox/ungulate_RA/EcologyResults/allUngulates/handleyResult##------ Thu Nov  9 02:12:20 2017 ------##_allUngulates.Rdata')
-	} else if(Sys.info()["sysname"] == "Windows"){
-		save(repIntTaxa, repIntOccs, optList_bm_median, optList_bm_allReps, file=paste0("C:/Users/Blaire/Dropbox/ungulate_RA/EcologyResults/BM_handleyResult_SampleStandardized=", do.subsample, timestamp(),".Rdata"))
-		# load('~/Dropbox/ungulate_RA/EcologyResults/allUngulates/handleyResult##------ Thu Nov  9 02:12:20 2017 ------##_allUngulates.Rdata')
-	}
+} else if(Sys.info()["sysname"] == "Windows"){
+	save(repIntTaxa, repIntOccs, optList_bm_median, optList_bm_allReps, file=paste0("C:/Users/Blaire/Dropbox/ungulate_RA/EcologyResults/BM_handleyResult_SampleStandardized=", settings$do.subsample, timestamp(),".Rdata"))
+	# load('~/Dropbox/ungulate_RA/EcologyResults/allUngulates/handleyResult##------ Thu Nov  9 02:12:20 2017 ------##_allUngulates.Rdata')
+}
 
 # save(repIntTaxa, repIntOccs, optList_tax_median, optList_tax_allReps, optList_bm_median, optList_bm_allReps, file=paste0("C:/Users/Blaire/Dropbox/ungulate_RA/EcologyResults/handleyResult", timestamp(),".Rdata"))
 ####################################################################################################################################
@@ -253,29 +224,29 @@ quartz(width=10)
 	# Number of shifts per rep
 	quartz()
 	par(mfrow=c(2,1), mar=c(5, 4, 4, 1))
-	hist(sapply(optList_tax_allReps, function(x) length(x) - 2), breaks=seq(-0.5, 10, 1.0), col="orchid4", main="Number of taxonomic shifts in each rep", xlab="Number of Shifts", xlim=c(0,10))
-	hist(sapply(optList_bm_allReps, function(x) length(x) - 2), breaks=seq(-0.5, 11.5, 1.0), col="firebrick4", main="Number of body mass shifts in each rep", xlab="Number of Shifts", xlim=c(0,10))
+	hist(sapply(optList_tax_allReps, function(x) length(x)), breaks=seq(-0.5, 10, 1.0), col="orchid4", main="Number of taxonomic shifts in each rep", xlab="Number of Shifts", xlim=c(0,10))
+	hist(sapply(optList_bm_allReps, function(x) length(x)), breaks=seq(-0.5, 11.5, 1.0), col="firebrick4", main="Number of body mass shifts in each rep", xlab="Number of Shifts", xlim=c(0,10))
 	
-quants <- apply(sapply(repIntTaxa, function(y) sapply(y, function(x) quantile(measure.mat[x,"bodyMass"], probs=c(0, 0.25, 0.5, 0.75, 1.0), na.rm=TRUE)), simplify = "array"), c(1,2), median, na.rm=TRUE)
+	# quants <- apply(sapply(repIntTaxa, function(y) sapply(y, function(x) quantile(measure.mat[x,"bodyMass"], probs=c(0, 0.25, 0.5, 0.75, 1.0), na.rm=TRUE)), simplify = "array"), c(1,2), median, na.rm=TRUE)
 ####################################################################################################################################
 	### number of Replicates with a shift in that interval
 	quartz()
 	par(mfrow=c(2,1), mar=c(4, 4, 1, 1))
 	# optList_tax_allReps <- optList_tax_allReps_heuristic
 	# optList_tax_allReps <- optList_tax_allReps_full
-	breakHist <- hist(rowMeans(intervals)[unlist(sapply(optList_tax_allReps, function(x) x[[length(x) - 1]]$optBreaks))], breaks=sort(unique(unlist(intervals))), plot=FALSE)
-	plot(breakHist, col=NA, border=NA, labels=FALSE, freq=TRUE, cex=0.3, xaxp =c(55,5,5), xlim=rev(range(intervals)), xaxp =c(55,5,10), ylim=c(0,reps), main="Number of Replicates with a Taxonomic Distribution Shift", xlab="Time (Ma)")
+	breakHist <- hist(rowMeans(intervals)[unlist(sapply(optList_tax_allReps, function(x) x[[length(x)]]$optBreaks))], breaks=sort(unique(unlist(intervals))), plot=FALSE)
+	plot(breakHist, col=NA, border=NA, labels=FALSE, freq=TRUE, cex=0.3, xaxp =c(55,5,5), xlim=rev(range(intervals)), xaxp =c(55,5,10), ylim=c(0,settings$n.reps), main="Number of Replicates with a Taxonomic Distribution Shift", xlab="Time (Ma)")
 	overlayCzTimescale(do.subepochs=TRUE)
-	plot(breakHist, col="orchid4", border="orchid1", labels=TRUE, freq=TRUE, cex=0.3, xaxp =c(55,5,10),  xlim=c(55, 0), ylim=c(0,reps), add=TRUE)
+	plot(breakHist, col="orchid4", border="orchid1", labels=TRUE, freq=TRUE, cex=0.3, xaxp =c(55,5,10),  xlim=c(55, 0), ylim=c(0,settings$n.reps), add=TRUE, cex=0.5)
 
 	# par(mfrow=c(2,1), mar=c(3.5, 3.5, 1, 1))
 	# optList_bm_allReps <- optList_bm_allReps_heuristic
 	# optList_bm_allReps <- optList_bm_allReps_full
 	### number of Replicates with a shift in that interval
-	breakHist <- hist(rowMeans(intervals)[unlist(sapply(optList_bm_allReps, function(x) unique(x[[length(x) - 1]]$optBreaks)))], breaks=sort(unique(unlist(intervals))), plot=FALSE)
-	plot(breakHist, col=NA, border=NA, labels=FALSE, freq=TRUE, cex=0.3, xaxp =c(55,5,10), xlim=rev(range(intervals)), ylim=c(0,reps), main="Number of Replicates with a Body Mass Distribution Shift", xlab="Time (Ma)")
+	breakHist <- hist(rowMeans(intervals)[unlist(sapply(optList_bm_allReps, function(x) unique(x[[length(x)]]$optBreaks)))], breaks=sort(unique(unlist(intervals))), plot=FALSE)
+	plot(breakHist, col=NA, border=NA, labels=FALSE, freq=TRUE, cex=0.3, xaxp =c(55,5,10), xlim=rev(range(intervals)), ylim=c(0,settings$n.reps), main="Number of Replicates with a Body Mass Distribution Shift", xlab="Time (Ma)")
 	overlayCzTimescale(do.subepochs=TRUE)
-	plot(breakHist, col="firebrick4", border="firebrick1", labels=TRUE, freq=TRUE, cex=0.3, xaxp =c(55,5,10), xlim=c(55, 0), ylim=c(0,reps), add=TRUE)
+	plot(breakHist, col="firebrick4", border="firebrick1", labels=TRUE, freq=TRUE, cex=0.3, xaxp =c(55,5,10), xlim=c(55, 0), ylim=c(0,settings$n.reps), add=TRUE, cex=0.5)
 
 
 ####################################################################################################################################
@@ -297,7 +268,7 @@ quants <- apply(sapply(repIntTaxa, function(y) sapply(y, function(x) quantile(me
 	#source("C:/Users/Blaire/Dropbox/ungulate_RA/RCode/isotopes.R")
 	# source("~/Dropbox/code/R/common_src/isotopes.R")
 		
-	optList_topes <- doTopesRateAnalysis(intervals)
+	optList_topes <- doTopesRateAnalysis(intervals, do.parallel=do.parallel)
 	plotTopesRateAnalysis(optList_topes, intervals, x.axis=FALSE) #
 	box(lwd=1)
 	# getAlroyStatistics(intervals)
@@ -318,10 +289,10 @@ quants <- apply(sapply(repIntTaxa, function(y) sapply(y, function(x) quantile(me
 		plotStackedRichness(this.box=prop, intervals=intervals, do.log=FALSE, overlay.labels=TRUE, numbers.only=TRUE, legend=FALSE, xlim=c(max(intervals, na.rm=TRUE),min(intervals, na.rm=TRUE)))
 		#med.n <- median(length(unique(unlist(sapply(repIntTaxa[[this.rep]], function(x) measure.mat$taxon[x]))))) #what is this.rep set to during this function?  variable is used in for loop in Handley
 		# med.n <- median(sapply(repIntTaxa, function(x) length(unique(unlist(sapply(x, function(y) measure.mat$taxon[y]))))))
-		# optList_tax <- doHandleyTest(thisCounts=apply(taxCube, c(1,2), median, na.rm=TRUE), n=med.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)	# based on means
-		abline(v=sort(c(intervals[optList_tax_median[[length(optList_tax_median)-1]]$optBreaks,2], range(intervals))), lwd=1.5, col="darkorchid4")
-		text(x= sort((c(max(intervals), intervals[optList_tax_median[[length(optList_tax_median)-1]]$optBreaks,2]) - 0.35)), y=par()$usr[3], labels=rev(seq_len(length(optList_tax_median[[length(optList_tax_median)-1]]$optBreaks) + 1)), pos=3, cex=0.5, col="darkorchid4")
-		text(x= sort((c(max(intervals), intervals[optList_tax_median[[length(optList_tax_median)-1]]$optBreaks,2]) - 0.35)), y=par()$usr[3], labels= paste(sort(c(max(intervals), intervals[optList_tax_median[[length(optList_tax_median)-1]]$optBreaks,2])), "Ma"), adj=c(0,0), cex=0.5, col="darkorchid4")
+		# optList_tax <- doHandleyTest(this.counts=apply(taxCube, c(1,2), median, na.rm=TRUE), n=med.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)	# based on means
+		abline(v=sort(c(intervals[optList_tax_median[[length(optList_tax_median)]]$optBreaks,2], range(intervals))), lwd=1.5, col="darkorchid4")
+		text(x= sort((c(max(intervals), intervals[optList_tax_median[[length(optList_tax_median)]]$optBreaks,2]) - 0.35)), y=par()$usr[3], labels=rev(seq_len(length(optList_tax_median[[length(optList_tax_median)]]$optBreaks) + 1)), pos=3, cex=0.5, col="darkorchid4")
+		text(x= sort((c(max(intervals), intervals[optList_tax_median[[length(optList_tax_median)]]$optBreaks,2]) - 0.35)), y=par()$usr[3], labels= paste(sort(c(max(intervals), intervals[optList_tax_median[[length(optList_tax_median)]]$optBreaks,2])), "Ma"), adj=c(0,0), cex=0.5, col="darkorchid4")
 		box(lwd=1)
 	
 	### body mass panel
@@ -352,11 +323,11 @@ quants <- apply(sapply(repIntTaxa, function(y) sapply(y, function(x) quantile(me
 		}
 		points(measure.mat[complete.cases(measure.mat[ ,c("FO","LO")]) & measure.mat$FO == measure.mat$LO, c("FO","bodyMass")], pch=21, col=alphaColor("gray0", 0.5), cex=0.25) #this line is not generating the proper output for the final graph due to c("FO","bodyMass") causing a  "undefined columns selected" error
 		
-		# optList_bm <- doHandleyTest(thisCounts=apply(countCube, c(1,2), median, na.rm=TRUE), n=med.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)	# based on means
-		# optList_bm <- doHandleyTest(thisCounts=apply(countCube, c(1,2), median, na.rm=TRUE), sig=0.01, do.heuristic=TRUE, do.parallel=do.parallel)	# based on median
-		abline(v=sort(c(intervals[optList_bm_median[[length(optList_bm_median)-1]]$optBreaks,2], range(intervals))), lwd=1.5, col="firebrick4")
-		text(x= sort((c(max(intervals), intervals[optList_bm_median[[length(optList_bm_median)-1]]$optBreaks,2]) - 0.35)), y=par()$usr[3], labels=rev(seq_len(length(optList_bm_median[[length(optList_bm_median)-1]]$optBreaks) + 1)), pos=3, cex=0.5, col="firebrick4")
-		text(x= sort((c(max(intervals), intervals[optList_bm_median[[length(optList_bm_median)-1]]$optBreaks,2]) - 0.35)), y=par()$usr[3], labels= paste(sort(c(max(intervals), intervals[optList_bm_median[[length(optList_bm_median)-1]]$optBreaks,2])), "Ma"), adj=c(0,0),cex=0.5, col="firebrick4")
+		# optList_bm <- doHandleyTest(this.counts=apply(countCube, c(1,2), median, na.rm=TRUE), n=med.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)	# based on means
+		# optList_bm <- doHandleyTest(this.counts=apply(countCube, c(1,2), median, na.rm=TRUE), sig=0.01, do.heuristic=TRUE, do.parallel=do.parallel)	# based on median
+		abline(v=sort(c(intervals[optList_bm_median[[length(optList_bm_median)]]$optBreaks,2], range(intervals))), lwd=1.5, col="firebrick4")
+		text(x= sort((c(max(intervals), intervals[optList_bm_median[[length(optList_bm_median)]]$optBreaks,2]) - 0.35)), y=par()$usr[3], labels=rev(seq_len(length(optList_bm_median[[length(optList_bm_median)]]$optBreaks) + 1)), pos=3, cex=0.5, col="firebrick4")
+		text(x= sort((c(max(intervals), intervals[optList_bm_median[[length(optList_bm_median)]]$optBreaks,2]) - 0.35)), y=par()$usr[3], labels= paste(sort(c(max(intervals), intervals[optList_bm_median[[length(optList_bm_median)]]$optBreaks,2])), "Ma"), adj=c(0,0),cex=0.5, col="firebrick4")
 		
 		quants <- apply(sapply(repIntTaxa, function(y) sapply(y, function(x) quantile(measure.mat[x,"bodyMass"], probs=c(0, 0.25, 0.5, 0.75, 1.0), na.rm=TRUE)), simplify = "array"), c(1,2), median, na.rm=TRUE)
 		polygon(c(rowMeans(intervals), rev(rowMeans(intervals))), c(quants[1,], rev(quants[5,])), col=alphaColor("darkorange4", 0.25), border="darkorange4")
@@ -512,7 +483,7 @@ quants <- apply(sapply(repIntTaxa, function(y) sapply(y, function(x) quantile(me
 # ###
 # install.packages("vegan")
 # require(vegan)
-# bmBox <- sapply(repIntTaxa, function(thisRep) t(sapply(thisRep, function(taxa) hist(measure.mat$bodyMass[taxa], freq=TRUE, xlim=c(min(bmBreaks), max(bmBreaks)), ylim=c(0,22), breaks=bmBreaks, col="firebrick1", ylab="", plot=plotHist)$counts)), simplify="array") #, main=paste(intervals[intv, "ageTop"], "-", intervals[intv, "ageBase"], "Ma (n = ", length(intSp[[intv]]), ")")
+# bmBox <- sapply(repIntTaxa, function(thisRep) t(sapply(thisRep, function(taxa) hist(measure.mat$bodyMass[taxa], freq=TRUE, xlim=c(min(bmBreaks), max(bmBreaks)), ylim=c(0,22), breaks=bmBreaks, col="firebrick1", ylab="", plot=settings$plotHist)$counts)), simplify="array") #, main=paste(intervals[intv, "ageTop"], "-", intervals[intv, "ageBase"], "Ma (n = ", length(intSp[[intv]]), ")")
 # par(mfrow=c(2,1), mar=c(3,3,0.5,0.5), mgp=c(1.25, 0.5, 0))
 # tax <- plotNMDS(thisBox=t(apply(taxCube, c(1,2), mean, na.rm=TRUE)), intervals, polygon.ints=optList_tax[[(length(optList_tax)-1)]]$optBreaks, scaler=5, title="taxonomy") #, filename="~/Desktop/NMDS_bodyMass.pdf"
 # bm <- plotNMDS(thisBox=bmBox, intervals, polygon.ints=oneOpt[[(length(oneOpt)-1)]]$optBreaks, scaler=5, title="Body Mass") #, filename="~/Desktop/NMDS_bodyMass.pdf"
