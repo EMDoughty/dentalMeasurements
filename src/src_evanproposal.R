@@ -1446,7 +1446,7 @@ getTargetTaxa<- function(measure.mat, uniqTax, occs, uniqOnly = FALSE, species.o
   if(!is.null(save.file)) write.csv(uniqTax, file = save.file)
 }
 
-data.coverage_v2 <- function(clades, clade.level = "family", data.mat, occs, measure.colnames, save.file = NULL)
+data.coverage_v2 <- function(clades, clade.level = "family", clade.ranked = TRUE, data.mat, occs, measure.colnames, save.file = NULL)
 {
   output.list <- list(AllTaxa = NA, OccsOnly = NA, MissingTaxa = NA) #, NoOccs = NA)
   
@@ -1466,7 +1466,11 @@ data.coverage_v2 <- function(clades, clade.level = "family", data.mat, occs, mea
     uniqTax <- taxaMat
   }
   
-  tax.mat <- uniqTax[uniqTax$taxon_name %in% clades, c("order","family")]
+  if(clade.ranked) {tax.mat <- uniqTax[uniqTax$taxon_name %in% clades, c("order","family")]
+  } else {
+    tax.mat <- uniqTax[uniqTax$taxon_name %in% clades, c("order","family")]
+    
+    }
   
   tax.mat$Percent.Species <- tax.mat$No.Species <- tax.mat$Sampled.Species <- tax.mat$Percent.Genera <- tax.mat$No.Genera <- tax.mat$Sampled.Genera  <-  NA
   
@@ -1478,6 +1482,7 @@ data.coverage_v2 <- function(clades, clade.level = "family", data.mat, occs, mea
     tax.mat$No.Species[tax.mat$family %in% xx] <- length(unique(uniqTax.temp$accepted_name[uniqTax.temp$genus != "" & uniqTax.temp$accepted_name != uniqTax.temp$genus]))
   }
   
+  ###########################################################################################################################################################################
   ##2) compare that list versus a list for the taxa that I have measurements for individual teeth (excludes image only or specimens with tooth row measurements but not individual teeth)
   #### cleanup the data.mat to remove extra columns
   data.mat <- data.mat[, colnames(data.mat)[1:66]]
@@ -1764,12 +1769,7 @@ sensitivity.numberReps <- function(countCube_herb = NULL, countCube_pred = NULL,
   return()
 }
 
-estiamteMissingDiversity_Alroy <- function() {
-  getThreeTimerRichnessFromOneOccList()
-  getThreeTimerRatesFromCounts()
-  
-  return()
-}
+
 
 get.repIntOccs <- function(intervals = NULL,
                            occs = NULL,
@@ -1944,4 +1944,51 @@ plot.medianRichnessInBin <- function(countCube = NULL, rep.test = 1,
   lines(rowMeans(intervals), prop[,3], col = alphaColor("green", 1))
   lines(rowMeans(intervals), prop[,4], col = alphaColor("blue", 1))
   lines(rowMeans(intervals), prop[,5], col = alphaColor("purple", 1))
+}
+
+compare.dataset <- function(evan.data, Jon.data, colname.index)
+{
+ #need to make sure that the columns containing measurements are double and not character
+  measure.colnames <- c("P2_L", "P2_TrigW", "P2_TalW", "P2_W", "P3_L", "P3_TrigW", "P3_TalW", "P3_W", "P4_L", "P4_TrigW", "P4_TalW", "P4_W", 
+                        "M1_L", "M1_TrigW", "M1_TalW", "M1_W", "M2_L", "M2_TrigW", "M2_TalW", "M2_W", "M3_L", "M3_TrigW", "M3_TalW", "M3_W",
+                        "p2_l", "p2_Trigw", "p2_Talw", "p2_w", "p3_l", "p3_Trigw", "p3_Talw", "p3_w", "p4_l", "p4_Trigw", "p4_Talw", "p4_w",
+                        "m1_l", "m1_Trigw", "m1_Talw", "m1_w", "m2_l", "m2_Trigw", "m2_Talw", "m2_w", "m3_l", "m3_Trigw", "m3_Talw", "m3_w",
+                        "M1.3_L", "m1.3_L", "P4.M3_L", "p4.m3_l")
+  
+  for(xx in c(measure.colnames)) 
+  {
+    evan.data[,c(xx)] <- as.double(evan.data[,c(xx)])
+    Jon.data[,c(xx)] <- as.double(Jon.data[,c(xx)])
+  }
+  
+  evan.data[,c("Include")] <- as.logical(evan.data[,c("Include")])
+  Jon.data[,c("Include")] <- as.logical(Jon.data[,c("Include")])
+  
+  unmatching.rows <- anti_join(evan.data[,c(1:12)], Jon.data[,c(1:12)], na_matches = c("na"))
+  print(nrow(unmatching.rows))
+  unmatching.rows <- anti_join(evan.data[,c(13:64)], Jon.data[,c(13:64)], na_matches = c("na"))
+  print(nrow(unmatching.rows))
+  unmatching.rows <- anti_join(evan.data[,c(65:71)], Jon.data[,c(65:71)], na_matches = c("na"))
+  print(nrow(unmatching.rows))
+  
+  unmatching.rows <- anti_join(evan.data[,c(1:66,68:71)], Jon.data[,c(1:66,68:71)], na_matches = c("na"))
+  print(nrow(unmatching.rows))
+  
+  unmatching.rows <- anti_join(Jon.data[,c(1:66,68:71)], evan.data[,c(1:66,68:71)], na_matches = c("na")) #the date entered column (colulmn 67) causes a few thousand to be unequal compared to the few hundred when its excluded
+  print(nrow(unmatching.rows))
+ 
+  unmatching.rows[is.na(unmatching.rows)] <-  ""
+  
+  write.csv(unmatching.rows, "/Users/emdoughty/Dropbox/Code/R/Files to Save outside git/ArchaicUngulate_UnmatchJontoEvanDataset.csv")
+  
+ # generics::intersect(evan.data, Jon.data)
+  
+  return()
+}
+
+estiamteMissingDiversity_Alroy <- function() {
+  getThreeTimerRichnessFromOneOccList()
+  getThreeTimerRatesFromCounts()
+  
+  return()
 }
