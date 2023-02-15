@@ -1446,7 +1446,7 @@ getTargetTaxa<- function(measure.mat, uniqTax, occs, uniqOnly = FALSE, species.o
   if(!is.null(save.file)) write.csv(uniqTax, file = save.file)
 }
 
-data.coverage_v2 <- function(clades, clade.level = "family", data.mat, occs, measure.colnames, save.file = NULL)
+data.coverage_v2 <- function(clades, clade.level = "family", clade.ranked = TRUE, data.mat, occs, measure.colnames, save.file = NULL)
 {
   output.list <- list(AllTaxa = NA, OccsOnly = NA, MissingTaxa = NA) #, NoOccs = NA)
   
@@ -1466,7 +1466,11 @@ data.coverage_v2 <- function(clades, clade.level = "family", data.mat, occs, mea
     uniqTax <- taxaMat
   }
   
-  tax.mat <- uniqTax[uniqTax$taxon_name %in% clades, c("order","family")]
+  if(clade.ranked) {tax.mat <- uniqTax[uniqTax$taxon_name %in% clades, c("order","family")]
+  } else {
+    tax.mat <- uniqTax[uniqTax$taxon_name %in% clades, c("order","family")]
+    
+    }
   
   tax.mat$Percent.Species <- tax.mat$No.Species <- tax.mat$Sampled.Species <- tax.mat$Percent.Genera <- tax.mat$No.Genera <- tax.mat$Sampled.Genera  <-  NA
   
