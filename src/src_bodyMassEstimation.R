@@ -80,7 +80,7 @@ fillMissingBodyMasses <- function(measure.mat) {
 appendRegressionCategories <- function(measure.mat, regMat, focal.tax) {
 	
 	regMat$family <- getCurrentTaxa(tax.vec = regMat$family)
-	regMat$genus <- getCurrentTaxa(tax.vec = regMat$genus, keep.changed.rank=FALSE)
+	regMat$genus <- getCurrentTaxa(tax.vec = regMat$genus)
 	regMat <- unique(regMat)
 	
 	uniqTax <- lapply(unlist(focal.tax), FUN=getTaxonomyForOneBaseTaxon)

@@ -125,9 +125,10 @@ getToothRowLengths <- function(taxon) {
 
 getExantMat <- function() {
 	lab <- c("p2", "p3", "p4", "m1", "m2", "m3")
-	
-	widths <- read.csv("~/Dropbox/code/R/cooperExtantDental/dat/widths_cooper.csv", stringsAsFactors=FALSE, strip.white=TRUE)
-	widths <- merge(widths, read.csv("~/Dropbox/code/R/cooperExtantDental/dat/widths_roberto.csv", stringsAsFactors=FALSE, strip.white=TRUE), all=TRUE, sort=FALSE)
+#	widths <- read.csv("~/Dropbox/code/R/cooperExtantDental/dat/widths_cooper.csv", stringsAsFactors=FALSE, strip.white=TRUE) original line
+	widths <- read.csv("~/Dropbox/code/R/dentalMeasurements/dat/widths_cooper.csv", stringsAsFactors=FALSE, strip.white=TRUE) # changed this line so it matches with directory on github
+#	widths <- merge(widths, read.csv("~/Dropbox/code/R/cooperExtantDental/dat/widths_roberto.csv", stringsAsFactors=FALSE, strip.white=TRUE), all=TRUE, sort=FALSE) original line
+	widths <- merge(widths, read.csv("~/Dropbox/code/R/dentalMeasurements/dat/widths_roberto.csv", stringsAsFactors=FALSE, strip.white=TRUE), all=TRUE, sort=FALSE) # changed this line so it matches with directory on github
 	w_means <-sapply(lab, function(x) rowMeans(widths[,grepl(x, colnames(widths))], na.rm=TRUE))
 	w_means[!is.finite(data.matrix(w_means))] <- NA
 	w_means <- data.frame(specimen=widths[,1], w_means)
@@ -136,8 +137,10 @@ getExantMat <- function() {
 	colnames(w_means) <- sapply(colnames(w_means), function(x) paste(x, "_w", sep=""))
 	colnames(w_means)[1] <- "specimen"
 	
-	lengths <- read.csv("~/Dropbox/code/R/cooperExtantDental/dat/lengths_cooper.csv", stringsAsFactors=FALSE, strip.white=TRUE)
-	lengths <- merge(lengths, read.csv("~/Dropbox/code/R/cooperExtantDental/dat/lengths_roberto.csv", stringsAsFactors=FALSE, strip.white=TRUE), all=TRUE, sort=FALSE)
+#	lengths <- read.csv("~/Dropbox/code/R/cooperExtantDental/dat/lengths_cooper.csv", stringsAsFactors=FALSE, strip.white=TRUE) original line
+	lengths <- read.csv("~/Dropbox/Code/R/dentalMeasurements/dat/lengths_cooper.csv", stringsAsFactors=FALSE, strip.white=TRUE) # changed this line so it matches with directory on github
+#	lengths <- merge(lengths, read.csv("~/Dropbox/code/R/cooperExtantDental/dat/lengths_roberto.csv", stringsAsFactors=FALSE, strip.white=TRUE), all=TRUE, sort=FALSE) original line	
+	lengths <- merge(lengths, read.csv("~/Dropbox/code/R/dentalMeasurements/dat/lengths_roberto.csv", stringsAsFactors=FALSE, strip.white=TRUE), all=TRUE, sort=FALSE) # changed this line so it matches with directory on github
 	l_means <- data.frame(sapply(lab, function(x) rowMeans(lengths[,grepl(x, colnames(lengths))], na.rm=TRUE)))
 	l_means <- cbind(specimen=lengths[,1], l_means)
 	w_means[is.nan(data.matrix(w_means))] <- NA
