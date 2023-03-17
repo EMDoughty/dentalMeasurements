@@ -22,6 +22,12 @@ source('~/Dropbox/code/R/dentalMeasurements/src/src_bodyMassEstimation.R', chdir
 source('~/Dropbox/code/R/dentalMeasurements/src/src_makeRepIntOccs.R', chdir = TRUE)
 source('~/Dropbox/code/R/dentalMeasurements/src/src_ecologyAnalysisFns.R', chdir = TRUE)
 
+source("/Users/emdoughty/Dropbox/Code/R/dentalMeasurements/src/src_evanproposal.R")
+
+require(stringr)
+require(dplyr)
+require(abind)
+
 ####################################################################################################################################
 settings <- list()
 settings$this.rank <- "species"
@@ -42,21 +48,26 @@ settings$this.rank <- "species"
 
 ####################################################################################################################################
 
-settings$focal.tax$order <- c("Artiodactyla", "Perissodactyla", "Dinocerata")
-settings$focal.tax$family <- c("Arctocyonidae", "Hyopsodontidae", "Phenacodontidae", "Periptychidae")
+settings$focal.tax$clade <- c("Artiodactyla", "Perissodactyla", "Condylarthra", "Dinocerata", "Taeniodonta", "Pantodonta", "Tillodontia", "Arctocyonidae","Chriacidae", "Hyopsodontidae","Periptychidae","Phenacodontidae")
+#settings$focal.tax$order <- c("Artiodactyla", "Perissodactyla", "Dinocerata", "Cimolesta") #Cimolesta is used as there are a few Taeniodont and tillodonts that lack a family designation
+#settings$focal.tax$family <- c("Arctocyonidae", "Hyopsodontidae", "Phenacodontidae", "Periptychidae")
+
 measure.mat <- getMeasureMatWithBodyMasses(settings)
 if (settings$this.rank =="genus") measure.mat <- makeOneGenusMatFromSpecimenMat(measure.mat)
 
 ####################################################################################################################################
 #### reduces matrix to just the focal order(s)
 ####################################################################################################################################
-
-# settings$focal.tax$order <- "Artiodactyla"
-# settings$focal.tax$order <- "Perissodactyla"
-# bigList <- unheadique(occs[((occs$accepted_rank =="species" | occs$accepted_rank =="genus") & occs$order %in% settings$focal.tax$order), c("order","family", "genus", "accepted_name")])
-bigList <- unique(occs[(occs$accepted_rank =="species" & (occs$order %in% settings$focal.tax$order | occs$family %in% settings$focal.tax$family)), c("order","family", "genus", "accepted_name")])
+#need way to get around issue of species without higher taxonimic designations in occs despite being in a clade.  Could do work around where bigList is derived from getHigher taxon and then compared with occs
+bigList <- unique(getTaxaInClade(clades = settings$focal.tax$clade, occs = occs, save.file = NULL))
+bigList <- unique(bigList[,c("order","family", "genus", "accepted_name")])
 bigList <- bigList[order(bigList$order, bigList$family, bigList$genus, bigList$accepted_name),]
+
+# bigList <- unheadique(occs[((occs$accepted_rank =="species" | occs$accepted_rank =="genus") & occs$order %in% settings$focal.tax$order), c("order","family", "genus", "accepted_name")])
+#bigList <- unique(occs[(occs$accepted_rank =="species" & (occs$order %in% settings$focal.tax$order | occs$family %in% settings$focal.tax$family)), c("order","family", "genus", "accepted_name")])
+#bigList <- bigList[order(bigList$order, bigList$family, bigList$genus, bigList$accepted_name),]
 # bigList[order(bigList$family, bigList$accepted_name),]
+
 shortFam <- sort(unique(bigList$family[bigList$order %in% settings$focal.tax$order]))
 if (any(shortFam == "NO_FAMILY_SPECIFIED")) shortFam <- shortFam[-which(shortFam == "NO_FAMILY_SPECIFIED")]
 
@@ -90,13 +101,13 @@ measure.mat <- measure.mat[measure.mat$taxon %in% bigList$accepted_name, ]
 
 ####################################################################################################################################
 
-settings <- list()
+#settings <- list()
 settings$int_length <- 2
-intervals <- makeIntervals(1, 56, settings$int_length)
+intervals <- makeIntervals(1, 65, settings$int_length)
 intList <- listifyMatrixByRow(intervals)
 
-settings$n.reps <- 3
-settings$do.subsample <- FALSE
+settings$n.reps <- 10000
+settings$do.subsample <- TRUE
 settings$quota <- 0.4
 
 settings$bootstrapSpecimens <- FALSE
@@ -112,7 +123,9 @@ settings$save.to.file <- TRUE
 		par(mfrow=c((nrow(intervals)), 3), mar=c(0,0,0.75,0), cex.axis=0.5, cex.main=0.75)
 	}
 	
-	repIntOccs <- getRepIntOccs(n.reps=settings$n.reps, do.subsample=settings$do.subsample, quota=settings$do.subsample, bootstrapSpecimens=settings$bootstrapSpecimens, bootstrapSpecies=settings$bootstrapSpecies, bootstrapSpeciesWithinIntervals=settings$bootstrapSpeciesWithinIntervals, measurem.mat=measurem.mat, intervals=intervals)
+	repIntOccs <- getRepIntOccs(settings = settings, intervals=intervals,
+	                            file.path = "~/Dropbox/Code/R/Files to Save outside git/",
+	                            file.name = "testrun.Rdata")
 
 
 	print("Completed getting taxa with intervals")

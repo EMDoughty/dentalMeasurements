@@ -999,6 +999,6 @@ getIntTaxaFromOneRepIntOccs <- function(this.repIntOccs, this.rank="species", do
 	intTaxa
 }
 
-getRepIntTaxaFromRepIntOccs <- function(repIntOccs, this.rank="species", do.rangethrough=TRUE) {
-	lapply(repIntOccs, getIntTaxaFromOneRepIntOccs, this.rank=this.rank, do.rangethrough= do.rangethrough)
+getRepIntTaxaFromRepIntOccs <- function(settings, repIntOccs, this.rank="species", do.rangethrough=TRUE) {
+	lapply(repIntOccs, getIntTaxaFromOneRepIntOccs, this.rank=settings$this.rank, do.rangethrough= do.rangethrough)
 }

@@ -157,7 +157,8 @@ getExantMat <- function() {
 }
 
 getArchaicMat <- function() {
-	dat <- read.csv("~/Dropbox/code/R/dentalMeasurements/dat/ArchaicUngulate_UploadFile_Master_221110.csv", stringsAsFactors=TRUE, strip.white=TRUE)
+	#dat <- read.csv("~/Dropbox/code/R/dentalMeasurements/dat/ArchaicUngulate_UploadFile_Master_221110.csv", stringsAsFactors=TRUE, strip.white=TRUE)
+	dat <- read.csv("~/Dropbox/code/R/dentalMeasurements/dat/ArchaicUngulate_UploadFile_Master.csv", stringsAsFactors=TRUE, strip.white=TRUE)
 	dat$identified.name  <- apply(X=dat, MARGIN=1, FUN=function(x) if (x["Accepted.Species"]=="") x["Accepted.Genus"] else paste(x["Accepted.Genus"], x["Accepted.Species"], sep=" "))
 	names(dat)[names(dat)=="Catalog.Number"] <- "specimen"
 	dat
