@@ -1455,7 +1455,7 @@ data.coverage_v3 <- function(clades, clade.level = "family", clade.ranked = TRUE
 {
   output.list <- list(AllTaxa = NA, OccsOnly = NA, MissingTaxa = NA) #, NoOccs = NA)
   
-  data.mat <- data.mat[, colnames(data.mat)[1:66]]
+  #data.mat <- data.mat[, colnames(data.mat)[1:66]]
   data.mat <- data.mat[!data.mat$Catalog.Number %in% "Accepted Names PBDB",]
   data.mat$accepted_name <- paste(data.mat$Accepted.Genus, data.mat$Accepted.Species, sep = " ")
   ####remove rows that lack measurements
@@ -2114,4 +2114,17 @@ estiamteMissingDiversity_Alroy <- function() {
   getThreeTimerRatesFromCounts()
   
   return()
+}
+
+getBinsNALMA <- function(settings)
+{
+  nalma.mark <- read.csv("/Users/emdoughty/Dropbox/Code/R/dentalMeasurements/dat/NOW_intervals_edit.csv")
+  nalma.mark <- nalma.mark[,1:3]; rownames(nalma.mark) <- nalma.mark$CHRON; colnames(nalma.mark) <- c("NALMA_Subdivision", "ageBase","ageTop")
+  nalma.mark <- nalma.mark[,-1]
+  nalma.mark <- nalma.mark[,c(2,1)]
+  intervals <- nalma.mark[nrow(nalma.mark):1,]
+  
+  intervals <- intervals[intervals$ageTop >= settings$min_age & intervals$ageTop <= settings$max_age | intervals$ageBase >= settings$min_age & intervals$ageBase <= settings$max_age,]
+  
+  return(intervals)
 }

@@ -46,6 +46,10 @@ settings$this.rank <- "species"
 		occs <- occs[!(occs$accepted_rank=="species" & duplicated(occs[,c("collection_no", "accepted_name")])),]
 	}
 
+	 occs.filename <- paste0("/Users/emdoughty/Dropbox/Code/R/Files to Save outside git/Testrun/Inputs/occs_",timestamp(),".csv")
+	 settings$occs.filename <- occs.filename
+	 write.csv(occs, file = occs.filename)
+	  
 ####################################################################################################################################
 
 settings$focal.tax$clade <- c("Artiodactyla", "Perissodactyla", "Condylarthra", "Dinocerata", "Taeniodonta", "Pantodonta", "Tillodontia", "Arctocyonidae","Chriacidae", "Hyopsodontidae","Periptychidae","Phenacodontidae")
@@ -80,6 +84,9 @@ bigList$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = bi
 # matrix(sort(bigList$accepted_name[!bigList$accepted_name %in% measure.mat$taxon]), ncol=1)
 measure.mat <- measure.mat[measure.mat$taxon %in% bigList$accepted_name, ]
 
+measure.mat.filename <- paste0("/Users/emdoughty/Dropbox/Code/R/Files to Save outside git/Testrun/Inputs/measure_mat_",timestamp(),".csv")
+write.csv(measure.mat, file = measure.mat.filename)
+
 ####################################################################################################################################
 
 	# richness <- matrix(0, nrow=nrow(intervals), ncol=4)
@@ -102,11 +109,14 @@ measure.mat <- measure.mat[measure.mat$taxon %in% bigList$accepted_name, ]
 ####################################################################################################################################
 
 #settings <- list()
-settings$int_length <- 2
-intervals <- makeIntervals(1, 65, settings$int_length)
+settings$int_length <- 2 #"NALMA"
+settings$min_age <- 1
+settings$max_age <- 65
+
+if(is.numeric(settings$int_length)) intervals <- makeIntervals(settings$min_age, settings$max_age, settings$int_length) else (intervals <- getBinsNALMA(settings))
 intList <- listifyMatrixByRow(intervals)
 
-settings$n.reps <- 10000
+settings$n.reps <- 1000
 settings$do.subsample <- TRUE
 settings$quota <- 0.4
 
@@ -116,20 +126,32 @@ settings$bootstrapSpeciesWithinIntervals <- FALSE
 settings$plotHist <- FALSE
 
 settings$do.rangethrough <- TRUE
-settings$save.to.file <- TRUE
 
 	if (settings$plotHist) {
 		quartz("Guild Histograms")
 		par(mfrow=c((nrow(intervals)), 3), mar=c(0,0,0.75,0), cex.axis=0.5, cex.main=0.75)
 	}
 	
-	repIntOccs <- getRepIntOccs(settings = settings, intervals=intervals,
-	                            file.path = "~/Dropbox/Code/R/Files to Save outside git/",
-	                            file.name = "testrun.Rdata")
+  
+	repIntOccs <- getRepIntOccs(settings = settings, intervals=intervals)
 
+	repIntOccs.filename <- paste0("~/Dropbox/Code/R/Files to Save outside git/Testrun/Inputs/", "repIntOccs_numReps=", settings$n.reps,"_int_length=",int_length,"_subsample=", settings$do.subsample, timestamp(),".Rdata")
+	save(settings, repIntOccs, file = repIntOccs.filename) 
+	print("**** repIntOccs saved to file...")
 
+	#####
+	settings$repIntOccs <- repIntOccs.filename
+	repIntTaxa <- getRepIntTaxaFromRepIntOccs(settings, repIntOccs, do.rangethrough=settings$do.rangethrough)
+	save(settings, repIntTaxa, file = paste0("~/Dropbox/Code/R/Files to Save outside git/Testrun/Inputs/","repIntTax_", settings$this.rank, "_numReps=", settings$n.reps,"_int_length=",int_length,"_subsample=", settings$do.subsample,"_rangethrough=", settings$do.rangethrough,".Rdata"))
+
+	settings$this.rank <- "species"
+	repIntTaxa <- getRepIntTaxaFromRepIntOccs(settings, repIntOccs, do.rangethrough=settings$do.rangethrough)
+	save(settings, repIntTaxa, file = paste0("~/Dropbox/Code/R/Files to Save outside git/Testrun/Inputs/","repIntTax_", settings$this.rank, "_numReps=", settings$n.reps,"_int_length=",int_length,"_subsample=", settings$do.subsample,"_rangethrough=", settings$do.rangethrough,".Rdata"))
+	
 	print("Completed getting taxa with intervals")
-
+	
+	
+	
 ####################################################################################################################################
 ### Handley analysis of taxonomic distributions
 print("Beginning median taxonomic Handley analysis...")

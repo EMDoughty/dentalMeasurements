@@ -5,7 +5,7 @@
 getRepIntOccs <- function(settings, 
 						intervals, 
 						return.box=TRUE, 
-						save.to.file=TRUE, 
+						save.to.file=FALSE, 
 						file.path="~/Desktop/EcologyResults/", 
 						file.name="coreData") {
 	
@@ -50,8 +50,7 @@ getRepIntOccs <- function(settings,
 	}
 	
 ###################################################################################################################################
-	repIntTaxa <- getRepIntTaxaFromRepIntOccs(settings, repIntOccs, this.rank=settings$this.rank, do.rangethrough=settings$do.rangethrough)
-	
+
 	# all.taxa <- all.taxa[all.taxa %in% as.character(bigList$accepted_name)]
 	
 #	taxRangeCube <- sapply(repIntTaxa, getIntRangesOneRep, all.taxa, simplify="array")
@@ -63,8 +62,8 @@ getRepIntOccs <- function(settings,
 
 	if (save.to.file) {
 		if(Sys.info()["sysname"] == "Darwin"){
-			save(settings, repIntTaxa, file=paste0(file.path, file.name, "_standardized=", do.subsample, timestamp(),".Rdata")) #taxRangeBox,
-			#load('~/Dropbox/ungulate_RA/EcologyResults/allUngulates/handleyResult##------ Thu Nov  9 02:12:20 2017 ------##_allUngulates.Rdata')
+			save(settings, repIntOccs, file=paste0(file.path, file.name, "_standardized=", settings$do.subsample, timestamp(),".Rdata")) #taxRangeBox,
+			#load('~/Dropbox/ungulate_RA/EcologyResults/allUngulates/handley.Result##------ Thu Nov  9 02:12:20 2017 ------##_allUngulates.Rdata')
 		} 
 		# else if(Sys.info()["sysname"] == "Windows"){
 			# save(repIntOccs, file=paste0("C:/Users/Blaire/Dropbox/ungulate_RA/EcologyResults/repIntOccs_SampleStandardized=", do.subsample, timestamp(),".Rdata"))
