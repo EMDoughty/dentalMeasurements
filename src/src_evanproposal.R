@@ -1400,7 +1400,7 @@ getTaxaInClade <- function(clades, occs, save.file=NULL) {
   
   uniqTax <- uniqTax[,c("phylum", "class", "order", "family", "genus", "accepted_species", "verbatim_genus", "verbatim_species","accepted_name", "taxon_name")]
   
-  if(!is.null(occs)) uniqTax <- unique(uniqTax[uniqTax$accepted_name %in% occs$accepted_name[occs$accepted_rank =="species"],])
+  if(!is.null(occs)) uniqTax <- unique(uniqTax[uniqTax$accepted_name %in% occs$accepted_name[occs$accepted_rank =="species"],]) #This should remove non mammal Proboscidea designation in the PBDB query since occs is for all mammals
   
   if(!is.null(save.file)) write.csv(uniqTax, file = save.file)
   
@@ -2128,3 +2128,19 @@ getBinsNALMA <- function(settings)
   
   return(intervals)
 }
+
+getCountCube <- function(repIntTaxa, measure.mat, target.column = "bodyMass", bmBreaks, sizecateg, intervals)
+{
+  countCube <- sapply(repIntTaxa, function(this.rep) {
+    sapply(this.rep, function(this.intv, this.rep) {
+      hist(measure.mat[,target.column][match(this.intv, measure.mat$taxon)], 
+           breaks= bmBreaks, plot=FALSE)$counts
+    }, this.rep=this.rep)
+  }, simplify = "array")
+  
+  #countCube <- countCube[,,1]
+  dimnames(countCube) <- list(sizecateg, rownames(intervals), NULL)
+  
+  return(countCube)
+}
+

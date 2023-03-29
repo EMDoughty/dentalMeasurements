@@ -31,6 +31,7 @@ require(abind)
 ####################################################################################################################################
 settings <- list()
 settings$this.rank <- "species"
+primary.workspace <- "~/Dropbox/Code/R/Files to Save outside git/Testrun/Inputs/"
 
 	options(timeout=300)
   # occs <- read.csv("http://paleobiodb.org/data1.2/occs/list.csv?base_name=Mammalia&continent=NOA&max_ma=66&min_ma=0&timerule=overlap&lngmin=-125.98&lngmax=-93.40&latmin=27&latmax=55.7&show=full&limit=all", stringsAsFactors=TRUE, strip.white=TRUE)
@@ -46,18 +47,32 @@ settings$this.rank <- "species"
 		occs <- occs[!(occs$accepted_rank=="species" & duplicated(occs[,c("collection_no", "accepted_name")])),]
 	}
 
-	 occs.filename <- paste0("/Users/emdoughty/Dropbox/Code/R/Files to Save outside git/Testrun/Inputs/occs_",timestamp(),".csv")
+	 occs.filename <- paste0(primary.workspace,"occs_",timestamp(),".csv")
 	 settings$occs.filename <- occs.filename
 	 write.csv(occs, file = occs.filename)
 	  
 ####################################################################################################################################
 
-settings$focal.tax$clade <- c("Artiodactyla", "Perissodactyla", "Condylarthra", "Dinocerata", "Taeniodonta", "Pantodonta", "Tillodontia", "Arctocyonidae","Chriacidae", "Hyopsodontidae","Periptychidae","Phenacodontidae")
+settings$focal.tax$clade <- c("Artiodactyla", "Perissodactyla", "Condylarthra", "Dinocerata", "Taeniodonta", "Pantodonta", "Tillodontia", "Arctocyonidae","Chriacidae", "Hyopsodontidae","Periptychidae","Phenacodontidae") #Including Proboscidea here causes functions that use focal.clade to query PBDB to break.  Doesn't return elephant-morphs just Hemiptera.
 #settings$focal.tax$order <- c("Artiodactyla", "Perissodactyla", "Dinocerata", "Cimolesta") #Cimolesta is used as there are a few Taeniodont and tillodonts that lack a family designation
 #settings$focal.tax$family <- c("Arctocyonidae", "Hyopsodontidae", "Phenacodontidae", "Periptychidae")
-
+settings$bmBreaks_herb <- c(-Inf, 0.69897, 1.39794, 2.176091, 2.69897, Inf) #Janis 2000  max(measure.mat$bodyMass, na.rm=TRUE)
+	 
+	 
 measure.mat <- getMeasureMatWithBodyMasses(settings)
-if (settings$this.rank =="genus") measure.mat <- makeOneGenusMatFromSpecimenMat(measure.mat)
+measure.mat$SizeCat <- measure.mat$bodyMass
+for(xx in seq(1, length(settings$bmBreaks_herb)-1, 1)){
+  measure.mat$SizeCat[measure.mat$bodyMass > settings$bmBreaks_herb[xx] & measure.mat$bodyMass < settings$bmBreaks_herb[xx+1]] <- xx
+} 
+
+#append Proboscideans onto measure mat
+probo.mat <- as.data.frame(matrix(nrow=length(unique(occs$accepted_name[occs$order %in% "Proboscidea" & occs$accepted_rank %in% settings$this.rank])), ncol=ncol(measure.mat))); colnames(probo.mat) <- colnames(measure.mat)
+probo.mat$taxon <- unique(occs$accepted_name[occs$order %in% "Proboscidea" & occs$accepted_rank %in% settings$this.rank]); probo.mat <- probo.mat[!probo.mat$taxon %in% "",]
+probo.mat$SizeCat <- 5
+measure.mat <- rbind(measure.mat, probo.mat)
+measure.mat <- measure.mat[order(measure.mat$taxon),]
+
+if(settings$this.rank =="genus") measure.mat <- makeOneGenusMatFromSpecimenMat(measure.mat)
 
 ####################################################################################################################################
 #### reduces matrix to just the focal order(s)
@@ -65,6 +80,9 @@ if (settings$this.rank =="genus") measure.mat <- makeOneGenusMatFromSpecimenMat(
 #need way to get around issue of species without higher taxonimic designations in occs despite being in a clade.  Could do work around where bigList is derived from getHigher taxon and then compared with occs
 bigList <- unique(getTaxaInClade(clades = settings$focal.tax$clade, occs = occs, save.file = NULL))
 bigList <- unique(bigList[,c("order","family", "genus", "accepted_name")])
+proboList <- occs[occs$order %in% "Proboscidea",]; proboList <- unique(proboList[,c("order", "family", "genus","accepted_name")])
+bigList <- rbind(bigList, proboList)
+
 bigList <- bigList[order(bigList$order, bigList$family, bigList$genus, bigList$accepted_name),]
 
 # bigList <- unheadique(occs[((occs$accepted_rank =="species" | occs$accepted_rank =="genus") & occs$order %in% settings$focal.tax$order), c("order","family", "genus", "accepted_name")])
@@ -72,8 +90,9 @@ bigList <- bigList[order(bigList$order, bigList$family, bigList$genus, bigList$a
 #bigList <- bigList[order(bigList$order, bigList$family, bigList$genus, bigList$accepted_name),]
 # bigList[order(bigList$family, bigList$accepted_name),]
 
-shortFam <- sort(unique(bigList$family[bigList$order %in% settings$focal.tax$order]))
+shortFam <- sort(unique(bigList$family)) #[bigList$order %in% settings$focal.tax$clade]))
 if (any(shortFam == "NO_FAMILY_SPECIFIED")) shortFam <- shortFam[-which(shortFam == "NO_FAMILY_SPECIFIED")]
+if (any(shortFam == " ")) shortFam <- shortFam[-which(shortFam == " ")]
 
 bigList$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = bigList$accepted_name)
  all.taxa <- sort(unique(bigList$accepted_name))
@@ -84,31 +103,74 @@ bigList$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = bi
 # matrix(sort(bigList$accepted_name[!bigList$accepted_name %in% measure.mat$taxon]), ncol=1)
 measure.mat <- measure.mat[measure.mat$taxon %in% bigList$accepted_name, ]
 
-measure.mat.filename <- paste0("/Users/emdoughty/Dropbox/Code/R/Files to Save outside git/Testrun/Inputs/measure_mat_",timestamp(),".csv")
-write.csv(measure.mat, file = measure.mat.filename)
+measure.mat.filename <- paste0(primary.workspace,"measure_mat_", settings$this.rank, "_", timestamp())
+write.csv(measure.mat, file = paste0(measure.mat.filename,".csv"))
+save(settings, bigList, shortFam, all.taxa, measure.mat, file = paste0(measure.mat.filename,".Rdata"))
+
+####################################################################################################################################
+settings$focal.tax$clade <- c("Carnivoramorpha", "Creodonta","Hyaenodonta", "Mesonychidae")
+settings$pred.data.filename <- "~/Dropbox/Proposal/Proposal/predator_data_final.csv"
+pred.data <- read.csv(settings$pred.data.filename)
+colnames(pred.data) <- c("family", "taxon",	"max_ma","min_ma",	"m1L",	"rbl",	"bodyMass",	"Citation")
+
+#append Mesonychidae from  Zhao?
+meson.mat <- read.csv("/Users/emdoughty/Dropbox/Code/R/Files to Save outside git/Mesonychidae_BodySize.csv")
+meson.mat <- meson.mat[meson.mat$family %in% "Mesonychidae", c("family", "accepted_name", "max_ma", "min_ma", "kg")]
+meson.mat <- meson.mat[!meson.mat$accepted_name %in% "",]
+meson.mat$m1L <-  meson.mat$rbl <- meson.mat$Citation <- NA
+colnames(meson.mat) <- c("family", "taxon",	"max_ma","min_ma",	"bodyMass","m1L",	"rbl",	"Citation")
+meson.mat <- meson.mat[, c("family", "taxon", "max_ma", "min_ma", "m1L", "rbl", "bodyMass", "Citation")]
+pred.data <- rbind(pred.data, meson.mat)
+
+pred.data$taxon <- gsub(pattern = "[[:space:]]", replacement = "_", x = pred.data$taxon)
+rownames(pred.data) <- pred.data$taxon
+
+pred.data[,c("bodyMass")] <- log10(pred.data[,c("bodyMass")])
+pred.data <- pred.data[is.finite(pred.data$bodyMass),]
+
+if(settings$this.rank =="genus") pred.data <- makeOneGenusMatFromSpecimenMat(pred.data)
+
+bigList <- unique(getTaxaInClade(clades = settings$focal.tax$clade, occs = occs, save.file = NULL))
+bigList <- unique(bigList[,c("order","family", "genus", "accepted_name")])
+
+bigList <- bigList[order(bigList$order, bigList$family, bigList$genus, bigList$accepted_name),]
+
+shortFam <- sort(unique(bigList$family)) #[bigList$order %in% settings$focal.tax$clade]))
+if (any(shortFam == "NO_FAMILY_SPECIFIED")) shortFam <- shortFam[-which(shortFam == "NO_FAMILY_SPECIFIED")]
+if (any(shortFam == " ")) shortFam <- shortFam[-which(shortFam == " ")]
+
+bigList$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = bigList$accepted_name)
+all.taxa <- sort(unique(bigList$accepted_name))
+
+pred.data <- pred.data[pred.data$taxon %in% bigList$accepted_name, ]
+###############
+
+pred.diet <- read.csv("/Users/emdoughty/Dropbox/Proposal/Proposal/Diet Data PPP CJ.csv")
+pred.diet$MASTER_LIST <- gsub(pattern = "[[:space:]]", replacement = "_", x = pred.diet$MASTER_LIST)
+
+#pred.data.master  <- pred.data
+
+pred.data <- pred.data[pred.data$taxon %in% pred.diet$MASTER_LIST,]
+pred.data$Diet <- pred.diet[pred.diet$MASTER_LIST %in% pred.data$taxon, "PPP_diet_2"]
+
+pred.data.hyper <- pred.data[pred.data$Diet %in% "hypercarnivore",]
+pred.data.meso <- pred.data[pred.data$Diet %in% "mesocarnivore",]
+pred.data.hypo <- pred.data[pred.data$Diet %in% "hypocarnivore",]
+pred.data.hyper.meso <- pred.data[pred.data$Diet %in% c("hypercarnivore","mesocarnivore"),]
+pred.data.hyper.hypo <- pred.data[pred.data$Diet %in% c("hypercarnivore","hypocarnivore"),]
+pred.data.meso.hypo <- pred.data[pred.data$Diet %in% c("mesocarnivore","hypocarnivore"),]
+
+pred.data.filename <- paste0(primary.workspace,"pred_data_",settings$this.rank,"_", timestamp())
+write.csv(pred.data, file = paste0(pred.data.filename,".csv"))
+save(settings, bigList, shortFam, all.taxa, 
+     pred.data, pred.data.hyper, pred.data.meso, pred.data.hypo, pred.data.hyper.meso, pred.data.hyper.hypo, pred.data.meso.hypo,
+     file = paste0(pred.data.filename,".Rdata"))
 
 ####################################################################################################################################
 
-	# richness <- matrix(0, nrow=nrow(intervals), ncol=4)
-	# for (intv in seq_len((nrow(intervals)))) {
-		# thisInt <- rownames(ranges)[ranges[,"FO"] >= intervals$ageTop[intv] & ranges[, "LO"] < intervals$ageBase[intv]]
-		# richness[intv,1] <- length(thisInt)
-		# richness[intv,2] <- sum(thisInt %in% measure.mat$taxon)
-		# richness[intv,3] <- sum(thisInt %in% measure.mat$taxon[is.finite(measure.mat$bodyMass)])
-		# richness[intv,4] <- sum(thisInt %in% measure.mat$taxon[is.finite(measure.mat$PC3)])	
-		# print(thisInt[!thisInt %in% measure.mat$taxon])	
-	# }
-	
-	# par(mar=c(3,4,0.5,0.5), cex=0.66)
-	# plot(rowMeans(intervals), richness[,3]/richness[,1], type="n", xlim=c(max(intervals, na.rm=TRUE),min(intervals, na.rm=TRUE)), ylim=c(0,1), main="", xlab="Time (Ma)", ylab="% sampled")
-	# overlayCzTimescale()
-	# lines(rowMeans(intervals), richness[,2]/richness[,1], lwd=1.5, type="o", pch=15, col="firebrick")
-	# lines(rowMeans(intervals), richness[,3]/richness[,1], lwd=1, type="o", pch=21, col="green4", bg="green1")
-	# # lines(rowMeans(intervals), richness[,4]/richness[,1], lwd=1.5, type="o", pch=17, col="dodgerblue")
+settings <- list()
+settings$occs.filename <- occs.filename
 
-####################################################################################################################################
-
-#settings <- list()
 settings$int_length <- 2 #"NALMA"
 settings$min_age <- 1
 settings$max_age <- 65
@@ -131,27 +193,30 @@ settings$do.rangethrough <- TRUE
 		quartz("Guild Histograms")
 		par(mfrow=c((nrow(intervals)), 3), mar=c(0,0,0.75,0), cex.axis=0.5, cex.main=0.75)
 	}
-	
   
 	repIntOccs <- getRepIntOccs(settings = settings, intervals=intervals)
 
-	repIntOccs.filename <- paste0("~/Dropbox/Code/R/Files to Save outside git/Testrun/Inputs/", "repIntOccs_numReps=", settings$n.reps,"_int_length=",int_length,"_subsample=", settings$do.subsample, timestamp(),".Rdata")
+	repInt.folder <- paste0(primary.workspace,"repInt_numReps=", settings$n.reps,"_int_length=", settings$int_length,"_age=",settings$max_age,"to", settings$min_age,"_subsample=", settings$do.subsample,"/")
+	if(!dir.exists(repInt.folder)) dir.create(repInt.folder)
+	repIntOccs.filename <- paste0(repInt.folder, "repIntOccs", timestamp(), ".Rdata")
 	save(settings, repIntOccs, file = repIntOccs.filename) 
 	print("**** repIntOccs saved to file...")
 
+	settings$repIntOccs.filename <- repIntOccs.filename
+	
 	#####
+	settings$this.rank <- "species"
 	settings$repIntOccs <- repIntOccs.filename
 	repIntTaxa <- getRepIntTaxaFromRepIntOccs(settings, repIntOccs, do.rangethrough=settings$do.rangethrough)
-	save(settings, repIntTaxa, file = paste0("~/Dropbox/Code/R/Files to Save outside git/Testrun/Inputs/","repIntTax_", settings$this.rank, "_numReps=", settings$n.reps,"_int_length=",int_length,"_subsample=", settings$do.subsample,"_rangethrough=", settings$do.rangethrough,".Rdata"))
+	save(settings, repIntTaxa, file = paste0(repInt.folder,"repIntTax_", settings$this.rank, "_do.rangethrough=",settings$do.rangethrough,"_", timestamp(),".Rdata"))
 
-	settings$this.rank <- "species"
+	settings$this.rank <- "genus"
 	repIntTaxa <- getRepIntTaxaFromRepIntOccs(settings, repIntOccs, do.rangethrough=settings$do.rangethrough)
-	save(settings, repIntTaxa, file = paste0("~/Dropbox/Code/R/Files to Save outside git/Testrun/Inputs/","repIntTax_", settings$this.rank, "_numReps=", settings$n.reps,"_int_length=",int_length,"_subsample=", settings$do.subsample,"_rangethrough=", settings$do.rangethrough,".Rdata"))
+	save(settings, repIntTaxa, file = paste0(repInt.folder,"repIntTax_", settings$this.rank, "_do.rangethrough=",settings$do.rangethrough,"_", timestamp(),".Rdata"))
 	
 	print("Completed getting taxa with intervals")
 	
-	
-	
+
 ####################################################################################################################################
 ### Handley analysis of taxonomic distributions
 print("Beginning median taxonomic Handley analysis...")
