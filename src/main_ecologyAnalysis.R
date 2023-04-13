@@ -31,7 +31,7 @@ require(abind)
 ####################################################################################################################################
 settings <- list()
 settings$this.rank <- "species"
-primary.workspace <- "~/Dropbox/Code/R/Files to Save outside git/Testrun/Inputs/"
+primary.workspace <- "~/Dropbox/Code/R/Files to Save outside git/Ch1_Analysis/Inputs/"
 
 	options(timeout=300)
   # occs <- read.csv("http://paleobiodb.org/data1.2/occs/list.csv?base_name=Mammalia&continent=NOA&max_ma=66&min_ma=0&timerule=overlap&lngmin=-125.98&lngmax=-93.40&latmin=27&latmax=55.7&show=full&limit=all", stringsAsFactors=TRUE, strip.white=TRUE)
@@ -57,7 +57,6 @@ settings$focal.tax$clade <- c("Artiodactyla", "Perissodactyla", "Condylarthra", 
 #settings$focal.tax$order <- c("Artiodactyla", "Perissodactyla", "Dinocerata", "Cimolesta") #Cimolesta is used as there are a few Taeniodont and tillodonts that lack a family designation
 #settings$focal.tax$family <- c("Arctocyonidae", "Hyopsodontidae", "Phenacodontidae", "Periptychidae")
 settings$bmBreaks_herb <- c(-Inf, 0.69897, 1.39794, 2.176091, 2.69897, Inf) #Janis 2000  max(measure.mat$bodyMass, na.rm=TRUE)
-	 
 	 
 measure.mat <- getMeasureMatWithBodyMasses(settings)
 measure.mat$SizeCat <- measure.mat$bodyMass
@@ -97,10 +96,6 @@ if (any(shortFam == " ")) shortFam <- shortFam[-which(shortFam == " ")]
 bigList$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = bigList$accepted_name)
  all.taxa <- sort(unique(bigList$accepted_name))
 
-# matrix(measure.mat$taxon[!measure.mat$taxon %in% bigList$accepted_name], ncol=1)
-# matrix(measure.mat$taxon[(!measure.mat$taxon %in% bigList$accepted_name[bigList$order %in% settings$focal.tax$order]) & measure.mat$taxon %in% as.character(occs$identified_name)], ncol=1)
-# matrix(sort(bigList$accepted_name[bigList$order %in% settings$focal.tax$order][! bigList$accepted_name[bigList$order %in% settings$focal.tax$order] %in% measure.mat$taxon]), ncol=1)
-# matrix(sort(bigList$accepted_name[!bigList$accepted_name %in% measure.mat$taxon]), ncol=1)
 measure.mat <- measure.mat[measure.mat$taxon %in% bigList$accepted_name, ]
 
 measure.mat.filename <- paste0(primary.workspace,"measure_mat_", settings$this.rank, "_", timestamp())
@@ -127,6 +122,8 @@ rownames(pred.data) <- pred.data$taxon
 
 pred.data[,c("bodyMass")] <- log10(pred.data[,c("bodyMass")])
 pred.data <- pred.data[is.finite(pred.data$bodyMass),]
+
+pred.data$genus <- unlist(lapply(strsplit(pred.data$taxon,"_"), function(x) x[1]))
 
 if(settings$this.rank =="genus") pred.data <- makeOneGenusMatFromSpecimenMat(pred.data)
 
@@ -168,17 +165,19 @@ save(settings, bigList, shortFam, all.taxa,
 
 ####################################################################################################################################
 
+for(xx in c(3.5,4))
+{
 settings <- list()
 settings$occs.filename <- occs.filename
 
-settings$int_length <- 2 #"NALMA"
+settings$int_length <- 2
 settings$min_age <- 1
 settings$max_age <- 65
 
 if(is.numeric(settings$int_length)) intervals <- makeIntervals(settings$min_age, settings$max_age, settings$int_length) else (intervals <- getBinsNALMA(settings))
 intList <- listifyMatrixByRow(intervals)
 
-settings$n.reps <- 1000
+settings$n.reps <- 10000
 settings$do.subsample <- TRUE
 settings$quota <- 0.4
 
@@ -187,7 +186,7 @@ settings$bootstrapSpecies <- FALSE
 settings$bootstrapSpeciesWithinIntervals <- FALSE
 settings$plotHist <- FALSE
 
-settings$do.rangethrough <- TRUE
+settings$do.rangethrough <- FALSE
 
 	if (settings$plotHist) {
 		quartz("Guild Histograms")
@@ -204,18 +203,30 @@ settings$do.rangethrough <- TRUE
 
 	settings$repIntOccs.filename <- repIntOccs.filename
 	
+	repIntSp.start <- Sys.time()
+	
 	#####
 	settings$this.rank <- "species"
-	settings$repIntOccs <- repIntOccs.filename
 	repIntTaxa <- getRepIntTaxaFromRepIntOccs(settings, repIntOccs, do.rangethrough=settings$do.rangethrough)
 	save(settings, repIntTaxa, file = paste0(repInt.folder,"repIntTax_", settings$this.rank, "_do.rangethrough=",settings$do.rangethrough,"_", timestamp(),".Rdata"))
 
+	repIntSp.end <- Sys.time()
+	
+	repIntGen.start <- Sys.time()
+	
 	settings$this.rank <- "genus"
 	repIntTaxa <- getRepIntTaxaFromRepIntOccs(settings, repIntOccs, do.rangethrough=settings$do.rangethrough)
 	save(settings, repIntTaxa, file = paste0(repInt.folder,"repIntTax_", settings$this.rank, "_do.rangethrough=",settings$do.rangethrough,"_", timestamp(),".Rdata"))
 	
+	repIntGen.end <- Sys.time()
+	
 	print("Completed getting taxa with intervals")
 	
+
+	repIntSp.end-repIntSp.start
+	repIntGen.end-repIntGen.start
+}
+
 
 ####################################################################################################################################
 ### Handley analysis of taxonomic distributions

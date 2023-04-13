@@ -1376,11 +1376,11 @@ getCurrentHigherTaxonomy <- function(archaic.ung, save.file=NULL) { #this functi
 getTaxaInClade <- function(clades, occs, save.file=NULL) {
   uniqTax <- lapply(c(clades), FUN=getTaxonomyForOneBaseTaxon_AcceptedName)
   uniq.len <- length(uniqTax)
- if(length(uniq.len) == 1) { uniqTax <- rbind(uniqTax[[1]])
+ if(uniq.len == 1) { uniqTax <- rbind(uniqTax[[1]])
     }
-  if(length(uniq.len) == 2) { uniqTax <- rbind(uniqTax[[1]], uniqTax[[2]])
+  if(uniq.len == 2) { uniqTax <- rbind(uniqTax[[1]], uniqTax[[2]])
   }
-  if(length(uniq.len) > 2) 
+  if(uniq.len > 2) 
   { 
     taxaMat <- rbind(uniqTax[[1]], uniqTax[[2]])
     for(xx in seq(3, length(uniqTax),1))
@@ -1836,7 +1836,8 @@ sensitivity.numberReps <- function(countCube_herb = NULL, countCube_pred = NULL,
   if(analysis.type %in% "var.CorrelCoef.All")
   {
     corr.results.both <- array(numeric(0),dim=c(nrow(countCube_herb),nrow(countCube_pred),dim(countCube_herb)[3]))
-    for(zz in seq(1, length(rep.test), 1))
+    var.corr <- vector()
+    for(zz in seq(1, rep.test, 1))
     {
       ##############################################################
       prop_herb <- t(apply(countCube_herb[,,c(1,rep.test[zz])], c(1,2), median, na.rm=TRUE))
@@ -1862,7 +1863,7 @@ sensitivity.numberReps <- function(countCube_herb = NULL, countCube_pred = NULL,
         for(yy in seq(1, nrow(countCube_herb),1))
         {
           
-          for(zz in seq(1, length(rep.test), 1))
+          for(zz in seq(1, rep.test, 1))
           {
             var.corr[zz] <- var(corr.results.both[xx,yy,c(seq(1,zz,1))])
             
