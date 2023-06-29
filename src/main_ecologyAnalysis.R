@@ -37,7 +37,10 @@ primary.workspace <- "~/Dropbox/Code/R/Files to Save outside git/Ch1_Analysis/In
   # occs <- read.csv("http://paleobiodb.org/data1.2/occs/list.csv?base_name=Mammalia&continent=NOA&max_ma=66&min_ma=0&timerule=overlap&lngmin=-125.98&lngmax=-93.40&latmin=27&latmax=55.7&show=full&limit=all", stringsAsFactors=TRUE, strip.white=TRUE)
 	 occs <- read.csv("http://paleobiodb.org/data1.2/occs/list.csv?base_name=Mammalia&continent=NOA&show=full&limit=all", stringsAsFactors=TRUE, strip.white=TRUE)
 	  occs <- occs[!occs$order %in% c("Cetacea", "Desmostylia", "Sirenia"), ]
-	  occs <- occs[!occs$family %in% c("Allodelphinidae", "Allodesminae", "Balaenidae", "Balaenopteridae", "Delphinidae", "Desmatophocidae", "Desmostylidae", "Didelphidae","Dugongidae","Enaliarctidae", "Eschrichtiidae","Iniidae", "Kentriodontidae", "Kogiidae", "Odobenidae", "Otariidae", "Paleoparadoxiidae", "Phocidae", "Physeteridae", "Platanistidae", "Pontoporiidae", "Protocetidae", "Squalodontidae", "Ziphiidae"), ]
+	  occs <- occs[!occs$family %in% c("Allodelphinidae", "Allodesminae", "Balaenidae", "Balaenopteridae", "Delphinidae", "Desmatophocidae", 
+	                                   "Desmostylidae", "Didelphidae","Dugongidae","Enaliarctidae", "Eschrichtiidae","Iniidae", "Kentriodontidae", 
+	                                   "Kogiidae", "Odobenidae", "Otariidae", "Paleoparadoxiidae", "Phocidae", "Physeteridae", "Platanistidae", 
+	                                   "Pontoporiidae", "Protocetidae", "Squalodontidae", "Ziphiidae"), ]
 	  occs <- occs[!occs$genus %in% c("Enaliarctos", "Pteronarctos", "Kolponomos", "Pacificotaria", "Pinnarctidion", "Pteronarctos"), ]
 	  occs <- occs[!occs$accepted_name %in% c("Archaeoceti", "Pinnipedia", "Imagotariinae"), ]
 	  occs$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = occs$accepted_name)	#replace spaces with underscores
@@ -71,7 +74,7 @@ probo.mat$SizeCat <- 5
 measure.mat <- rbind(measure.mat, probo.mat)
 measure.mat <- measure.mat[order(measure.mat$taxon),]
 
-if(settings$this.rank =="genus") measure.mat <- makeOneGenusMatFromSpecimenMat(measure.mat)
+if(settings$this.rank =="genus") measure.mat <- makeOneGenusMatFromSpecimenMat(measure.mat); measure.mat$genus <- rownames(measure.mat)
 
 ####################################################################################################################################
 #### reduces matrix to just the focal order(s)
@@ -96,7 +99,8 @@ if (any(shortFam == " ")) shortFam <- shortFam[-which(shortFam == " ")]
 bigList$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = bigList$accepted_name)
  all.taxa <- sort(unique(bigList$accepted_name))
 
-measure.mat <- measure.mat[measure.mat$taxon %in% bigList$accepted_name, ]
+if(settings$this.rank =="genus") {measure.mat <- measure.mat[measure.mat$taxon %in% unique(bigList$genus), ]
+} else{ measure.mat <- measure.mat[measure.mat$taxon %in% bigList$accepted_name, ]}
 
 measure.mat.filename <- paste0(primary.workspace,"measure_mat_", settings$this.rank, "_", timestamp())
 write.csv(measure.mat, file = paste0(measure.mat.filename,".csv"))
@@ -139,23 +143,23 @@ if (any(shortFam == " ")) shortFam <- shortFam[-which(shortFam == " ")]
 bigList$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = bigList$accepted_name)
 all.taxa <- sort(unique(bigList$accepted_name))
 
-pred.data <- pred.data[pred.data$taxon %in% bigList$accepted_name, ]
+#pred.data <- pred.data[pred.data$taxon %in% bigList$accepted_name, ]
+if(settings$this.rank =="genus") {pred.data <- pred.data[pred.data$taxon %in% unique(bigList$genus), ]
+} else{ pred.data <- pred.data[pred.data$taxon %in% bigList$accepted_name, ]}
 ###############
-
+if(settings$this.rank %in% "species")
+{
 pred.diet <- read.csv("/Users/emdoughty/Dropbox/Proposal/Proposal/Diet Data PPP CJ.csv")
+pred.diet$genus <- unlist(lapply(strsplit(pred.diet$MASTER_LIST, "_"),function(x) x[1]))
 pred.diet$MASTER_LIST <- gsub(pattern = "[[:space:]]", replacement = "_", x = pred.diet$MASTER_LIST)
 
 #pred.data.master  <- pred.data
 
 pred.data <- pred.data[pred.data$taxon %in% pred.diet$MASTER_LIST,]
+
 pred.data$Diet <- pred.diet[pred.diet$MASTER_LIST %in% pred.data$taxon, "PPP_diet_2"]
 
-pred.data.hyper <- pred.data[pred.data$Diet %in% "hypercarnivore",]
-pred.data.meso <- pred.data[pred.data$Diet %in% "mesocarnivore",]
-pred.data.hypo <- pred.data[pred.data$Diet %in% "hypocarnivore",]
-pred.data.hyper.meso <- pred.data[pred.data$Diet %in% c("hypercarnivore","mesocarnivore"),]
-pred.data.hyper.hypo <- pred.data[pred.data$Diet %in% c("hypercarnivore","hypocarnivore"),]
-pred.data.meso.hypo <- pred.data[pred.data$Diet %in% c("mesocarnivore","hypocarnivore"),]
+} else { pred.data$Diet <- NA}
 
 pred.data.filename <- paste0(primary.workspace,"pred_data_",settings$this.rank,"_", timestamp())
 write.csv(pred.data, file = paste0(pred.data.filename,".csv"))
@@ -165,14 +169,12 @@ save(settings, bigList, shortFam, all.taxa,
 
 ####################################################################################################################################
 
-for(xx in c(3.5,4))
-{
 settings <- list()
 settings$occs.filename <- occs.filename
 
 settings$int_length <- 2
-settings$min_age <- 1
-settings$max_age <- 65
+settings$min_age <- 0
+settings$max_age <- 64
 
 if(is.numeric(settings$int_length)) intervals <- makeIntervals(settings$min_age, settings$max_age, settings$int_length) else (intervals <- getBinsNALMA(settings))
 intList <- listifyMatrixByRow(intervals)
@@ -186,7 +188,7 @@ settings$bootstrapSpecies <- FALSE
 settings$bootstrapSpeciesWithinIntervals <- FALSE
 settings$plotHist <- FALSE
 
-settings$do.rangethrough <- FALSE
+settings$do.rangethrough <- TRUE
 
 	if (settings$plotHist) {
 		quartz("Guild Histograms")
@@ -225,7 +227,7 @@ settings$do.rangethrough <- FALSE
 
 	repIntSp.end-repIntSp.start
 	repIntGen.end-repIntGen.start
-}
+
 
 
 ####################################################################################################################################

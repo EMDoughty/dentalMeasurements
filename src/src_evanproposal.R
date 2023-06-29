@@ -1781,7 +1781,7 @@ sensitivity.numberReps <- function(countCube_herb = NULL, countCube_pred = NULL,
                                    output.filename = NULL, output.filepath = NULL)
 {
   if(!is.null(output.filename)) { png(output.filename, width = 10, height = 6, units = "in", res = 200)
-    } else {png(paste0(output.filepath, analysis.type,"_", number.reps, "reps_", timestamp(),".png"), width = 10, height = 6, units = "in", res = 200)}
+    } else {png(paste0(output.filepath, analysis.type,"_", number.reps, "reps_", timestamp(),".png"), width = 11, height = 6, units = "in", res = 200)}
  
   #look at how # reps alters
   ##1) the number of species in each category per bin
@@ -1808,13 +1808,13 @@ sensitivity.numberReps <- function(countCube_herb = NULL, countCube_pred = NULL,
     corr.results.both <- vector()
     var.corr <- vector()
     
-    for(xx in seq(1, length(rep.test), 1))
+    for(xx in seq(1, rep.test, 1))
     {
       ##############################################################
-      prop_herb <- t(apply(countCube_herb[,,c(1,rep.test[xx])], c(1,2), median, na.rm=TRUE))
+      prop_herb <- t(apply(countCube_herb[,,seq(1, xx,1)], c(1,2), median, na.rm=TRUE))
       colnames(prop_herb)[colnames(prop_herb)==""] <- "indeterminate"
       
-      prop_pred <- t(apply(countCube_pred[,,c(1,rep.test[xx])], c(1,2), median, na.rm=TRUE))
+      prop_pred <- t(apply(countCube_pred[,,seq(1, xx,1)], c(1,2), median, na.rm=TRUE))
       colnames(prop_pred)[colnames(prop_pred)==""] <- "indeterminate"
     
       ungulates <- prop_herb
@@ -1840,10 +1840,10 @@ sensitivity.numberReps <- function(countCube_herb = NULL, countCube_pred = NULL,
     for(zz in seq(1, rep.test, 1))
     {
       ##############################################################
-      prop_herb <- t(apply(countCube_herb[,,c(1,rep.test[zz])], c(1,2), median, na.rm=TRUE))
+      prop_herb <- t(apply(countCube_herb[,,seq(1, zz, 1)], c(1,2), median, na.rm=TRUE))
       colnames(prop_herb)[colnames(prop_herb)==""] <- "indeterminate"
       
-      prop_pred <- t(apply(countCube_pred[,,c(1,rep.test[zz])], c(1,2), median, na.rm=TRUE))
+      prop_pred <- t(apply(countCube_pred[,,seq(1, zz, 1)], c(1,2), median, na.rm=TRUE))
       colnames(prop_pred)[colnames(prop_pred)==""] <- "indeterminate"
       
       ungulates <- prop_herb
@@ -1857,7 +1857,7 @@ sensitivity.numberReps <- function(countCube_herb = NULL, countCube_pred = NULL,
     
     if(length(ylim) == 2) ylim <- array(c(rep(ylim[1], times = nrow(countCube_pred)), rep(ylim[2],times = nrow(countCube_pred))), dim = c(nrow(countCube_pred), 2, nrow(countCube_herb))) # = c(2, nrow(countCube_pred), nrow(countCube_herb)))
     
-    par(mfrow=c(nrow(countCube_herb),nrow(countCube_pred)), mar = c(1,1,0,0), oma = c(4,3,3,3))
+    par(mfrow=c(nrow(countCube_herb),nrow(countCube_pred)), mar = c(1,4.5,0,0), oma = c(4,4,3,3))
       for(xx in seq(1, nrow(countCube_pred),1))
       {
         for(yy in seq(1, nrow(countCube_herb),1))
@@ -1868,21 +1868,43 @@ sensitivity.numberReps <- function(countCube_herb = NULL, countCube_pred = NULL,
             var.corr[zz] <- var(corr.results.both[xx,yy,c(seq(1,zz,1))])
             
           }
+          
+          if(!is.null(ylim)){
           plot(0, 0, type = "n", xlim = c(0, dim(countCube_herb)[3]), ylim = ylim[yy,,xx],
                main = NULL, xlab = NULL, ylab = NULL, axes= FALSE)
             
-          axis(2, labels = FALSE)
-          axis(1, labels = FALSE)
-          if(yy == 1) axis(2, labels = TRUE)
-          if(xx == max(nrow(countCube_pred))) axis(1, labels = TRUE)
-          
-          points(seq(1, dim(countCube_herb)[3],1), var.corr, col = alphaColor("gray75",0.5))
-          lines(seq(1, dim(countCube_herb)[3],1), var.corr, col = "black")
-          
-          if(yy == 1 & xx == ceiling(nrow(countCube_pred)/2)){ mtext("Variance of Correlation Coefficient of Cumulative Median Assemblage", side = 2, line = 3, cex = 1)}
-          if(yy == ceiling(nrow(countCube_herb)/2) & xx == max(nrow(countCube_pred))){ mtext("Number of Replicates", side = 1, line = 2, cex = 1)}
-          if(xx == 1) { mtext(rownames(countCube_herb)[yy], side = 3, line = 1, cex = 0.5)}
-          if(yy == 1) { mtext(rownames(countCube_pred)[xx], side = 2, line = 2, cex = 0.5)}
+            axis(2, labels = FALSE)
+            axis(1, labels = FALSE)
+            if(yy == 1) axis(2, labels = TRUE)
+            if(xx == max(nrow(countCube_pred))) axis(1, labels = TRUE)
+            
+            points(seq(1, dim(countCube_herb)[3],1), var.corr, col = alphaColor("gray75",0.5))
+            lines(seq(1, dim(countCube_herb)[3],1), var.corr, col = "black")
+            
+            if(yy == 1 & xx == ceiling(nrow(countCube_pred)/2)){ mtext("Variance of Correlation Coefficient of Median Assemblage", side = 2, line = 3, cex = 1)}
+            if(yy == ceiling(nrow(countCube_herb)/2) & xx == max(nrow(countCube_pred))){ mtext("Number of Cumulative Replicates", side = 1, line = 2, cex = 1)}
+            if(xx == 1) { mtext(rownames(countCube_herb)[yy], side = 3, line = 1, cex = 0.5)}
+            if(yy == 1) { mtext(rownames(countCube_pred)[xx], side = 2, line = 2, cex = 0.5)}
+            
+          } else {
+            plot(0, 0, type = "n", xlim = c(0, dim(countCube_herb)[3]), ylim = c(0, max(var.corr, na.rm = T)),
+                 main = "", xlab = "", ylab = "", axes= FALSE, yaxt = "n", xaxt = "n")
+            
+            options(scipen = -2, digits = 3)
+            axis(2, labels = TRUE, lwd = 1, las = 1, line = 0.5)
+            options(scipen = 0, digits = 7)
+            
+            axis(1, labels = FALSE)
+            if(xx == max(nrow(countCube_pred))) axis(1, labels = TRUE)
+            
+            points(seq(1, dim(countCube_herb)[3],1), var.corr, col = alphaColor("gray75",0.5))
+            lines(seq(1, dim(countCube_herb)[3],1), var.corr, col = "black")
+            
+            if(yy == 1 & xx == ceiling(nrow(countCube_pred)/2)){ mtext("Variance of Correlation Coefficient of Median Assemblage", side = 2, line = 6, cex = 1)}
+            if(yy == ceiling(nrow(countCube_herb)/2) & xx == max(nrow(countCube_pred))){ mtext("Number of Cumulative Replicates", side = 1, line = 2.5, cex = 1)}
+            if(xx == 1) { mtext(rownames(countCube_herb)[yy], side = 3, line = 1, cex = 0.75)}
+            if(yy == 1) { mtext(rownames(countCube_pred)[xx], side = 2, line = 4.5, cex = 0.75)}
+          }
           
           print(paste0(xx," ",yy," ",zz))
         }
@@ -2145,3 +2167,56 @@ getCountCube <- function(repIntTaxa, measure.mat, target.column = "bodyMass", bm
   return(countCube)
 }
 
+sensitivity.bodymass.kmeans <- function(mom.data = NULL, k.max = 10)
+{
+  kmeans_results <- list()
+  kmeans_breaks <- list()
+  
+  wss <- vector(length = k.max-1)
+  sil <- vector(length = k.max-1)
+  cal.hara <- vector(length = k.max-1)
+  davies <- vector(length = k.max-1)
+  
+  for(ii in seq(2,k.max,1))
+  {
+    set.seed(1)
+    kmeans_results[[ii]] <- kmeans(mom.data$LogMass..kg., centers = ii, iter.max = 10000, nstart = 50)
+    
+    wss[ii-1] <- kmeans_results[[ii]]$tot.withinss
+    sil[ii-1] <- mean(silhouette(kmeans_results[[ii]]$cluster, dist(mom.data$LogMass..kg.))[,3])
+    cal.hara[ii-1] <-  calinhara(mom.data$LogMass..kg., kmeans_results[[ii]]$cluster)
+    davies[ii-1] <- index.DB(mom.data$LogMass..kg., kmeans_results[[ii]]$cluster, centrotypes="centroids")$DB
+    
+    kmean_Onebreaks <- matrix(ncol = 3, nrow = ii)
+    colnames(kmean_Onebreaks) <- c("k", "min.kg", "max.kg")
+    
+    for(jj in seq(1, max(unique(kmeans_results[[ii]]$cluster)),1)) 
+    {
+      min.categ <- min(mom.data[kmeans_results[[ii]]$cluster == jj,"LogMass..kg."])
+      max.categ <- max(mom.data[kmeans_results[[ii]]$cluster == jj,"LogMass..kg."])
+      
+      kmean_Onebreaks[jj,] <- c(jj, min.categ, max.categ)
+    }
+    kmeans_breaks[[ii]] <- kmean_Onebreaks[order(kmean_Onebreaks[,c("min.kg")]),] 
+  }
+  
+  kmeans_out <- list(results = kmeans_results, breaks = kmeans_breaks, 
+                     wss = wss, sil = sil, cal.hara = cal.hara)
+    
+  return(kmeans_out)
+}
+
+taxa.in.mat <- function(measure.mat = NULL, 
+                        breaks = c(-Inf, 0, 0.845098, 1.322219, 2, Inf),
+                        sizecateg = sizecateg <- c("<1kg","1-7kg","7-21kg","21-100kg",">100kg" ))
+{
+  
+  measure.mat$sizecat <- measure.mat$bodyMass
+  for(xx in seq(1, length(sizecateg),1))
+  {
+    measure.mat$sizecat[measure.mat$bodyMass >= breaks[xx] & measure.mat$bodyMass <= breaks[xx+1]]  <- sizecateg[xx]
+  }
+  print(table(measure.mat$sizecat))
+  
+  return(measure.mat)
+}
