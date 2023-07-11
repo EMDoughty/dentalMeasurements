@@ -36,12 +36,13 @@ primary.workspace <- "~/Dropbox/Code/R/Files to Save outside git/Ch1_Analysis/In
 	options(timeout=300)
   # occs <- read.csv("http://paleobiodb.org/data1.2/occs/list.csv?base_name=Mammalia&continent=NOA&max_ma=66&min_ma=0&timerule=overlap&lngmin=-125.98&lngmax=-93.40&latmin=27&latmax=55.7&show=full&limit=all", stringsAsFactors=TRUE, strip.white=TRUE)
 	 occs <- read.csv("http://paleobiodb.org/data1.2/occs/list.csv?base_name=Mammalia&continent=NOA&show=full&limit=all", stringsAsFactors=TRUE, strip.white=TRUE)
-	  occs <- occs[!occs$order %in% c("Cetacea", "Desmostylia", "Sirenia"), ]
+	 #occs <- occs[!occs$life_habit %in% "aquatic",] 
+	  occs <- occs[!occs$order %in% c("Cetacea", "Desmostylia", "Desmostyloidea", "Sirenia"), ]
 	  occs <- occs[!occs$family %in% c("Allodelphinidae", "Allodesminae", "Balaenidae", "Balaenopteridae", "Delphinidae", "Desmatophocidae", 
 	                                   "Desmostylidae", "Didelphidae","Dugongidae","Enaliarctidae", "Eschrichtiidae","Iniidae", "Kentriodontidae", 
 	                                   "Kogiidae", "Odobenidae", "Otariidae", "Paleoparadoxiidae", "Phocidae", "Physeteridae", "Platanistidae", 
-	                                   "Pontoporiidae", "Protocetidae", "Squalodontidae", "Ziphiidae"), ]
-	  occs <- occs[!occs$genus %in% c("Enaliarctos", "Pteronarctos", "Kolponomos", "Pacificotaria", "Pinnarctidion", "Pteronarctos"), ]
+	                                   "Pontoporiidae", "Protocetidae", "Squalodontidae", "Stagodontidae", "Ziphiidae"), ]
+	  occs <- occs[!occs$genus %in% c("Enaliarctos", "Pteronarctos", "Kolponomos", "Pacificotaria", "Pinnarctidion", "Pteronarctos"), ] #otters?
 	  occs <- occs[!occs$accepted_name %in% c("Archaeoceti", "Pinnipedia", "Imagotariinae"), ]
 	  occs$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = occs$accepted_name)	#replace spaces with underscores
 
@@ -57,24 +58,33 @@ primary.workspace <- "~/Dropbox/Code/R/Files to Save outside git/Ch1_Analysis/In
 ####################################################################################################################################
 
 settings$focal.tax$clade <- c("Artiodactyla", "Perissodactyla", "Condylarthra", "Dinocerata", "Taeniodonta", "Pantodonta", "Tillodontia", "Arctocyonidae","Chriacidae", "Hyopsodontidae","Periptychidae","Phenacodontidae") #Including Proboscidea here causes functions that use focal.clade to query PBDB to break.  Doesn't return elephant-morphs just Hemiptera.
-#settings$focal.tax$order <- c("Artiodactyla", "Perissodactyla", "Dinocerata", "Cimolesta") #Cimolesta is used as there are a few Taeniodont and tillodonts that lack a family designation
-#settings$focal.tax$family <- c("Arctocyonidae", "Hyopsodontidae", "Phenacodontidae", "Periptychidae")
 settings$bmBreaks_herb <- c(-Inf, 0.69897, 1.39794, 2.176091, 2.69897, Inf) #Janis 2000  max(measure.mat$bodyMass, na.rm=TRUE)
 	 
 measure.mat <- getMeasureMatWithBodyMasses(settings)
 measure.mat$SizeCat <- measure.mat$bodyMass
+
+if(settings$this.rank =="genus") measure.mat <- makeOneGenusMatFromSpecimenMat(measure.mat); measure.mat$genus <- rownames(measure.mat)
+
 for(xx in seq(1, length(settings$bmBreaks_herb)-1, 1)){
   measure.mat$SizeCat[measure.mat$bodyMass > settings$bmBreaks_herb[xx] & measure.mat$bodyMass < settings$bmBreaks_herb[xx+1]] <- xx
 } 
 
 #append Proboscideans onto measure mat
 probo.mat <- as.data.frame(matrix(nrow=length(unique(occs$accepted_name[occs$order %in% "Proboscidea" & occs$accepted_rank %in% settings$this.rank])), ncol=ncol(measure.mat))); colnames(probo.mat) <- colnames(measure.mat)
-probo.mat$taxon <- unique(occs$accepted_name[occs$order %in% "Proboscidea" & occs$accepted_rank %in% settings$this.rank]); probo.mat <- probo.mat[!probo.mat$taxon %in% "",]
+probo.mat$taxon <- unique(occs$accepted_name[occs$order %in% "Proboscidea" & occs$accepted_rank %in% settings$this.rank]); probo.mat <- probo.mat[!probo.mat$taxon %in% "",]; rownames(probo.mat) <- probo.mat$taxon
+if(settings$this.rank %in% "species")
+{
+  probo.mat$family <- occs$family[match(rownames(probo.mat),occs$accepted_name)]
+  probo.mat$genus <- occs$genus[match(rownames(probo.mat),occs$accepted_name)]
+}
+if(settings$this.rank %in% "genus")
+{
+  probo.mat$family <- occs$family[match(rownames(probo.mat),occs$genus)]
+  probo.mat$genus <- occs$genus[match(rownames(probo.mat),occs$genus)]
+}
 probo.mat$SizeCat <- 5
 measure.mat <- rbind(measure.mat, probo.mat)
 measure.mat <- measure.mat[order(measure.mat$taxon),]
-
-if(settings$this.rank =="genus") measure.mat <- makeOneGenusMatFromSpecimenMat(measure.mat); measure.mat$genus <- rownames(measure.mat)
 
 ####################################################################################################################################
 #### reduces matrix to just the focal order(s)
@@ -86,11 +96,6 @@ proboList <- occs[occs$order %in% "Proboscidea",]; proboList <- unique(proboList
 bigList <- rbind(bigList, proboList)
 
 bigList <- bigList[order(bigList$order, bigList$family, bigList$genus, bigList$accepted_name),]
-
-# bigList <- unheadique(occs[((occs$accepted_rank =="species" | occs$accepted_rank =="genus") & occs$order %in% settings$focal.tax$order), c("order","family", "genus", "accepted_name")])
-#bigList <- unique(occs[(occs$accepted_rank =="species" & (occs$order %in% settings$focal.tax$order | occs$family %in% settings$focal.tax$family)), c("order","family", "genus", "accepted_name")])
-#bigList <- bigList[order(bigList$order, bigList$family, bigList$genus, bigList$accepted_name),]
-# bigList[order(bigList$family, bigList$accepted_name),]
 
 shortFam <- sort(unique(bigList$family)) #[bigList$order %in% settings$focal.tax$clade]))
 if (any(shortFam == "NO_FAMILY_SPECIFIED")) shortFam <- shortFam[-which(shortFam == "NO_FAMILY_SPECIFIED")]

@@ -2073,7 +2073,7 @@ plot.medianRichnessInBin <- function(countCube = NULL, rep.test = 1,
        xlab = xlab, ylab = ylab, main = main)
   axis(side = 1, at = seq(xlim[2], xlim[1], 5), labels = axis.label)
   
-  for(xx in seq(1, length(rep.test), 1))
+  for(xx in seq(1, rep.test, 1))
   {
     prop <- t(apply(countCube[,,c(1,rep.test[xx])], c(1,2), median, na.rm=TRUE))
     colnames(prop)[colnames(prop)==""] <- "indeterminate"
@@ -2220,3 +2220,526 @@ taxa.in.mat <- function(measure.mat = NULL,
   
   return(measure.mat)
 }
+
+overlayCzTimescale_evan <- function(do.subepochs=FALSE, color=TRUE, 
+                                    thisAlpha.intervals=0.33, thisAlpha.text = 0.33, 
+                                    borderCol="white", invertTime=FALSE, 
+                                    scale.cex=0.75, scale.headers = 0.95, text.offset = 0.025, 
+                                    top = NULL, bottom = NULL, epoch.label.vert.move = 0, subepoch.label.vert.move = 0) {
+  textCol <- rgb(0,0,0,thisAlpha.text)
+  # textShadowCol<-"gray50"
+  old.cex<-par()$cex
+  par(cex=old.cex * scale.cex)
+  epochs=data.frame(name=c("Camb",
+                           "eO",
+                           "mO",
+                           "lO",
+                           "eS",
+                           "mS",
+                           "lS",
+                           "eD",
+                           "mD",
+                           "lD",
+                           "Miss",
+                           "Penn",
+                           "eP",
+                           "mP",
+                           "lP",
+                           "eT", 
+                           "mT",
+                           "lT",
+                           "eJ",
+                           "mJ",
+                           "lJ",
+                           "eK",
+                           "lK",
+                           "Paleo",
+                           "Eo",
+                           "Oligo",
+                           "Mio",
+                           "Plio",
+                           "Pl.",
+                           "Recent"),
+                    ageBase =c(542,
+                               486,
+                               472,
+                               461,
+                               444,
+                               428,
+                               423,
+                               416,
+                               398,
+                               385,
+                               359,
+                               318,
+                               299,
+                               271,
+                               260,
+                               
+                               251.0,
+                               245.0,
+                               235.0,
+                               201.6,
+                               176.0,
+                               161.0,
+                               145.5,
+                               99.6,
+                               65.5,
+                               55.8,
+                               33.9,
+                               23.03,
+                               5.33,
+                               2.58,
+                               0))
+  if (color) { epochs<-data.frame(epochs, rgb =c(
+    rgb(0.533, 0.671, 0.494, thisAlpha.intervals),
+    rgb(0.0, 0.686, 0.565, thisAlpha.intervals),
+    rgb(0.118, 0.737, 0.624, thisAlpha.intervals),
+    rgb(0.459, 0.796, 0.690, thisAlpha.intervals),
+    rgb(0.565, 0.835, 0.788, thisAlpha.intervals),
+    rgb(0.675, 0.871, 0.831, thisAlpha.intervals),
+    rgb(0.725, 0.894, 0.867, thisAlpha.intervals),
+    rgb(0.906, 0.698, 0.471, thisAlpha.intervals),
+    rgb(0.953, 0.788, 0.557, thisAlpha.intervals),
+    rgb(0.953, 0.875, 0.710, thisAlpha.intervals),
+    rgb(0.427, 0.624, 0.533, thisAlpha.intervals),
+    rgb(0.584, 0.769, 0.780, thisAlpha.intervals),
+    rgb(0.937, 0.463, 0.404, thisAlpha.intervals),
+    rgb(0.988, 0.549, 0.478, thisAlpha.intervals),
+    rgb(0.996, 0.702, 0.647, thisAlpha.intervals),
+    
+    rgb(0.643, 0.365, 0.627, thisAlpha.intervals),
+    rgb(0.718, 0.510, 0.71, thisAlpha.intervals),
+    rgb(0.745, 0.616, 0.776, thisAlpha.intervals),
+    rgb(0.0, 0.718, 0.906, thisAlpha.intervals),
+    rgb(0.392, 0.816, 0.918, thisAlpha.intervals),
+    rgb(0.647, 0.882, 0.973, thisAlpha.intervals),
+    rgb(0.5803922, 0.7960784, 0.4745098, thisAlpha.intervals),
+    rgb(0.7803922, 0.8784314, 0.6156863, thisAlpha.intervals),
+    rgb(0.9803922, 0.6980392, 0.4862745, thisAlpha.intervals),
+    rgb(0.9843137, 0.7372549, 0.5294118, thisAlpha.intervals),
+    rgb(0.9960784, 0.8588235, 0.6745098, thisAlpha.intervals),
+    rgb(1, 0.945098, 0, thisAlpha.intervals),
+    rgb(1, 0.9764706, 0.6823529, thisAlpha.intervals),
+    rgb(1, 0.9411765, 0.7490196, thisAlpha.intervals),
+    rgb(1, 0.9529412, 0.9333333, thisAlpha.intervals)), stringsAsFactors = FALSE) 
+  } else { epochs<-data.frame(epochs, rgb =c(
+    rgb(0.57, 0.57, 0.57, thisAlpha.intervals),
+    rgb(0.51, 0.51, 0.51, thisAlpha.intervals),
+    rgb(0.59, 0.59, 0.59, thisAlpha.intervals),
+    rgb(0.68, 0.68, 0.68, thisAlpha.intervals),
+    rgb(0.79, 0.79, 0.79, thisAlpha.intervals),
+    rgb(0.79, 0.79, 0.79, thisAlpha.intervals),
+    rgb(0.79, 0.79, 0.79, thisAlpha.intervals),
+    rgb(0.69, 0.69, 0.69, thisAlpha.intervals),
+    rgb(0.77, 0.77, 0.77, thisAlpha.intervals),
+    rgb(0.85, 0.85, 0.85, thisAlpha.intervals),
+    rgb(0.51, 0.51, 0.51, thisAlpha.intervals),
+    rgb(0.68, 0.68, 0.68, thisAlpha.intervals),
+    rgb(0.53, 0.53, 0.53, thisAlpha.intervals),
+    rgb(0.61, 0.61, 0.61, thisAlpha.intervals),
+    rgb(0.73, 0.73, 0.73, thisAlpha.intervals),
+    
+    rgb(0.39, 0.39, 0.39, thisAlpha.intervals),
+    rgb(0.51, 0.51, 0.51, thisAlpha.intervals),
+    rgb(0.59, 0.59, 0.59, thisAlpha.intervals),
+    rgb(0.58, 0.58, 0.58, thisAlpha.intervals),
+    rgb(0.71, 0.71, 0.71, thisAlpha.intervals),
+    rgb(0.81, 0.81, 0.81, thisAlpha.intervals),
+    rgb(0.69, 0.69, 0.69, thisAlpha.intervals),
+    rgb(0.81, 0.81, 0.81, thisAlpha.intervals),
+    rgb(0.71, 0.71, 0.71, thisAlpha.intervals),
+    rgb(0.75, 0.75, 0.75, thisAlpha.intervals),
+    rgb(0.85, 0.85, 0.85, thisAlpha.intervals),
+    rgb(0.93, 0.93, 0.93, thisAlpha.intervals),
+    rgb(0.96, 0.96, 0.96, thisAlpha.intervals),
+    rgb(0.93, 0.93, 0.93, thisAlpha.intervals),
+    rgb(1, 1, 1, thisAlpha.intervals)), stringsAsFactors = FALSE) }
+  # } else { epochs <- data.frame(epochs, rgb = rep("000000", times=nrow(epochs)), stringsAsFactors = FALSE) }
+  
+  if (do.subepochs) subepochs=data.frame(modifier=c("e", "m", "l", "e", "m", "l", "e", "l", "e", "m", "l", "PP"), ageBase=c(65.5, 61.7, 58.7, 55.8, 48.6, 37.2, 33.9, 28.4, 23.03, 15.97, 11.61, 5.33), stringsAsFactors = FALSE)
+  
+  if (invertTime) {
+    epochs$ageBase<- par()$usr[2]/1.137059-epochs$ageBase
+    if (do.subepochs) subepochs$ageBase<- par()$usr[2]/1.137059-subepochs$ageBase
+  }
+  
+  if(is.null(top)) top=par()$usr[4]
+  if(is.null(bottom)) bottom=par()$usr[3]
+  
+  #lays down colors
+  for (i in 1:(nrow(epochs)-1)) {
+    polygon(c(epochs[i,2], epochs[i,2], epochs[(i+1),2], epochs[(i+1),2]), c(bottom, top, top, bottom), col=epochs$rgb[i], border=borderCol, lty=0)
+  }
+  
+  #lays down Era boundaries
+  abline(v=251,lwd=1.5, col=borderCol)
+  abline(v=65.5,lwd=1.5, col=borderCol)
+  
+  if (do.subepochs) {
+    top=(scale.headers*(top - bottom)) + bottom
+    for (i in 1:(nrow(subepochs)-1)) {
+      polygon(cbind(c(subepochs[i,2], subepochs[i,2], subepochs[(i+1),2], subepochs[(i+1),2]), c(bottom, top, top, bottom)), lwd=0.25, border=borderCol)
+      text (x=mean(c(as.numeric(subepochs[i,2]), as.numeric(subepochs[(i+1),2]))), y=(((scale.headers + text.offset)*(top - bottom)) + bottom + subepoch.label.vert.move), label=subepochs[i,1], col=textCol)
+    }
+  }
+  
+  #lays down borders and text
+  if(is.null(top)) top=par()$usr[4]
+  for (i in 1:(nrow(epochs)-1)) {
+    polygon(cbind(c(epochs[i,2], epochs[i,2], epochs[(i+1),2], epochs[(i+1),2]), c(bottom, top, top, bottom)), col=NA, border=borderCol, lwd=0.5)
+    # text (mean(c(as.numeric(epochs[i,2]), as.numeric(epochs[i+1,2]))), (0.975*top), label=epochs[i,1], col=textShadowCol, adj=c(0.475,0.525), font=2) #cex=par()$cex+0.05
+    # text (mean(c(as.numeric(epochs[i,2]), as.numeric(epochs[i+1,2]))), (0.975*top), label=epochs[i,1], col=textShadowCol, font=2) #cex=par()$cex+0.05
+    text (x=mean(c(as.numeric(epochs[i,2]), as.numeric(epochs[i+1,2]))), y=(((scale.headers + text.offset)*(top - bottom)) + bottom + epoch.label.vert.move), label=epochs[i,1], col=textCol, font=2)
+  }
+  abline(h=((scale.headers*(top - bottom)) + bottom), lwd=1.0, col=borderCol)
+  
+  par(cex=old.cex)
+}
+
+sensitivity.MedianRichnessInBin <- function(countCube_herb = NULL, countCube_pred = NULL, intervals = NULL, number.reps = 1000, 
+                                            ylim = c(0,60),
+                                            output.filename = NULL, output.filepath = NULL)
+{
+  if(!is.null(output.filename)) { png(output.filename, width = 10, height = 6, units = "in", res = 200)
+  } else {png(paste0(output.filepath, "medianRichnessInBin_", number.reps, "reps_", timestamp(),".png"), width = 11, height = 6, units = "in", res = 200)}
+
+  rep.test <- seq(number.reps,dim(countCube_herb)[3], number.reps)
+  
+  par(mfrow = c(2,1), mar = c(0.5,1,1,1), oma = c(3,2,0,0))
+    
+  plot.medianRichnessInBin(countCube = countCube_herb, rep.test = rep.test,
+                           xlim = c(66,0), ylim = ylim, xaxt = "n", xlab = "", ylab = "Number of Taxa", main = "Median Number of Taxa Per Time Bin",
+                           axis.label = FALSE)
+  overlayCzTimescale_evan(do.subepochs = TRUE, color = TRUE, borderCol = "black")
+  plot.medianRichnessInBin(countCube = countCube_pred, rep.test = rep.test,
+                           xlim = c(66,0), ylim = ylim/2, xlab = "Time (Ma)", ylab = "Number of Taxa", main = "")
+  overlayCzTimescale_evan(do.subepochs = TRUE, color = TRUE, borderCol = "black")
+  dev.off()
+    
+  return()
+}
+
+
+sensitivity.var.CorrelCoef.Single <- function(countCube_herb = NULL, countCube_pred = NULL, intervals = NULL, number.reps = 1000, 
+                                              var.CorrelCoef.Single = c(1,1),
+                                              ylim = NULL,
+                                              output.filename = NULL, output.filepath = NULL)
+{
+  if(!is.null(output.filename)) { png(output.filename, width = 10, height = 6, units = "in", res = 200)
+  } else {png(paste0(output.filepath,"var.CorrelCoef_single_", number.reps, "reps_", timestamp(),".png"), width = 11, height = 6, units = "in", res = 200)}
+  
+  rep.test <- seq(number.reps,dim(countCube_herb)[3], number.reps)
+  
+    corr.results.both <- vector()
+    var.corr <- vector()
+    
+    for(xx in seq(1, rep.test, 1))
+    {
+      ##############################################################
+      prop_herb <- t(apply(countCube_herb[,,seq(1, xx,1)], c(1,2), median, na.rm=TRUE))
+      colnames(prop_herb)[colnames(prop_herb)==""] <- "indeterminate"
+      
+      prop_pred <- t(apply(countCube_pred[,,seq(1, xx,1)], c(1,2), median, na.rm=TRUE))
+      colnames(prop_pred)[colnames(prop_pred)==""] <- "indeterminate"
+      
+      ungulates <- prop_herb
+      predators <- prop_pred
+      
+      all.val <- cbind(predators, ungulates)
+      
+      corr.results.both[xx] <- cor(predators, ungulates, method = "spearman")[var.CorrelCoef.Single[1],var.CorrelCoef.Single[2]] #for antelope vs wolf sized critters
+      
+      var.corr[xx] <- var(corr.results.both)
+    }
+    plot(seq(1, dim(countCube_herb)[3],1), var.corr, col = alphaColor("gray75",0.5),
+         xlab = "Cumulative Number of Replicates", ylab = "Variance of Correlation Coefficient of Median Assemblage")
+    lines(seq(1, dim(countCube_herb)[3],1), var.corr, col = "black")
+  
+  dev.off()
+  return()
+}
+
+sensitivity.var.CorrelCoef.All <- function(countCube_herb = NULL, countCube_pred = NULL, intervals = NULL, number.reps = 1000, 
+                                           ylim = NULL, FD.correl = FALSE,
+                                           output.filename = NULL, output.filepath = NULL)
+{
+  if(!is.null(output.filename)) { png(output.filename, width = 10, height = 6, units = "in", res = 200)
+  } else {png(paste0(output.filepath, "var.CorrelCoef.All_", number.reps, "reps_", timestamp(),".png"), width = 11, height = 6, units = "in", res = 200)}
+  
+  rep.test <- seq(number.reps,dim(countCube_herb)[3], number.reps)
+  
+  corr.results.both <- array(numeric(0),dim=c(nrow(countCube_herb),nrow(countCube_pred),dim(countCube_herb)[3]))
+  var.corr <- vector()
+  for(zz in seq(1, rep.test, 1))
+  {
+     ##############################################################
+    prop_herb <- t(apply(countCube_herb[,,seq(1, zz, 1)], c(1,2), median, na.rm=TRUE))
+    colnames(prop_herb)[colnames(prop_herb)==""] <- "indeterminate"
+      
+    prop_pred <- t(apply(countCube_pred[,,seq(1, zz, 1)], c(1,2), median, na.rm=TRUE))
+    colnames(prop_pred)[colnames(prop_pred)==""] <- "indeterminate"
+      
+    if(FD.correl) {
+      predators <- getDiversity1stDiff(data.mat = t(prop_pred), output.rownames = rownames(prop_pred))
+      ungulates <- getDiversity1stDiff(data.mat = t(prop_herb), output.rownames = rownames(prop_herb))
+      
+    } else{
+      ungulates <- prop_herb
+      predators <- prop_pred
+    }
+      
+    all.val <- cbind(predators, ungulates)
+    
+    corr.results.both[,,zz] <- cor(predators, ungulates, method = "spearman") 
+  }  
+  dimnames(corr.results.both) <- dimnames(cor(predators, ungulates, method = "spearman"))
+  
+  if(length(ylim) == 2) ylim <- array(c(rep(ylim[1], times = nrow(countCube_pred)), rep(ylim[2],times = nrow(countCube_pred))), dim = c(nrow(countCube_pred), 2, nrow(countCube_herb))) # = c(2, nrow(countCube_pred), nrow(countCube_herb)))
+    
+  par(mfrow=c(nrow(countCube_herb),nrow(countCube_pred)), mar = c(1,4.5,0,0), oma = c(4,4,3,3))
+  for(xx in seq(1, nrow(countCube_pred),1))
+  {
+    for(yy in seq(1, nrow(countCube_herb),1))
+    {
+        
+      for(zz in seq(1, rep.test, 1))
+      {
+        var.corr[zz] <- var(corr.results.both[xx,yy,c(seq(1,zz,1))])
+      }
+        
+       if(!is.null(ylim)){
+         plot(0, 0, type = "n", xlim = c(0, dim(countCube_herb)[3]), ylim = ylim[yy,,xx],
+              main = "", xlab = "", ylab = "", axes= FALSE, yaxt = "n", xaxt = "n")
+          
+        axis(2, labels = FALSE)
+        axis(1, labels = FALSE)
+        if(yy == 1) axis(2, labels = TRUE)
+        if(xx == max(nrow(countCube_pred))) axis(1, labels = TRUE)
+          
+        points(seq(1, dim(countCube_herb)[3],1), var.corr, col = alphaColor("gray75",0.5))
+        lines(seq(1, dim(countCube_herb)[3],1), var.corr, col = "black")
+          
+        if(yy == 1 & xx == ceiling(nrow(countCube_pred)/2)){ mtext("Variance of Correlation Coefficient of Median Assemblage", side = 2, line = 3, cex = 1)}
+        if(yy == ceiling(nrow(countCube_herb)/2) & xx == max(nrow(countCube_pred))){ mtext("Number of Cumulative Replicates", side = 1, line = 2, cex = 1)}
+        if(xx == 1) { mtext(rownames(countCube_herb)[yy], side = 3, line = 1, cex = 0.5)}
+        if(yy == 1) { mtext(rownames(countCube_pred)[xx], side = 2, line = 2, cex = 0.5)}
+          
+      } else {
+        plot(0, 0, type = "n", xlim = c(0, dim(countCube_herb)[3]), ylim = c(0, max(var.corr, na.rm = T)),
+             main = "", xlab = "", ylab = "", axes= FALSE, yaxt = "n", xaxt = "n")
+          
+        options(scipen = -2, digits = 3)
+        axis(2, labels = TRUE, lwd = 1, las = 1, line = 0.5)
+        options(scipen = 0, digits = 7)
+          
+        axis(1, labels = FALSE)
+        if(xx == max(nrow(countCube_pred))) axis(1, labels = TRUE)
+          
+        points(seq(1, dim(countCube_herb)[3],1), var.corr, col = alphaColor("gray75",0.5))
+        lines(seq(1, dim(countCube_herb)[3],1), var.corr, col = "black")
+          
+        if(yy == 1 & xx == ceiling(nrow(countCube_pred)/2)){ mtext("Variance of Correlation Coefficient of Median Assemblage", side = 2, line = 6, cex = 1)}
+        if(yy == ceiling(nrow(countCube_herb)/2) & xx == max(nrow(countCube_pred))){ mtext("Number of Cumulative Replicates", side = 1, line = 2.5, cex = 1)}
+        if(xx == 1) { mtext(rownames(countCube_herb)[yy], side = 3, line = 1, cex = 0.75)}
+        if(yy == 1) { mtext(rownames(countCube_pred)[xx], side = 2, line = 4.5, cex = 0.75)}
+      }
+        
+      print(paste0(yy," ",xx," ",zz))
+    }
+  }
+  
+  dev.off()
+  return()
+}
+
+sensitivity.CorrelCoef.All <- function(countCube_herb = NULL, countCube_pred = NULL, intervals = NULL, number.reps = 1000, 
+                                       ylim = NULL, FD.correl = FALSE,
+                                       output.filename = NULL, output.filepath = NULL)
+{
+  if(!is.null(output.filename)) { png(output.filename, width = 10, height = 6, units = "in", res = 200)
+  } else {png(paste0(output.filepath, "CorrelCoef.All_", number.reps, "reps_", timestamp(),".png"), width = 11, height = 6, units = "in", res = 200)}
+  
+  rep.test <- seq(number.reps,dim(countCube_herb)[3], number.reps)
+  
+  corr.results.both <- array(numeric(0),dim=c(nrow(countCube_herb),nrow(countCube_pred),dim(countCube_herb)[3]))
+  corr.coef <- vector()
+  for(zz in seq(1, rep.test, 1))
+  {
+    ##############################################################
+    prop_herb <- t(apply(countCube_herb[,,seq(1, zz, 1)], c(1,2), median, na.rm=TRUE))
+    colnames(prop_herb)[colnames(prop_herb)==""] <- "indeterminate"
+    
+    prop_pred <- t(apply(countCube_pred[,,seq(1, zz, 1)], c(1,2), median, na.rm=TRUE))
+    colnames(prop_pred)[colnames(prop_pred)==""] <- "indeterminate"
+    
+    if(FD.correl) {
+      predators <- getDiversity1stDiff(data.mat = t(prop_pred), output.rownames = rownames(prop_pred))
+      ungulates <- getDiversity1stDiff(data.mat = t(prop_herb), output.rownames = rownames(prop_herb))
+      
+    } else{
+      ungulates <- prop_herb
+      predators <- prop_pred
+    }
+    all.val <- cbind(predators, ungulates)
+    
+    corr.results.both[,,zz] <- cor(predators, ungulates, method = "spearman")
+    
+  }
+  dimnames(corr.results.both) <- dimnames(cor(predators, ungulates, method = "spearman"))
+  
+  if(length(ylim) == 2) ylim <- array(c(rep(ylim[1], times = nrow(countCube_pred)), rep(ylim[2],times = nrow(countCube_pred))), dim = c(nrow(countCube_pred), 2, nrow(countCube_herb))) # = c(2, nrow(countCube_pred), nrow(countCube_herb)))
+  
+  par(mfrow=c(nrow(countCube_herb),nrow(countCube_pred)), mar = c(1,4.5,0,0), oma = c(4,4,3,3))
+  for(xx in seq(1, nrow(countCube_pred),1))
+  {
+    for(yy in seq(1, nrow(countCube_herb),1))
+    {
+      
+      if(!is.null(ylim)){
+        plot(0, 0, type = "n", xlim = c(0, dim(countCube_herb)[3]), ylim = ylim[yy,,xx],
+             main = "", xlab = "", ylab = "", axes= FALSE, yaxt = "n", xaxt = "n")
+        
+        axis(2, labels = FALSE)
+        axis(1, labels = FALSE)
+        if(yy == 1) axis(2, labels = TRUE)
+        if(xx == max(nrow(countCube_pred))) axis(1, labels = TRUE)
+        
+        points(seq(1, dim(countCube_herb)[3],1), apply(corr.results.both,c(3), function(x) x[xx,yy]), col = alphaColor("gray75",0.5))
+        lines(seq(1, dim(countCube_herb)[3],1), apply(corr.results.both,c(3), function(x) x[xx,yy]), col = "black")
+        
+        if(yy == 1 & xx == ceiling(nrow(countCube_pred)/2)){ mtext("Correlation Coefficient of Median Assemblage", side = 2, line = 6, cex = 1)}
+        if(yy == ceiling(nrow(countCube_herb)/2) & xx == max(nrow(countCube_pred))){ mtext("Number of Cumulative Replicates", side = 1, line = 2.5, cex = 1)}
+        if(xx == 1) { mtext(rownames(countCube_herb)[yy], side = 3, line = 1, cex = 0.75)}
+        if(yy == 1) { mtext(rownames(countCube_pred)[xx], side = 2, line = 4.5, cex = 0.75)}
+        
+      } else {
+        plot(0, 0, type = "n", xlim = c(0, dim(countCube_herb)[3]), ylim = c(min(apply(corr.results.both,c(3), function(x) x[xx,yy]), na.rm = T), max(apply(corr.results.both,c(3), function(x) x[xx,yy]), na.rm = T)),
+             main = "", xlab = "", ylab = "", axes= FALSE, yaxt = "n", xaxt = "n")
+        
+        options(scipen = -2, digits = 3)
+        axis(2, labels = TRUE, lwd = 1, las = 1, line = 0.5)
+        options(scipen = 0, digits = 7)
+        
+        axis(1, labels = FALSE)
+        if(xx == max(nrow(countCube_pred))) axis(1, labels = TRUE)
+        
+        points(seq(1, dim(countCube_herb)[3],1), apply(corr.results.both,c(3), function(x) x[xx,yy]), col = alphaColor("gray75",0.5))
+        lines(seq(1, dim(countCube_herb)[3],1), apply(corr.results.both,c(3), function(x) x[xx,yy]), col = "black")
+        
+        if(yy == 1 & xx == ceiling(nrow(countCube_pred)/2)){ mtext("Correlation Coefficient of Median Assemblage", side = 2, line = 6, cex = 1)}
+        if(yy == ceiling(nrow(countCube_herb)/2) & xx == max(nrow(countCube_pred))){ mtext("Number of Cumulative Replicates", side = 1, line = 2.5, cex = 1)}
+        if(xx == 1) { mtext(rownames(countCube_herb)[yy], side = 3, line = 1, cex = 0.75)}
+        if(yy == 1) { mtext(rownames(countCube_pred)[xx], side = 2, line = 4.5, cex = 0.75)}
+      }
+      
+      print(paste0(xx," ",yy," ",zz))
+    }
+  }
+  
+  dev.off()
+  return()
+}
+
+plotSpeciesInGenera <- function(repIntTaxa, measure.mat, bmBreaks, sizecateg, intervals, do.reps=100)
+{
+  ##############This is a work in progress
+  
+  #check repIntTaxa to determine how many species are to a genera within a given bin.
+  ##need to relegate this to only sampling congenerics so that speciose genera with longer duration (canis) don't overestimate by taking all at once
+  ##get genus name, compare with PBDB for species filtered for time bin is in, if valid count them
+  
+  #remove non target taxa
+  
+  #compare interval (species level) with PBDB occs
+
+  rownames(measure.mat) <- measure.mat$taxon
+  measure.mat.genus <- makeOneGenusMatFromSpecimenMat(measure.mat)
+  
+  for(xx in seq(1, length(settings$bmBreaks_herb)-1, 1)){
+    measure.mat.genus$SizeCat[measure.mat.genus$bodyMass > bmBreaks[xx] & measure.mat.genus$bodyMass < bmBreaks[xx+1]] <- xx
+  } 
+  
+  measure.mat.genus$SizeCat[rownames(measure.mat.genus) %in% unique(occs$genus[occs$order %in% "Proboscidea"])] <- 5
+  
+  gen.count.inrep.list <- list()
+  gen.count.alrep.list <- list()
+  
+  max.rep <- do.reps
+  for(zz in seq(1, max.rep,1))
+  {
+    for(yy in seq(1,length(repIntTaxa[[zz]]),1))
+    {
+      genus.vec <- unique(occs$genus[occs$accepted_name %in% repIntTaxa[[zz]][[yy]] & occs$accepted_name %in% measure.mat$taxon]) # get list of genera
+      genus.vec <- genus.vec[order(genus.vec)]
+      if(length(genus.vec)>0)
+      {
+        genus.count.mat <- data.frame(genus = genus.vec[order(genus.vec)], sp.per.gen.in.bin = NA, size.cat = measure.mat.genus$SizeCat[match(genus.vec[order(genus.vec)],measure.mat.genus$taxon)]) #setup matrix to store values
+      } else {
+        genus.count.mat <- data.frame(genus = NA, sp.per.gen.in.bin = NA, size.cat = NA)
+      }
+      
+      for(xx in seq(1, nrow(genus.count.mat))) 
+      {
+        #add code to seperate into size cats too
+        sp.in.gen <- unique(occs$accepted_name[occs$genus %in% genus.count.mat[xx,1] & occs$accepted_rank %in% "species"]) # get unique species in a genus
+        genus.count.mat[xx,2] <- length(sp.in.gen[sp.in.gen %in% repIntTaxa[[zz]][[yy]]]) #check that species are in the bin (may be missing as species duration not in bin, not sampled, etc.)
+      }
+      
+      print(genus.count.mat)
+      
+      gen.count.list[[yy]] <- data.frame(mean=mean(genus.count.mat$sp.per.gen.in.bin), 
+                                         median=median(genus.count.mat$sp.per.gen.in.bin),
+                                         min=min(genus.count.mat$sp.per.gen.in.bin),
+                                         max=max(genus.count.mat$sp.per.gen.in.bin))
+    }
+    names(gen.count.list) <- names(repIntTaxa[[1]])
+    gen.count.alrep.list[[zz]] <- gen.count.list
+    
+    print(paste0(zz," out of ", max.rep))
+  }
+  
+  gen.count.alrep.list[[1]]
+
+#need way to reliably condense into median
+ genusCube.mean <- rowMeans(sapply(gen.count.alrep.list, function (this.rep) {
+                                   sapply(this.rep, function(this.intv, this.rep) {
+                                          as.numeric(this.intv$mean)
+                                   }, this.rep=this.rep)
+                                 },simplify = "array"))
+  
+ genusCube.median <- sapply(gen.count.alrep.list, function (this.rep) {
+                            sapply(this.rep, function(this.intv, this.rep) {
+                                   as.numeric(this.intv$median)
+                            }, this.rep=this.rep)
+                           },simplify = "array")
+ genusCube.median <- apply(genusCube.median, c(1), median, na.rm=FALSE)
+ 
+ genusCube.min <- sapply(gen.count.alrep.list, function (this.rep) {
+                         sapply(this.rep, function(this.intv, this.rep) {
+                                as.numeric(this.intv$min)
+                         }, this.rep=this.rep)
+                        },simplify = "array")
+ genusCube.min <- apply(genusCube.min, c(1), min, na.rm=FALSE)
+ 
+ genusCube.max <- sapply(gen.count.alrep.list, function (this.rep) {
+                         sapply(this.rep, function(this.intv, this.rep) {
+                                as.numeric(this.intv$max)
+                         }, this.rep=this.rep)
+                        },simplify = "array")
+ genusCube.max <- apply(genusCube.max, c(1), max, na.rm=FALSE)
+
+ plot(rowMeans(intervals),genusCube.median, xlim = c(66,0), ylim = c(0,15), type = "n",
+      xlab = "Time (Ma)", ylab = "Species Per Genera") 
+ lines(rowMeans(intervals), genusCube.median, col ="black", lwd = 2)
+ lines(rowMeans(intervals), genusCube.mean, col ="red", lwd = 2)
+ lines(rowMeans(intervals), genusCube.max, col = "darkgreen", lwd = 2)
+ legend(x = 20, y = 15, legend = c("median", "mean", "max"), fill = c("black","red", "darkgreen"))
+  
+ return()
+}
+
+time1 <- Sys.time()
+plotSpeciesInGenera(repIntTaxa = repIntTaxa, measure.mat = pred.data, bmBreaks = settings$bmBreaks_pred, sizecateg = NULL, intervals = intervals, do.reps=100)
+time2 <- Sys.time()
+time2-time1
