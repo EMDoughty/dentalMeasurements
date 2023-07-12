@@ -1034,35 +1034,30 @@ getCurrentHigherTaxonomy <- function(archaic.ung, save.file=NULL) { #this functi
   Verbatim.Genus <- gsub("aff. ", "", Verbatim.Genus)
   Verbatim.Species <- gsub("aff. ", "", Verbatim.Species)
   
-  Verbatim.Species <- gsub("sp.", "", Verbatim.Species) # need to do this as PBDB does not use sp. jsut the generic name
-  
   archaic.ung$Verbatim.taxon <- NA
   
   archaic.ung$Verbatim.taxon[!Verbatim.Species %in% ""] <- paste(Verbatim.Genus[!Verbatim.Species %in% ""], Verbatim.Species[!Verbatim.Species %in% ""], sep=" ") #7/13/2023 genera only entries have added space = conflict with PBDB
-  archaic.ung$Verbatim.taxon[Verbatim.Species %in% ""] <- Verbatim.Genus[Verbatim.Species %in% ""]
+  archaic.ung$Verbatim.taxon[Verbatim.Species %in% "sp." | Verbatim.Species %in% ""] <- Verbatim.Genus[Verbatim.Species %in% "sp." | Verbatim.Species %in% ""] #this sets Genus only desingations (i.e. Genus sp.) serpeately to avoid a space after he genus nae
   
-  Accepted.Name <- getCurrentTaxa(tax.vec = archaic.ung$Verbatim.taxon) #this does not work on most Genus sp. designations or entries that are in quotes.  Is hit or miss on entries with question marks
-  
-  Accepted.Genus <- str_split_fixed(string = Accepted.Name, " ", n = Inf)[,1]
-  Accepted.Species <- paste0(str_split_fixed(string = Accepted.Name, " ", n = Inf)[,2],str_split_fixed(string = Accepted.Name, " ", n = Inf)[,3])
-  
-  archaic.ung$Accepted.Name <- Accepted.Name
+  archaic.ung$Accepted.Name <- getCurrentTaxa(tax.vec = archaic.ung$Verbatim.taxon) #this does not work on most Genus sp. designations or entries that are in quotes.  Is hit or miss on entries with question marks
   archaic.ung$Accepted.Name <- gsub(pattern = "[[:space:]]", replacement = "_", x = archaic.ung$Accepted.Name)
-  
-  archaic.ung$Accepted.Genus <- Accepted.Genus
-  archaic.ung$Accepted.Species <- Accepted.Species
   
   uniqTax <- lapply(c("Mammalia"), FUN=getTaxonomyForOneBaseTaxon_AcceptedName)
   uniqTax <- rbind(uniqTax[[1]])
   uniqTax$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = uniqTax$accepted_name)
   
+  archaic.ung$Accepted.Genus <- uniqTax$genus[match(x=archaic.ung$Accepted.Name, table=uniqTax$accepted_name)] 
+  
+  #need to add a check for dealing with sub genera and subspecies
+  archaic.ung$Accepted.Species <- unlist(lapply(strsplit(uniqTax$accepted_name[match(x=archaic.ung$Accepted.Name, table=uniqTax$accepted_name)], "_"), function(x) x[2])) 
+  archaic.ung$Accepted.Species[is.na(archaic.ung$Accepted.Species)] <- ""
+  
+  uniqTax$accepted_name[match(x=archaic.ung$Accepted.Name, table=uniqTax$accepted_name)]
+  
   archaic.ung$Family <- uniqTax$family[match(x=archaic.ung$Accepted.Name, table=uniqTax$accepted_name)]
-  archaic.ung$Family[is.na(archaic.ung$Family)] <- uniqTax$family[match(x=archaic.ung$Accepted.Genus[is.na(archaic.ung$Family)], table=uniqTax$taxon_name)]
 
   archaic.ung$Order <- uniqTax$order[match(x=archaic.ung$Accepted.Name, table=uniqTax$accepted_name)]
-  archaic.ung$Order[is.na(archaic.ung$Order)] <- uniqTax$order[match(x=archaic.ung$Accepted.Genus[is.na(archaic.ung$Order)], table=uniqTax$taxon_name)]
-  
-  
+
   if(!is.null(save.file)) write.csv(archaic.ung, file = save.file)
      
   return(archaic.ung)
