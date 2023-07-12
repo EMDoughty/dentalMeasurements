@@ -1063,6 +1063,7 @@ getCurrentHigherTaxonomy <- function(archaic.ung, save.file=NULL) { #this functi
   return(archaic.ung)
 }
 
+###############################################
 getTaxaInClade <- function(clades, occs, save.file=NULL) {
   uniqTax <- lapply(c(clades), FUN=getTaxonomyForOneBaseTaxon_AcceptedName)
   uniq.len <- length(uniqTax)
@@ -1080,7 +1081,6 @@ getTaxaInClade <- function(clades, occs, save.file=NULL) {
     uniqTax <- taxaMat
   }
   
- # uniqTax$accepted_species <- str_split_fixed(string = uniqTax[,"accepted_name"], " ", n = Inf)[,2]
   uniqTax$accepted_species <- str_split_fixed(string = uniqTax$accepted_name, " ", n = Inf)[,2]
   
   uniqTax$verbatim_genus <- str_split_fixed(string = uniqTax$taxon_name, " ", n = Inf)[,1]
@@ -1088,10 +1088,13 @@ getTaxaInClade <- function(clades, occs, save.file=NULL) {
   
   uniqTax$accepted_name <- gsub(" ","_", uniqTax$accepted_name)
   
-  uniqTax <- uniqTax[,c("phylum", "class", "order", "family", "genus", "accepted_species", "verbatim_genus", "verbatim_species","accepted_name", "taxon_name")]
+  uniqTax <- uniqTax[,c("phylum", "class", "order", "family", "accepted_name","genus", "accepted_species", "taxon_name", "verbatim_genus", "verbatim_species")]
   
-  if(!is.null(occs)) uniqTax <- unique(uniqTax[uniqTax$accepted_name %in% occs$accepted_name[occs$accepted_rank =="species"],]) #This should remove non mammal Proboscidea designation in the PBDB query since occs is for all mammals
-  
+  if(!is.null(occs)) 
+  {
+    occs$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = occs$accepted_name)
+    uniqTax <- unique(uniqTax[uniqTax$accepted_name %in% occs$accepted_name[occs$accepted_rank =="species"],]) #This should remove non mammal Proboscidea designation in the PBDB query since occs is for all mammals
+  }
   if(!is.null(save.file)) write.csv(uniqTax, file = save.file)
   
   return(uniqTax)
