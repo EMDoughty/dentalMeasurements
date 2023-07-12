@@ -31,7 +31,7 @@ require(abind)
 ####################################################################################################################################
 settings <- list()
 settings$this.rank <- "species"
-primary.workspace <- "~/Dropbox/Code/R/Files to Save outside git/Ch1_Analysis/Inputs/"
+primary.workspace <- "/Users/emdoughty/Dropbox/Code/R/Files to Save outside git/evanCorrelations/New Code/" #"~/Dropbox/Code/R/Files to Save outside git/Ch1_Analysis/Inputs/"
 
 	options(timeout=300)
   # occs <- read.csv("http://paleobiodb.org/data1.2/occs/list.csv?base_name=Mammalia&continent=NOA&max_ma=66&min_ma=0&timerule=overlap&lngmin=-125.98&lngmax=-93.40&latmin=27&latmax=55.7&show=full&limit=all", stringsAsFactors=TRUE, strip.white=TRUE)
@@ -55,6 +55,13 @@ primary.workspace <- "~/Dropbox/Code/R/Files to Save outside git/Ch1_Analysis/In
 	 settings$occs.filename <- occs.filename
 	 write.csv(occs, file = occs.filename)
 	  
+	 check.binom <- unique(occs$accepted_name)
+	 check.binom <- check.binom[unlist(lapply(strsplit(check.binom, "_"), function(x) length(x))) > 2]
+	 check.binom <- check.binom[order(check.binom)]
+	 check.gen <- unlist(lapply(check.binom, function(x) strsplit(x,"_")[[1]][1]))
+	 check.mat <- unique(occs[occs$genus %in% check.gen,c("accepted_name", "order","family", "genus"),])
+	 check.mat <- check.mat[order(check.mat$accepted_name),]
+	 write.csv(check.mat,file = paste0(primary.workspace, "checkTaxonDups.csv"))
 ####################################################################################################################################
 
 settings$focal.tax$clade <- c("Artiodactyla", "Perissodactyla", "Condylarthra", "Dinocerata", "Taeniodonta", "Pantodonta", "Tillodontia", "Arctocyonidae","Chriacidae", "Hyopsodontidae","Periptychidae","Phenacodontidae") #Including Proboscidea here causes functions that use focal.clade to query PBDB to break.  Doesn't return elephant-morphs just Hemiptera.
@@ -82,6 +89,8 @@ if(settings$this.rank %in% "genus")
   probo.mat$family <- occs$family[match(rownames(probo.mat),occs$genus)]
   probo.mat$genus <- occs$genus[match(rownames(probo.mat),occs$genus)]
 }
+probo.mat <- probo.mat[!rownames(probo.mat) %in% "Amebelodon_(Konobelodon)_britti",] #duplicate due to accepted name in PBDB
+
 probo.mat$SizeCat <- 5
 measure.mat <- rbind(measure.mat, probo.mat)
 measure.mat <- measure.mat[order(measure.mat$taxon),]
