@@ -1147,13 +1147,13 @@ getTargetTaxa<- function(measure.mat, uniqTax, occs, measure.columns = c("P2_L",
 }
 
 
-data.coverage_v3 <- function(clades, clade.level = "family", clade.ranked = TRUE, data.mat, occs, measure.colnames, save.file = NULL)
+data.coverage <- function(clades, clade.level = "family", clade.ranked = TRUE, data.mat, occs, measure.colnames, save.file = NULL)
 {
   output.list <- list(AllTaxa = NA, OccsOnly = NA, MissingTaxa = NA) #, NoOccs = NA)
   
   #data.mat <- data.mat[, colnames(data.mat)[1:66]]
-  data.mat <- data.mat[!data.mat$Catalog.Number %in% "Accepted Names PBDB",]
-  data.mat$accepted_name <- paste(data.mat$Accepted.Genus, data.mat$Accepted.Species, sep = " ")
+  #data.mat <- data.mat[!data.mat$Catalog.Number %in% "Accepted Names PBDB",]
+  #data.mat$accepted_name <- paste(data.mat$Accepted.Genus, data.mat$Accepted.Species, sep = " ")
   ####remove rows that lack measurements
   data.mat <- data.mat[!apply(is.na(data.mat[,measure.colnames]) | data.mat[,measure.colnames] == "", 1, all),]
   
@@ -1168,6 +1168,8 @@ data.coverage_v3 <- function(clades, clade.level = "family", clade.ranked = TRUE
   {
     
     fam.list <- unique(uniqTax[[xx]]$family)[!unique(uniqTax[[xx]]$family) %in% ""]
+    
+    uniqTax[[xx]]$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = uniqTax[[xx]]$accepted_name)
     
     tax.mat <- matrix(nrow = length(fam.list), ncol = 6)
     rownames(tax.mat) <- c(fam.list)
