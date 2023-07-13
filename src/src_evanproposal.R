@@ -1057,6 +1057,8 @@ getCurrentHigherTaxonomy <- function(archaic.ung, save.file=NULL) { #this functi
   archaic.ung$Family <- uniqTax$family[match(x=archaic.ung$Accepted.Name, table=uniqTax$accepted_name)]
 
   archaic.ung$Order <- uniqTax$order[match(x=archaic.ung$Accepted.Name, table=uniqTax$accepted_name)]
+  
+  names(archaic.ung)[colnames(archaic.ung) %in% "Accepted.Name"] <- "accepted_name"
 
   if(!is.null(save.file)) write.csv(archaic.ung, file = save.file)
      
@@ -1081,7 +1083,7 @@ getTaxaInClade <- function(clades, occs, save.file=NULL) {
     uniqTax <- taxaMat
   }
   
-  uniqTax$accepted_species <- str_split_fixed(string = uniqTax$accepted_name, " ", n = Inf)[,2]
+  uniqTax$species <- str_split_fixed(string = uniqTax$accepted_name, " ", n = Inf)[,2]
   
   uniqTax$verbatim_genus <- str_split_fixed(string = uniqTax$taxon_name, " ", n = Inf)[,1]
   uniqTax$verbatim_species <- str_split_fixed(string = uniqTax$taxon_name, " ", n = Inf)[,2]
@@ -1106,7 +1108,10 @@ getTaxonomyForOneBaseTaxon_AcceptedName <- function(this.taxon) {
   this.names[,c("phylum", "class", "order", "family", "genus", "accepted_name","taxon_name")]
 }
 
-getTargetTaxa<- function(measure.mat, uniqTax, occs, uniqOnly = FALSE, species.only = FALSE, save.file = NULL){ # get a list of taxa that indicates #occs it has and whether its in North America if it does
+getTargetTaxa<- function(measure.mat, uniqTax, occs, measure.columns = c("P2_L", "P2_W", "P3_L", "P3_W", "P4_L", "P4_W", "M1_L", "M1_W", "M2_L", "M2_W", "M3_L", "M3_W",
+                                                                          "p2_l", "p2_w", "p3_l", "p3_w", "p4_l", "p4_w", "m1_l", "m1_w", "m2_l", "m2_w", "m3_l", "m3_w",
+                                                                          "M1.3_L", "m1.3_L", "P4.M3_L", "p4.m3_l", "P3.M3_L", "p3.m3_l", "PCRU", "PCRL"), 
+                         accepted_nameOnly = FALSE, species.only = FALSE, save.file = NULL){ # get a list of taxa that indicates #occs it has and whether its in North America if it does
   
   uniqTax$NoOccs <- 0 
   
@@ -1114,19 +1119,17 @@ getTargetTaxa<- function(measure.mat, uniqTax, occs, uniqOnly = FALSE, species.o
   
   uniqTax$DataCollected <- 0
   
-  measure.mat$accepted_name <- paste(measure.mat$Accepted.Genus, measure.mat$Accepted.Species, sep = " ")
+  if(!"accepted_name" %in% colnames(measure.mat)) {print("Function requires an accepted_name column");return()}
   
-  dental.col <-  c("P2_L", "P2_W", "P3_L", "P3_W", "P4_L", "P4_W", "M1_L", "M1_W", "M2_L", "M2_W", "M3_L", "M3_W",
-  "p2_l", "p2_w", "p3_l", "p3_w", "p4_l", "p4_w", "m1_l", "m1_w", "m2_l", "m2_w", "m3_l", "m3_w")
+  dental.col <- measure.columns
   
-  if(uniqOnly == TRUE) uniqTax <- unique(uniqTax[,c(1:6,9)])
-  if(species.only == TRUE) uniqTax <- uniqTax[uniqTax$accepted_name %in% occs$accepted_name[occs$accepted_rank %in% "species"],]
+  if(accepted_nameOnly) uniqTax <- unique(uniqTax[,c(1:5)])
+  if(species.only) uniqTax <- uniqTax[uniqTax$accepted_name %in% occs$accepted_name[occs$accepted_rank %in% "species"],]
   
   for(xx in uniqTax$accepted_name)
   {
     uniqTax$NoOccs[uniqTax$accepted_name %in% xx] <- nrow(occs[occs$accepted_name %in% xx,])
     
-
     if(!uniqTax$NoOccs[uniqTax$accepted_name %in% xx] <= 0) 
     {
       if(any(occs$cc[occs$accepted_name %in% xx] %in% c("US", "CA", "MX"))) uniqTax$InNorAmer[uniqTax$accepted_name %in% xx] <- TRUE
