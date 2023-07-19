@@ -31,7 +31,7 @@ require(abind)
 ####################################################################################################################################
 settings <- list()
 settings$this.rank <- "species"
-primary.workspace <- "/Users/emdoughty/Dropbox/Code/R/Files to Save outside git/evanCorrelations/New Code/" #"~/Dropbox/Code/R/Files to Save outside git/Ch1_Analysis/Inputs/"
+primary.workspace <- "/Users/emdoughty/Dropbox/Code/R/Files to Save outside git/Ch1_Analysis/Inputs/" #"~/Dropbox/Code/R/Files to Save outside git/Ch1_Analysis/Inputs/"
 
 	options(timeout=300)
   # occs <- read.csv("http://paleobiodb.org/data1.2/occs/list.csv?base_name=Mammalia&continent=NOA&max_ma=66&min_ma=0&timerule=overlap&lngmin=-125.98&lngmax=-93.40&latmin=27&latmax=55.7&show=full&limit=all", stringsAsFactors=TRUE, strip.white=TRUE)
@@ -55,13 +55,6 @@ primary.workspace <- "/Users/emdoughty/Dropbox/Code/R/Files to Save outside git/
 	 settings$occs.filename <- occs.filename
 	 write.csv(occs, file = occs.filename)
 	  
-	 check.binom <- unique(occs$accepted_name)
-	 check.binom <- check.binom[unlist(lapply(strsplit(check.binom, "_"), function(x) length(x))) > 2]
-	 check.binom <- check.binom[order(check.binom)]
-	 check.gen <- unlist(lapply(check.binom, function(x) strsplit(x,"_")[[1]][1]))
-	 check.mat <- unique(occs[occs$genus %in% check.gen,c("accepted_name", "order","family", "genus"),])
-	 check.mat <- check.mat[order(check.mat$accepted_name),]
-	 write.csv(check.mat,file = paste0(primary.workspace, "checkTaxonDups.csv"))
 ####################################################################################################################################
 
 settings$focal.tax$clade <- c("Artiodactyla", "Perissodactyla", "Condylarthra", "Dinocerata", "Taeniodonta", "Pantodonta", "Tillodontia", "Arctocyonidae","Chriacidae", "Hyopsodontidae","Periptychidae","Phenacodontidae") #Including Proboscidea here causes functions that use focal.clade to query PBDB to break.  Doesn't return elephant-morphs just Hemiptera.
@@ -127,10 +120,11 @@ pred.data <- read.csv(settings$pred.data.filename)
 colnames(pred.data) <- c("family", "taxon",	"max_ma","min_ma",	"m1L",	"rbl",	"bodyMass",	"Citation")
 
 #append Mesonychidae from  Zhao?
-meson.mat <- read.csv("/Users/emdoughty/Dropbox/Code/R/Files to Save outside git/Mesonychidae_BodySize.csv")
+meson.mat  <- read.csv("/Users/emdoughty/Dropbox/Code/R/Files to Save outside git/Mesonychidae_BodySize.csv")
 meson.mat <- meson.mat[meson.mat$family %in% "Mesonychidae", c("family", "accepted_name", "max_ma", "min_ma", "kg")]
 meson.mat <- meson.mat[!meson.mat$accepted_name %in% "",]
-meson.mat$m1L <-  meson.mat$rbl <- meson.mat$Citation <- NA
+meson.mat <- meson.mat[!is.na(meson.mat$kg),]
+meson.mat$m1L <-  meson.mat$rbl <- NA; meson.mat$Citation <- "Zhao 1995"
 colnames(meson.mat) <- c("family", "taxon",	"max_ma","min_ma",	"bodyMass","m1L",	"rbl",	"Citation")
 meson.mat <- meson.mat[, c("family", "taxon", "max_ma", "min_ma", "m1L", "rbl", "bodyMass", "Citation")]
 pred.data <- rbind(pred.data, meson.mat)
@@ -140,6 +134,11 @@ rownames(pred.data) <- pred.data$taxon
 
 pred.data[,c("bodyMass")] <- log10(pred.data[,c("bodyMass")])
 pred.data <- pred.data[is.finite(pred.data$bodyMass),]
+
+settings$bmBreaks_pred <- c(-Inf, 0, 0.845098, 1.322219, 2, Inf)
+for(xx in seq(1, length(settings$bmBreaks_pred)-1, 1)){
+  pred.data$SizeCat[pred.data$bodyMass > settings$bmBreaks_pred[xx] & pred.data$bodyMass < settings$bmBreaks_pred[xx+1]] <- xx
+} 
 
 pred.data$genus <- unlist(lapply(strsplit(pred.data$taxon,"_"), function(x) x[1]))
 
@@ -167,18 +166,14 @@ pred.diet <- read.csv("/Users/emdoughty/Dropbox/Proposal/Proposal/Diet Data PPP 
 pred.diet$genus <- unlist(lapply(strsplit(pred.diet$MASTER_LIST, "_"),function(x) x[1]))
 pred.diet$MASTER_LIST <- gsub(pattern = "[[:space:]]", replacement = "_", x = pred.diet$MASTER_LIST)
 
-#pred.data.master  <- pred.data
-
-pred.data <- pred.data[pred.data$taxon %in% pred.diet$MASTER_LIST,]
-
-pred.data$Diet <- pred.diet[pred.diet$MASTER_LIST %in% pred.data$taxon, "PPP_diet_2"]
+pred.data$Diet <- pred.diet[match(pred.data$taxon, pred.diet$MASTER_LIST), "PPP_diet_2"]
 
 } else { pred.data$Diet <- NA}
 
 pred.data.filename <- paste0(primary.workspace,"pred_data_",settings$this.rank,"_", timestamp())
 write.csv(pred.data, file = paste0(pred.data.filename,".csv"))
 save(settings, bigList, shortFam, all.taxa, 
-     pred.data, pred.data.hyper, pred.data.meso, pred.data.hypo, pred.data.hyper.meso, pred.data.hyper.hypo, pred.data.meso.hypo,
+     pred.data,
      file = paste0(pred.data.filename,".Rdata"))
 
 ####################################################################################################################################

@@ -52,37 +52,6 @@ get.speciesMeans <- function(data,
   return(species.Mat)
 }
 
-
-data.coverage <- function(collected.dat = archaic.merg,   #data.coverage(archaic.merg, bigList.check, focal.archaic, "family")
-                          occs.list = bigList.check, 
-                          taxon.vec = focal.archaic, 
-                          column.taxon = "family",
-                          this.rank)
-{
-  #remove genus only from occs
-  # occs.list <- occs.list[!occs.list$accepted_name %in% occs.list$genus,]
-  
-  occs.list <- occs.list[occs.list$accepted_rank %in% this.rank,]
-  total.cov <- length(unique(occs.list$accepted_name[occs.list[,column.taxon] %in% taxon.vec]))
-  
-  total.sampled <- length(unique(collected.dat$accepted_name[collected.dat[,column.taxon] %in% taxon.vec]))
-  
-  print(paste("Total Coverage: ",paste(total.sampled,total.cov, sep = "/")))
-  
-  # print("\n")
-  
-  for(xx in seq(1, length(taxon.vec),1))
-  {
-    
-    family.sam <- nrow(collected.dat[collected.dat[,column.taxon] %in% taxon.vec[xx],])
-    family.tot <- length(unique(occs.list$accepted_name[occs.list[,column.taxon] %in% taxon.vec[xx]]))
-    print(paste(paste(taxon.vec[xx], ": ", sep=""),paste(family.sam,family.tot, sep = "/")))
-    #  print("\n")
-  }
-  
-  return()
-}
-
 getMeasureMatCondylarths<- function(data.raw, 
                                     occs, 
                                     col.order = NULL,
@@ -271,74 +240,7 @@ plot.Dental.ratio <- function(plot.data,
   return() 
 }
 
-getBodyMassVectorFromMeasureMatAllMeasuresDasmuth <- function(measure.mat, linked.files=FALSE) 
-{
-  #######################################################################################################################################
-  ##### read Dasmuth 1990 regression parameters from file, and append standard deviations
-  #######################################################################################################################################
-  if (linked.files) {
-    # regList <- list(ruminantia=read.csv("https://dl.dropbox.com/s/dcd0bs1x5v9e7lh/regRuminantia.csv"), perissodactyla=read.csv("https://dl.dropbox.com/s/04k387q7yh4wp9u/regPerissodactyla.csv"), ungulate=read.csv("https://dl.dropbox.com/s/310ayur1s1dc8sl/regAllUngulates.csv"))
-  } else {
-    regList <- list(ArchaicAllSelenodonts=read.csv("~/Dropbox/Code/R/DentalMeasurements/dat/regArchaicAllSelenodonts.csv"), 
-                    ArchaicNonselenodonts=read.csv("~/Dropbox/Code/R/DentalMeasurements/dat/regArchaicNonselenodonts.csv"), 
-                    ArchaicSelenodontNonBrowsers=read.csv("~/Dropbox/Code/R/DentalMeasurements/dat/regArchaicSelenodontNonBrowsers.csv"), 
-                    ArchaicSelenodontBrowsers=read.csv("~/Dropbox/Code/R/DentalMeasurements/dat/regArchaicSelenodontBrowsers.csv"), 
-                    DasmuthAllUngulates=read.csv("~/Dropbox/Code/R/DentalMeasurements/dat/regAllArchaicUngulates.csv"))
-  }
-  regList <- lapply(regList, appendStDevToReg)
-  
-  #######################################################################################################################################
-  ##### get body mass for only those taxa that have all (i.e., are not missing any) of the published measurements (about _____ species)
-  #######################################################################################################################################
-  measure.mat$reg[measure.mat$reg==""] <- NA
-  #theseColumns <- c(as.character(regList[[1]]$m)[-which(as.character(regList[[1]]$m) %in% c("loP", "loM"))], "reg") # theseColumns is the names of columns that are also in reg - published measuremnts
-  theseColumns <- as.character(regList[[1]]$m)
-  theseColumns <- theseColumns[which(theseColumns %in% colnames(measure.mat))] #remove measues not present in dataset or those not
-  
- # bm <- getMLBodyMasses_compiled(measure.mat[, theseColumns], regList, best.only=FALSE) # for some reason the use of these columns subset causes the is.na() check to fail.  Check works when code is ran manually. 
-  
-  
-  #######################################################################################################################################
-  ##### get regression parameters for measurements not in published regression
-  #######################################################################################################################################
- # other_m <- c("P2_L", "P2_W", "P3_L", "P3_W", "P4_L", "P4_W", "M1_L", "M1_W", "M3_L", "M3_W")
-  # 	other_m <- colnames(measure.mat[,sapply(measure.mat, is.numeric)])[!colnames(measure.mat[,sapply(measure.mat, is.numeric)]) %in% theseColumns]
-  
-  #otherReg <- lapply(X=names(regList), FUN=function(this.group) {
-  #  shortMat <- measure.mat[rownames(measure.mat) %in% rownames(bm) & measure.mat$reg==this.group, other_m]
-  #  short.bm <- bm[rownames(bm) %in% rownames(shortMat),]
-  #  apply(log10(shortMat), MARGIN=2, FUN=function(x, bm) {
-  #    lm(bm ~ x) } , bm=short.bm ) 
-  #} )
-  
-  #names(otherReg) <- names(regList)
-  
-  #otherList <- lapply(otherReg, function(thisReg) t(sapply(thisReg, function(x) c(coef(x), summary(x)$sigma))))
-  
-  #######################################################################################################################################
-  ##### merge regression parameters for unpublished measurements (otherList) with those from published (regList)
-  #######################################################################################################################################
-  #for (i in seq_along(regList)) {
-  #  colnames(otherList[[i]]) <- c("intercept", "slope", "stdev")
-  #  otherList[[i]] <- data.frame(m=rownames(otherList[[i]]), otherList[[i]], stringsAsFactors=FALSE)
-  #  regList[[i]] <- merge(regList[[i]], otherList[[i]], all=TRUE, sort=FALSE)
-  #}
-  
-  #######################################################################################################################################
-  ##### recalculate body masses of all taxa with all (merged) measurements
-  #######################################################################################################################################
-  bm <-  getMLBodyMasses_compiled(measure.mat = measure.mat, regList = regList, best.only=FALSE)
-
-  #convert g to kg
-  bm.g <- 10^bm
-  bm.g <- bm.g/1000
-  bm <- log10(bm.g)
-  
-  bm[match(measure.mat$taxon, rownames(bm))]	
-}
-
 #check that no duplicate species names in rows
-
 
 getDateTaxa <- function(measure.mat, occs, this.rank = "species")
 {
@@ -1090,7 +992,7 @@ getTaxaInClade <- function(clades, occs, save.file=NULL) {
   
   uniqTax$accepted_name <- gsub(" ","_", uniqTax$accepted_name)
   
-  uniqTax <- uniqTax[,c("phylum", "class", "order", "family", "accepted_name","genus", "accepted_species", "taxon_name", "verbatim_genus", "verbatim_species")]
+  uniqTax <- uniqTax[,c("phylum", "class", "order", "family", "accepted_name","genus", "species", "taxon_name", "verbatim_genus", "verbatim_species")]
   
   if(!is.null(occs)) 
   {
