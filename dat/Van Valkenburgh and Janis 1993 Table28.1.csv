@@ -1,0 +1,26 @@
+﻿Interval,Epoch,Mammal Age,mya (midpoint of interval),Carnivore Species (Total),Carnivore Species (Estimate),Herbivore Species (Total),Herbivore Species (Estimate),Total,Predator/Prey ratio,Mean Turnover estimate,Region/sampled
+1,M. Eocene,L. Uintan,44,12,14,33,49,45,0.36,0.65,4
+2,L. Eocene,Duchesnean,40,9,9,43,50,52,0.21,0.79,5
+3,L. Eocene,E. Chadronian,36,12,19,37,44,49,0.32,0.75,3
+4,L. Eocene,M. Chadronian,35,9,12,23,27,32,0.39,0.64,3
+5,L. Eocene,L. Chadronian,34,8,9,37,48,45,0.22,0.59,3
+6,Oligocene,Orellan,33,7,9,20,32,27,0.35,,2
+7,Oligocene,E.E. Arikareean,28,19,21,37,43,56,0.51,0.8,3
+8,Oligocene,L.E. Arikareean,25,9,13,16,28,25,0.56,0.7,4
+9,E. Miocene,E.L. Arikareean,22,13,15,25,27,38,0.52,0.88,3
+10,E. Miocene,L.L. Arikareean,21,11,13,42,55,53,0.26,0.73,4
+11,E. Miocene,E. Hemingfordian,19,15,25,42,55,57,0.36,0.8,4
+12,E. Miocene,L. Hemingfordian,17,10,14,54,79,64,0.19,0.7,5
+13,M. Miocene,E. Barstovian,16,22,27,98,127,120,0.22,0.74,6
+14,M. Miocene,E.L. Barstovian,14,23,36,76,111,99,0.3,0.79,6
+15,M. Miocene,L.L. Barstovian,12,14,21,78,105,92,0.18,0.72,5
+16,L. Miocene,E. Clarendonian,11,16,19,63,90,79,0.25,0.74,6
+17,L. Miocene,L. Clarendonian,9.5,15,25,71,97,86,0.21,0.68,6
+18,L. Miocene,E.E. Hemphillian,8,9,20,38,67,47,0.24,0.65,6
+19,L. Miocene,L.E. Hemphillian,6.5,13,21,50,77,63,0.26,0.53,6
+20,L. Miocene,L. Hemphillian,5.5,13,24,46,80,59,0.28,0.58,7
+21,Pliocene,E. Blancan,3.5,12,19,21,32,33,0.57,0.54,5
+22,Pliocene,L. Blancan,2.5,14,17,32,49,46,0.44,0.46,6
+23,Pleistocene,Irvingtonian,1,15,16,33,41,33,0.45,0.54,7
+24,Pleistocene,Rancholabrean,0.3,17,23,35,44,35,0.49,0.62,6
+25,Holocene,Recent,0,14,14,12,12,12,1.17,0.33,8

@@ -1,15 +1,3 @@
-# # setwd("C:/Users/Evan/Dropbox/ungulate_RA/RCode")
-
-# #all ungulates
-#load("~/Dropbox/ungulate_RA/EcologyResults/allUngulates/handleyResult##------ Thu Nov  9 02:12:20 2017 ------##_allUngulates.Rdata")
-
-# #artio only
-# load("/Users/emdoughty/Dropbox/ungulate_RA/EcologyResults/artio/handleyResult##------ Wed Nov 15 16:57:31 2017 ------##_artiodactyla.Rdata")
-
-# #perisso only
-# load("/Users/emdoughty/Dropbox/ungulate_RA/EcologyResults/perisso/handleyResult##------ Thu Nov 16 10:27:58 2017 ------##.Rdata")
-# startTime <- Sys.time()
-# load('~/Dropbox/ungulate_RA/EcologyResults/Intervals=2Ma_Reps=1000_Subsampled=TRUE/repIntTaxa_SampleStandardized=TRUE##------ Fri Mar 29 21:20:21 2019 ------##.Rdata')
 
 #sources for Jon Marcot's code and specimen measurements 
 source("~/Dropbox/code/R/common_src/strat.R")
@@ -59,59 +47,53 @@ primary.workspace <- "/Users/emdoughty/Dropbox/Code/R/Files to Save outside git/
 
 settings$focal.tax$clade <- c("Artiodactyla", "Perissodactyla", "Condylarthra", "Dinocerata", "Taeniodonta", "Pantodonta", "Tillodontia", "Arctocyonidae","Chriacidae", "Hyopsodontidae","Periptychidae","Phenacodontidae") #Including Proboscidea here causes functions that use focal.clade to query PBDB to break.  Doesn't return elephant-morphs just Hemiptera.
 settings$bmBreaks_herb <- c(-Inf, 0.69897, 1.39794, 2.176091, 2.69897, Inf) #Janis 2000  max(measure.mat$bodyMass, na.rm=TRUE)
+#settings$bmBreaks_herb <- c(-Inf, 1.05731, 1.56404, 2.06176, 2.65482, Inf) #K= 5 2023_8_2
+#settings$bmBreaks_herb <- c(-Inf, 0.84399, 1.26905, 1.62439, 2.08805, 2.65482, Inf) #K= 6 2023_8_2
 	 
 measure.mat <- getMeasureMatWithBodyMasses(settings)
 measure.mat$SizeCat <- measure.mat$bodyMass
 
-if(settings$this.rank =="genus") measure.mat <- makeOneGenusMatFromSpecimenMat(measure.mat); measure.mat$genus <- rownames(measure.mat)
+if(settings$this.rank =="genus") 
+{
+  measure.mat <- makeOneGenusMatFromSpecimenMat(measure.mat)
+  measure.mat$genus <- rownames(measure.mat)
+  measure.mat$family <- occs$family[match(measure.mat$genus, occs$genus)]
+}
 
 for(xx in seq(1, length(settings$bmBreaks_herb)-1, 1)){
   measure.mat$SizeCat[measure.mat$bodyMass > settings$bmBreaks_herb[xx] & measure.mat$bodyMass < settings$bmBreaks_herb[xx+1]] <- xx
 } 
 
 #append Proboscideans onto measure mat
-probo.mat <- as.data.frame(matrix(nrow=length(unique(occs$accepted_name[occs$order %in% "Proboscidea" & occs$accepted_rank %in% settings$this.rank])), ncol=ncol(measure.mat))); colnames(probo.mat) <- colnames(measure.mat)
-probo.mat$taxon <- unique(occs$accepted_name[occs$order %in% "Proboscidea" & occs$accepted_rank %in% settings$this.rank]); probo.mat <- probo.mat[!probo.mat$taxon %in% "",]; rownames(probo.mat) <- probo.mat$taxon
 if(settings$this.rank %in% "species")
 {
+  probo.mat <- as.data.frame(matrix(nrow=length(unique(occs$accepted_name[occs$order %in% "Proboscidea" & occs$accepted_rank %in% settings$this.rank])), ncol=ncol(measure.mat))); colnames(probo.mat) <- colnames(measure.mat)
+  probo.mat$taxon <- unique(occs$accepted_name[occs$order %in% "Proboscidea" & occs$accepted_rank %in% "species"]); probo.mat <- probo.mat[!probo.mat$taxon %in% "",]; rownames(probo.mat) <- probo.mat$taxon
   probo.mat$family <- occs$family[match(rownames(probo.mat),occs$accepted_name)]
   probo.mat$genus <- occs$genus[match(rownames(probo.mat),occs$accepted_name)]
 }
 if(settings$this.rank %in% "genus")
 {
+  probo.mat <- as.data.frame(matrix(nrow=length(unique(occs$genus[occs$order %in% "Proboscidea" & occs$accepted_rank %in% c("species","genus")])), ncol=ncol(measure.mat))); colnames(probo.mat) <- colnames(measure.mat)
+  probo.mat$taxon <- unique(occs$genus[occs$order %in% "Proboscidea" & occs$accepted_rank %in% c("species","genus")]); probo.mat <- probo.mat[!probo.mat$taxon %in% "",]; rownames(probo.mat) <- probo.mat$taxon
   probo.mat$family <- occs$family[match(rownames(probo.mat),occs$genus)]
   probo.mat$genus <- occs$genus[match(rownames(probo.mat),occs$genus)]
 }
-probo.mat <- probo.mat[!rownames(probo.mat) %in% "Amebelodon_(Konobelodon)_britti",] #duplicate due to accepted name in PBDB
 
 probo.mat$SizeCat <- 5
 measure.mat <- rbind(measure.mat, probo.mat)
 measure.mat <- measure.mat[order(measure.mat$taxon),]
 
-####################################################################################################################################
-#### reduces matrix to just the focal order(s)
-####################################################################################################################################
-#need way to get around issue of species without higher taxonimic designations in occs despite being in a clade.  Could do work around where bigList is derived from getHigher taxon and then compared with occs
-bigList <- unique(getTaxaInClade(clades = settings$focal.tax$clade, occs = occs, save.file = NULL))
-bigList <- unique(bigList[,c("order","family", "genus", "accepted_name")])
-proboList <- occs[occs$order %in% "Proboscidea",]; proboList <- unique(proboList[,c("order", "family", "genus","accepted_name")])
-bigList <- rbind(bigList, proboList)
-
-bigList <- bigList[order(bigList$order, bigList$family, bigList$genus, bigList$accepted_name),]
-
-shortFam <- sort(unique(bigList$family)) #[bigList$order %in% settings$focal.tax$clade]))
-if (any(shortFam == "NO_FAMILY_SPECIFIED")) shortFam <- shortFam[-which(shortFam == "NO_FAMILY_SPECIFIED")]
-if (any(shortFam == " ")) shortFam <- shortFam[-which(shortFam == " ")]
-
-bigList$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = bigList$accepted_name)
- all.taxa <- sort(unique(bigList$accepted_name))
-
-if(settings$this.rank =="genus") {measure.mat <- measure.mat[measure.mat$taxon %in% unique(bigList$genus), ]
-} else{ measure.mat <- measure.mat[measure.mat$taxon %in% bigList$accepted_name, ]}
+if(settings$this.rank %in% "genus") 
+{
+  measure.mat <- measure.mat[measure.mat$taxon %in% occs$genus[occs$accepted_rank %in% c("species","genus")],]
+} else {
+  measure.mat <- measure.mat[measure.mat$taxon %in% occs$accepted_name[occs$accepted_rank %in% "species"],]
+}
 
 measure.mat.filename <- paste0(primary.workspace,"measure_mat_", settings$this.rank, "_", timestamp())
 write.csv(measure.mat, file = paste0(measure.mat.filename,".csv"))
-save(settings, bigList, shortFam, all.taxa, measure.mat, file = paste0(measure.mat.filename,".Rdata"))
+save(settings, measure.mat, file = paste0(measure.mat.filename,".Rdata"))
 
 ####################################################################################################################################
 settings$focal.tax$clade <- c("Carnivoramorpha", "Creodonta","Hyaenodonta", "Mesonychidae")
@@ -129,41 +111,40 @@ colnames(meson.mat) <- c("family", "taxon",	"max_ma","min_ma",	"bodyMass","m1L",
 meson.mat <- meson.mat[, c("family", "taxon", "max_ma", "min_ma", "m1L", "rbl", "bodyMass", "Citation")]
 pred.data <- rbind(pred.data, meson.mat)
 
+pred.data[,c("bodyMass")] <- log10(pred.data[,c("bodyMass")])
+pred.data <- pred.data[is.finite(pred.data$bodyMass),]
+pred.data$SizeCat <- pred.data$bodyMass
+
+#get updated taxonomy for target taxa
+pred.data$taxon <- getCurrentTaxa(tax.vec = pred.data$taxon, show.progress = TRUE)
 pred.data$taxon <- gsub(pattern = "[[:space:]]", replacement = "_", x = pred.data$taxon)
 rownames(pred.data) <- pred.data$taxon
 
-pred.data[,c("bodyMass")] <- log10(pred.data[,c("bodyMass")])
-pred.data <- pred.data[is.finite(pred.data$bodyMass),]
+pred.data$genus <- occs$genus[match(pred.data$taxon, occs$accepted_name)]
 
-settings$bmBreaks_pred <- c(-Inf, 0, 0.845098, 1.322219, 2, Inf)
+if(settings$this.rank =="genus") 
+{
+  pred.data <- makeOneGenusMatFromSpecimenMat(pred.data)
+  pred.data$genus <- rownames(pred.data)
+  pred.data$family <- occs$family[match(pred.data$genus, occs$genus)]
+}
+
+settings$bmBreaks_pred <- c(-Inf, 0, 0.845098, 1.322219, 2, Inf) #PPP categories
 for(xx in seq(1, length(settings$bmBreaks_pred)-1, 1)){
   pred.data$SizeCat[pred.data$bodyMass > settings$bmBreaks_pred[xx] & pred.data$bodyMass < settings$bmBreaks_pred[xx+1]] <- xx
 } 
 
-pred.data$genus <- unlist(lapply(strsplit(pred.data$taxon,"_"), function(x) x[1]))
+if(settings$this.rank %in% "genus") 
+{
+  pred.data <- pred.data[pred.data$taxon %in% occs$genus[occs$accepted_rank %in% c("species","genus")],]
+} else {
+  pred.data <- pred.data[pred.data$taxon %in% occs$accepted_name[occs$accepted_rank %in% "species"],]
+}
 
-if(settings$this.rank =="genus") pred.data <- makeOneGenusMatFromSpecimenMat(pred.data)
-
-bigList <- unique(getTaxaInClade(clades = settings$focal.tax$clade, occs = occs, save.file = NULL))
-bigList <- unique(bigList[,c("order","family", "genus", "accepted_name")])
-
-bigList <- bigList[order(bigList$order, bigList$family, bigList$genus, bigList$accepted_name),]
-
-shortFam <- sort(unique(bigList$family)) #[bigList$order %in% settings$focal.tax$clade]))
-if (any(shortFam == "NO_FAMILY_SPECIFIED")) shortFam <- shortFam[-which(shortFam == "NO_FAMILY_SPECIFIED")]
-if (any(shortFam == " ")) shortFam <- shortFam[-which(shortFam == " ")]
-
-bigList$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = bigList$accepted_name)
-all.taxa <- sort(unique(bigList$accepted_name))
-
-#pred.data <- pred.data[pred.data$taxon %in% bigList$accepted_name, ]
-if(settings$this.rank =="genus") {pred.data <- pred.data[pred.data$taxon %in% unique(bigList$genus), ]
-} else{ pred.data <- pred.data[pred.data$taxon %in% bigList$accepted_name, ]}
-###############
 if(settings$this.rank %in% "species")
 {
 pred.diet <- read.csv("/Users/emdoughty/Dropbox/Proposal/Proposal/Diet Data PPP CJ.csv")
-pred.diet$genus <- unlist(lapply(strsplit(pred.diet$MASTER_LIST, "_"),function(x) x[1]))
+pred.diet$MASTER_LIST <- getCurrentTaxa(tax.vec = pred.diet$MASTER_LIST, show.progress = TRUE)
 pred.diet$MASTER_LIST <- gsub(pattern = "[[:space:]]", replacement = "_", x = pred.diet$MASTER_LIST)
 
 pred.data$Diet <- pred.diet[match(pred.data$taxon, pred.diet$MASTER_LIST), "PPP_diet_2"]
@@ -172,9 +153,7 @@ pred.data$Diet <- pred.diet[match(pred.data$taxon, pred.diet$MASTER_LIST), "PPP_
 
 pred.data.filename <- paste0(primary.workspace,"pred_data_",settings$this.rank,"_", timestamp())
 write.csv(pred.data, file = paste0(pred.data.filename,".csv"))
-save(settings, bigList, shortFam, all.taxa, 
-     pred.data,
-     file = paste0(pred.data.filename,".Rdata"))
+save(settings, pred.data, file = paste0(pred.data.filename,".Rdata"))
 
 ####################################################################################################################################
 

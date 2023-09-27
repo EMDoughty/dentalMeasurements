@@ -114,7 +114,7 @@ getRepIntTaxaFromRepIntOccs <- function(repIntOccs,
 	
 	if (save.to.file) {
 		if(Sys.info()["sysname"] == "Darwin"){
-			save(settings, repIntTaxa, file=paste0(file.path, file.name, "_standardized=", settings$do.subsample, "_rangethrough=", settings$do.rangethrough, "_", gsub(pattern=" ", replacement="_", x=date()),".Rdata"))
+			save(settings, repIntTaxa, file=paste0(file.path, file.name, "_rangethrough=", settings$do.rangethrough, "_", gsub(pattern=" ", replacement="_", x=date()),".Rdata"))
 		} 
 		print("**** repIntTaxa saved to file...")		
 	}

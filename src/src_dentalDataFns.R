@@ -156,10 +156,19 @@ getExantMat <- function() {
 	extant.mat
 }
 
-getArchaicMat <- function() {
-	#dat <- read.csv("~/Dropbox/code/R/dentalMeasurements/dat/ArchaicUngulate_UploadFile_Master_221110.csv", stringsAsFactors=TRUE, strip.white=TRUE)
+getArchaicMat <- function() { 
+  #changed 2023_9_6 to added if statement as I (Evan) added identified.name as a field when cleaning the archaic dataset
+  #2023_9_26 reverted to original code (Evan) since using the identified "verbatim" name will fail to keep the taxonomy of partial synonyms correct.  Must use the accepted name in its place.
 	dat <- read.csv("~/Dropbox/code/R/dentalMeasurements/dat/ArchaicUngulate_UploadFile_Master.csv", stringsAsFactors=TRUE, strip.white=TRUE)
-	dat$identified.name  <- apply(X=dat, MARGIN=1, FUN=function(x) if (x["Accepted.Species"]=="") x["Accepted.Genus"] else paste(x["Accepted.Genus"], x["Accepted.Species"], sep=" "))
+	
+	dat$verbatim.name <- dat$identified.name
+	if(any(colnames(dat) %in% "accepted_name"))
+	{
+	 dat$identified.name <- dat$accepted.name
+	} else {
+	 dat$identified.name  <- apply(X=dat, MARGIN=1, FUN=function(x) if (x["Accepted.Species"]=="") x["Accepted.Genus"] else paste(x["Accepted.Genus"], x["Accepted.Species"], sep=" "))
+	}
+	
 	names(dat)[names(dat)=="Catalog.Number"] <- "specimen"
 	dat
 }
@@ -213,9 +222,9 @@ appendMissingPaleoDBSpecies <- function(measure.mat, tax.vec) {
 	measure.mat
 }
 
-getMeasureMatWithBodyMasses <- function(settings) {
+getMeasureMatWithBodyMasses <- function(settings, append.archaic=TRUE, append.extant=TRUE) {
 	print("Building measurement matrix...")
-	measure.mat <- getSingleSpeciesMatrix()
+	measure.mat <- getSingleSpeciesMatrix(append.archaic = append.archaic, append.extant = append.extant)
 
 	tax.vec <- sort(unique(occs$accepted_name[occs$accepted_rank %in% c("genus", "species")]))
 	tax.vec <- tax.vec[!tax.vec %in% rownames(measure.mat)]
