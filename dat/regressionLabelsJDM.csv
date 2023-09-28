@@ -90,9 +90,9 @@ Pantodonta,Cimolesta,Cyriacotheriidae,NA,ungulate,DamuthNonSelenodonts
 Pantodonta,Cimolesta,Titanoideidae,NA,ungulate,DamuthNonSelenodonts
 Pantodonta,Cimolesta,Coryphodontidae,NA,ungulate,DamuthNonSelenodonts
 Tillodontia,Cimolesta,Esthonychidae,NA,ungulate,DamuthNonSelenodonts
-Tillodontia,Cimolesta,NO_FAMILY_SPECIFIED,Azygonyx,ungulate,DamuthNonSelenodonts
-Taeniodonta,NO_ORDER_SPECIFIED,Conoryctidae,NA,ungulate,DamuthNonSelenodonts
-Taeniodonta,NO_ORDER_SPECIFIED,Stylinodontidae,NA,ungulate,DamuthNonSelenodonts
-Taeniodonta,NO_ORDER_SPECIFIED,NO_FAMILY_SPECIFIED,Onychodectes,ungulate,DamuthNonSelenodonts
-Condylarthra,Condylarthra,NO_FAMILY_SPECIFIED,Desmatoclaenus,ungulate,DamuthNonSelenodonts
-Pantodonta,Cimolesta,NO_FAMILY_SPECIFIED,Crustulus,ungulate,DamuthNonSelenodonts
+Tillodontia,Cimolesta,NA,Azygonyx,ungulate,DamuthNonSelenodonts
+Taeniodonta,NA,Conoryctidae,NA,ungulate,DamuthNonSelenodonts
+Taeniodonta,NA,Stylinodontidae,NA,ungulate,DamuthNonSelenodonts
+Taeniodonta,NA,NA,Onychodectes,ungulate,DamuthNonSelenodonts
+Condylarthra,Condylarthra,NA,Desmatoclaenus,ungulate,DamuthNonSelenodonts
+Pantodonta,Cimolesta,NA,Crustulus,ungulate,DamuthNonSelenodonts

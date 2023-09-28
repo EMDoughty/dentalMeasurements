@@ -164,7 +164,7 @@ getArchaicMat <- function() {
 	dat$verbatim.name <- dat$identified.name
 	if(any(colnames(dat) %in% "accepted_name"))
 	{
-	 dat$identified.name <- dat$accepted.name
+	 dat$identified.name <- gsub("_", " ", dat$accepted_name)
 	} else {
 	 dat$identified.name  <- apply(X=dat, MARGIN=1, FUN=function(x) if (x["Accepted.Species"]=="") x["Accepted.Genus"] else paste(x["Accepted.Genus"], x["Accepted.Species"], sep=" "))
 	}
