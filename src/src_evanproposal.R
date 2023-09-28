@@ -172,11 +172,11 @@ getCurrentHigherTaxonomy <- function(archaic.ung, focal.taxa = "Mammalia", save.
   Verbatim.Genus <- gsub("[?]", "", Verbatim.Genus)
   Verbatim.Species <- gsub("[?]", "", Verbatim.Species)
   
-  Verbatim.Genus <- gsub("cf. ", "", Verbatim.Genus)
-  Verbatim.Species <- gsub("cf. ", "", Verbatim.Species)
+  Verbatim.Genus <- gsub("cf[[:punct:]] ", "", Verbatim.Genus)
+  Verbatim.Species <- gsub("cf[[:punct:]] ", "", Verbatim.Species)
   
-  Verbatim.Genus <- gsub("aff. ", "", Verbatim.Genus)
-  Verbatim.Species <- gsub("aff. ", "", Verbatim.Species)
+  Verbatim.Genus <- gsub("aff[[:punct:]] ", "", Verbatim.Genus)
+  Verbatim.Species <- gsub("aff[[:punct:]] ", "", Verbatim.Species)
   
   archaic.ung$verbatim.name <- NA
   
