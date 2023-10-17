@@ -119,7 +119,7 @@ data.coverage <- function(clades, clade.level = "family", clade.ranked = TRUE, d
   return(output.list)
 }
 
-getCorrelationPlot <- function(prop1, prop2, mar = c(0,0,0,0), cl.pos = NULL, tl.pos = c("lt"))
+getCorrelationPlot <- function(prop1, prop2, mar = c(0,0,0,0), cl.pos = NULL, tl.pos = c("lt"), sig.level = c(0.001, 0.01, 0.05), insig = 'label_sig')
 {
   corr.results.both <- cor.p <- matrix(nrow = ncol(prop1), ncol= ncol(prop2)) 
   dimnames(corr.results.both) <- dimnames(cor.p) <- list(colnames(prop1), colnames(prop2))
@@ -142,7 +142,7 @@ getCorrelationPlot <- function(prop1, prop2, mar = c(0,0,0,0), cl.pos = NULL, tl
                      addgrid.col = 'black',
                      method = "color",
                      na.label = "-",
-                     sig.level = c(0.001, 0.01, 0.05), insig = 'label_sig', 
+                     sig.level = sig.level, insig = insig, 
                      pch.cex = 1,
                      tl.pos = tl.pos, tl.offset = 1, tl.cex = 1) -> p1
   
@@ -361,6 +361,70 @@ getTaxonomyForOneBaseTaxon_AcceptedName <- function(this.taxon)
   this.names[,c("phylum", "class", "order", "family", "genus", "accepted_name","taxon_name")]
 }
 
+correl.scatter.plot <- function(prop1, prop2, point.labels, 
+                                axis.lims = FALSE, xlim = NULL, xlim.nudge = c(0,0), ylim = NULL, ylim.nudge=c(0,0),
+                                col = alphaColor(rev(COL2("RdYlBu", n = length(prop1[,yy]))), alpha = 1),
+                                plot.single.correl = NULL)
+
+{
+  if(!is.null(plot.single.correl)){
+    par.mfrow.rows <- 1
+    par.mfrow.cols <- 1
+    
+    for.xx <- plot.single.correl[1]
+    for.yy <- plot.single.correl[2]
+  } else {
+    par.mfrow.rows <- ncol(prop2) #y axis within plot but is rows on array
+    par.mfrow.cols <- ncol(prop1) #x axis within plot but is cols on array
+    
+    for.xx <- seq_len(ncol(prop2))
+    for.yy <- seq_len(ncol(prop1))
+  }
+  
+  par(mfrow = c(par.mfrow.rows,par.mfrow.cols), mar = c(2,2,1,1), oma = c(2,4,4,2))
+  for(xx in for.xx)
+  {
+    for(yy in for.yy)
+    {
+      if(!any(complete.cases(cbind(prop1[,yy],prop2[,xx])))) 
+      { 
+        plot(0, xaxt = 'n', yaxt = 'n', bty = 'n', pch = '', ylab = '', xlab = '')
+      } else {
+        if(axis.lims & is.null(xlim)) {
+          xlim.this.plot <- c(round_any(min(prop1[complete.cases(cbind(prop1[,yy],prop2[,xx])),yy], na.rm = TRUE),5, f= floor) + xlim.nudge[1],
+                              round_any(max(prop1[complete.cases(cbind(prop1[,yy],prop2[,xx])),yy], na.rm = TRUE),5, f= ceiling)+xlim.nudge[2]) 
+        } else if(axis.lims & !is.null(xlim)) {
+          xlim.this.plot <- xlim
+        } else {xlim.this.plot <- NULL}
+        
+        if(axis.lims & is.null(ylim)) {
+          ylim.this.plot <- c(round_any(min(prop2[complete.cases(cbind(prop1[,yy],prop2[,xx])),xx], na.rm = TRUE),5, f = floor) + ylim.nudge[1],
+                              round_any(max(prop2[complete.cases(cbind(prop1[,yy],prop2[,xx])),xx], na.rm = TRUE),5, f = ceiling) + ylim.nudge[2])
+        } else if(axis.lims & !is.null(ylim)) {
+          ylim.this.plot <- ylim
+        } else {ylim.this.plot <- NULL}
+       
+        plot(prop1[,yy],
+             prop2[,xx],
+             xlim=xlim.this.plot, ylim=ylim.this.plot,
+             ylab = "Predator Richness", xlab = "Herbivores Richness",
+             col = col,
+             pch = 16)
+        points(prop1[,yy], prop2[,xx], pch = 21, cex = 1)
+        if(!is.null(point.labels)) text(prop1[,yy], prop2[,xx], point.labels, cex = 0.75, adj = -0.25)
+        
+        prop.linear <- lm(prop2[,xx] ~ prop1[,yy])
+        if(is.finite(prop.linear$coefficients[1]) & is.finite(prop.linear$coefficients[2])) abline(lm(prop2[,xx] ~ prop1[,yy]))
+        
+        if(xx == 3 & yy == 1) mtext("Predator Richness", side = 2, line = 4)
+        if(xx == 1 & yy == 3) mtext("Herbivore Richness", side = 3, line = 2.5)
+        if(yy == 1) mtext(colnames(prop2)[xx], side = 2, line =2)
+        if(xx == 1) mtext(colnames(prop1)[yy], side = 3, line =0.5)
+      }
+    }
+  }
+}
+
 #function to remove zeros
 removeZeros <- function(dat.sub, dat.master, remove.zeros = c("all", "false.zero","leading","trailing"))
 {
@@ -428,7 +492,17 @@ transpose.array <- function(countCube)
   }
   dimnames(countCube.flip) <- list(colnames(countCube), rownames(countCube), NULL)
   countCube.flip
-  
+}
+
+make_mock_median_prop <- function(nrow = 30, ncol = 5)
+{
+  mock.dat <- matrix(nrow = nrow, ncol = ncol)
+  mock.vec <- c(rep(x = 10, times = nrow/2), rep(x = 0, times = nrow/2))
+  mock.dat[,1] <- mock.dat[,2] <- mock.vec
+  mock.dat[,3] <- c(rep(x = 0, times = nrow/3), rep(x = 10, times = nrow/3), rep(x = 0, times = nrow/3))
+  mock.dat[,4] <- mock.dat[,5] <- rev(mock.vec)
+   
+  return()
 }
 
 

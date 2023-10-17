@@ -75,7 +75,8 @@ getSpecimenMatFromLiteratureMeasurements <- function(filename = "~/Dropbox/code/
 # }
 
 makeOneGenusMatFromSpecimenMat <- function(measure.mat) {
-	oneGenusMat <- aggregate(measure.mat, by = list(measure.mat$genus), mean, na.rm = TRUE)		# the column "genus" is appended with the reg.vec, so might need a better way of getting this...
+	#need to make it so only the genus is being used to aggregate as some entries have a subgenus included within the genus field in pbdb. 10/6/2023 It seems that this is not an issue with measure.mat but in occs and repIntTaxa
+  oneGenusMat <- aggregate(measure.mat, by = list(measure.mat$genus), mean, na.rm = TRUE)		# the column "genus" is appended with the reg.vec, so might need a better way of getting this...
 	# oneGenusMat <- aggregate(measure.mat, by=list(measure.mat$genus), median, na.rm=TRUE)
 	oneGenusMat <- data.frame(oneGenusMat, row.names = oneGenusMat[, 1])
 	oneGenusMat[sapply(oneGenusMat, is.nan)] <- NA
