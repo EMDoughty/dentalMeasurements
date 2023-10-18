@@ -375,10 +375,10 @@ cmp_getLikelihoodOneSetOfIntervals <- cmpfun(getLikelihoodOneSetOfIntervals)
 getLikelihoodOneSetIntBreaks_core <- function(this.count.set, intBreaks) {
 	lnL <- vector(mode="numeric", length=length(intBreaks)-1)
 	for (i in seq_len(length(intBreaks) - 2)) {
-		if (intBreaks[i] != intBreaks[i+1]) { lnL[i] <- cmp_getLikelihoodOneSetOfIntervals(this.count.set = this.count.set[, seq(from=intBreaks[i], to=(intBreaks[i + 1] + 1) ) ])
+		if (intBreaks[i] != intBreaks[i+1]) { lnL[i] <- cmp_getLikelihoodOneSetOfIntervals(this.count.set = this.count.set[seq(from=intBreaks[i], to=(intBreaks[i + 1] + 1) ), ]) #10/17/2023 why does this iterate to the 2nd to last intervals (in this case 4 Ma)
 		} else lnL[i] <- cmp_getLikelihoodOneSetOfIntervals(this.count.set = this.count.set[, intBreaks[i]])
 	}
-	lnL[i+1] <- cmp_getLikelihoodOneSetOfIntervals(this.count.set = this.count.set[, seq(from=intBreaks[i+1], to=(intBreaks[i + 2]))])
+	lnL[i+1] <- cmp_getLikelihoodOneSetOfIntervals(this.count.set = this.count.set[seq(from=intBreaks[i+1], to=(intBreaks[i + 2])),])
 	sum(lnL)
 }
 
@@ -389,8 +389,9 @@ getLikelihoodOneSetIntBreaks_core <- function(this.count.set, intBreaks) {
 # }
 
 getLikelihoodOneSetIntBreaks <- function(intBreaks=NULL, thisCounts) {
-	intBreaks <- sort(c(1, intBreaks, dim(thisCounts[[1]])[2]), decreasing=TRUE)
-	sum(sapply(thisCounts, FUN=getLikelihoodOneSetIntBreaks_core, intBreaks=intBreaks))
+  #intBreaks <- sort(c(1, intBreaks, dim(thisCounts[[1]])[2]), decreasing=TRUE)
+  intBreaks <- sort(c(1, intBreaks, dim(thisCounts[[1]])[1]), decreasing=TRUE) #10/17/2023 older versions of this code had countCube in wide and not long format so swapping the dimensions to be the long may be necessary.  Is this dont this way to include the first and last interval along with breaks?
+	sum(sapply(thisCounts, FUN=getLikelihoodOneSetIntBreaks_core, intBreaks=intBreaks)) #thisCounts is not being treated as a list by sapply.  this.count.set should be the equivalent of thisCount[[1]] when its read by sapply
 }
 
 getOldIntBreaksStarterList_recursive <- function(master.break.list, index, oldIntBreaks, extra.intvs) {
@@ -413,10 +414,10 @@ doHandleyTest <- function(thisCounts, n, use.LRT=FALSE, sig=0.01, do.heuristic=T
 		if (is.null(this.cores)) this.cores <- detectCores() - 2
 	}
 
-	if (!is.list(thisCounts)) thisCounts <- list(thisCounts)
+	if (!is.list(thisCounts)) thisCounts <- list(thisCounts) #why does this need to be a list? most indexing treats this as an array
 
-	n.hist.classes <- dim(thisCounts[[1]])[1]
-	n.intv <- dim(thisCounts[[1]])[2]
+	n.hist.classes <- dim(thisCounts[[1]])[2] #10/17/023 had to change the dimensions being indexed as thisCounts are now in long format
+	n.intv <- dim(thisCounts[[1]])[1]
 
 	optList=list()
 	optList[[1]] <- list(nrates=1, optBreaks=NULL, optlnL= sum(sapply(thisCounts, cmp_getLikelihoodOneSetOfIntervals)))	
