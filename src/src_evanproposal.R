@@ -513,7 +513,7 @@ make_mock_median_prop <- function(nrow = 30, ncol = 5)
   return()
 }
 
-taxHadley <- function(repIntTaxa, 
+taxHandley <- function(repIntTaxa, 
                       occs,
                       shortFam,
                       bigList,
@@ -534,6 +534,7 @@ taxHadley <- function(repIntTaxa,
   # shortFam <- sort(unique(bigList$family))
   
   taxCube <- sapply(repIntTaxa, function(y) sapply(y, function(x) tabulate(match(bigList$family[as.character(bigList$accepted_name) %in% x], shortFam), nbins=length(shortFam)), simplify="array"), simplify="array")
+
   dimnames(taxCube) <- list(shortFam, rownames(intervals), NULL)
   med.n <- median(sapply(repIntTaxa, function(x) length(unique(unlist(sapply(x, function(y) y))))))
   optList_tax_median <- doHandleyTest(thisCounts=apply(taxCube, c(1,2), median, na.rm=TRUE), n=med.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)	
@@ -541,8 +542,8 @@ taxHadley <- function(repIntTaxa,
   print("Beginning taxonomic Handley analysis for all reps...")
   optList_tax_allReps <- list()
   for (this.rep in seq_len(reps)) {
-    taxCube <- sapply(repIntTaxa, function(y) sapply(y, function(x) tabulate(match(bigList$family[as.character(bigList$accepted_name) %in% x], shortFam), nbins=length(shortFam)), simplify="array"), simplify="array")
-    this.n <- length(unique(unlist(sapply(repIntTaxa [[this.rep]], function(x) x))))
+   # taxCube <- sapply(repIntTaxa, function(y) sapply(y, function(x) tabulate(match(bigList$family[as.character(bigList$accepted_name) %in% x], shortFam), nbins=length(shortFam)), simplify="array"), simplify="array") #duplicate code, can be removed if taxcube is made above
+    this.n <- length(unique(unlist(sapply(repIntTaxa[[this.rep]], function(x) x))))
     optList_tax_allReps[[this.rep]] <- doHandleyTest(taxCube[,,this.rep], n=this.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)	
     if(this.rep %% run.update == 0) cat("Taxonomic Handley Rep:", this.rep, "\n")
   }
@@ -564,60 +565,74 @@ taxHadley <- function(repIntTaxa,
   return(repIntTaxaAll)
 }
 
-traitHadley <- function(countCube,
-                        trait.col,
-                        measure.mat,
-                        occs,
-                        shortFam,
-                        bigList, 
-                        intervals, 
-                        reps = 10,
-                        bmBreaks = c(-Inf, 0.69897, 1.39794, 2.176091, 2.69897, 3.0, Inf), #Janis 2000  max(measure.mat$bodyMass, na.rm=TRUE)
-                        extra.intvs = 0, 
-                        do.parallel=FALSE, 
-                        do.heuristic = FALSE,
-                        do.save = FALSE,
-                        run.update = 100)
+traitHandley <- function(countCube,
+                         measure.mat,
+                         whichHandley = c("median", "allReps"),
+                         extra.intvs = 0, 
+                         do.parallel=FALSE,
+                         this.cores = NULL,
+                         do.heuristic = FALSE,
+                         do.save = FALSE,
+                         run.update = 100,
+                         file.path = NULL,
+                         filename = NULL)
 {
   ####################################################################################################################################
   ### Handley analysis of body mass distributions
-  print("Beginning median body mass Handley analysis...")
-  
-# countCube <- sapply(repIntTaxa, function(this.rep) {
-#    sapply(this.rep, function(this.intv, this.rep) {
-#      hist(measure.mat[,trait.col][match(this.intv, measure.mat$taxon)], breaks=bmBreaks, plot=FALSE)$counts
-#    }, this.rep=this.rep)
-#  }, simplify = "array")
-  
-  countBox <- apply(countCube, c(1,2), quantile, probs=c(0.025, 0.5, 0.975), na.rm=TRUE)
-  
-  optList_bm_median <- doHandleyTest(thisCounts = t(countBox[2,,]), n=nrow(measure.mat), do.heuristic=do.heuristic, extra.intvs=extra.intvs)
-  
-  print("Beginning body mass Handley analysis for all reps...")
-  optList_bm_allReps <- list()
-  for (this.rep in seq_len(reps)) {
-    this.n <- length(unique(unlist(sapply(repIntTaxa[[this.rep]], function(x) x))))
-    optList_bm_allReps[[this.rep]] <- doHandleyTest(countCube[,,this.rep], n=this.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)
-    if(this.rep %% run.update == 0) cat("Body Mass Handley Rep:",this.rep, "\n")
-  }
-  
-  if(do.save)
+  if(any(whichHandley %in% "median"))
   {
-    ####################################################################################################################################
-    if(Sys.info()["sysname"] == "Darwin"){
-      save(optList_bm_median, optList_bm_allReps, file=paste0("~/Dropbox/ungulate_RA/EcologyResults/BM_handleyResult_SampleStandardized=", do.subsample, timestamp(),".Rdata"))
-      #load('~/Dropbox/ungulate_RA/EcologyResults/allUngulates/handleyResult##------ Thu Nov  9 02:12:20 2017 ------##_allUngulates.Rdata')
-    } else if(Sys.info()["sysname"] == "Windows"){
-      save(optList_bm_median, optList_bm_allReps, file=paste0("C:/Users/Blaire/Dropbox/ungulate_RA/EcologyResults/BM_handleyResult_SampleStandardized=", do.subsample, timestamp(),".Rdata"))
-      # load('~/Dropbox/ungulate_RA/EcologyResults/allUngulates/handleyResult##------ Thu Nov  9 02:12:20 2017 ------##_allUngulates.Rdata')
-    }
+    print("Beginning median body mass Handley analysis...")
     
-    # save(repIntTaxa, repIntOccs, optList_tax_median, optList_tax_allReps, optList_bm_median, optList_bm_allReps, file=paste0("C:/Users/Blaire/Dropbox/ungulate_RA/EcologyResults/handleyResult", timestamp(),".Rdata"))
-    ####################################################################################################################################
-  }
+    countBox <- apply(countCube, c(1,2), quantile, probs=c(0.025, 0.5, 0.975), na.rm=TRUE)
+    
+    start.test <- Sys.time()
+    optList_bm_median <- doHandleyTest(thisCounts = t(countBox[2,,]), n=nrow(measure.mat), do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel = TRUE, this.cores = this.cores)
+    end.test <- Sys.time()
+    print(end.test - start.test)
+    beep(3)
+    ##Median Herbivores (subsampled; optimal is 7 breaks, so needs to run through 8 breaks)
+    #runs in about 38.04854 minutes with 2 cores
+    #runs in about 25.51563 minutes with 3 cores
+    #runs in about 21.86931 minutes with 4 cores
+    #runs in about 22.05333 minutes with 5 cores
+    #runs in about 24.65575 minutes with 6 cores 
+    
+    if(do.save)
+    {
+      save(optList_bm_median, file=paste0(file.path, filename,"optList_bm_median.Rdata"))
+    }
+    beep(3)
+    
+  } else if(any(whichHandley %in% "allReps")) {
+    start.test <- Sys.time()
+    print("Beginning body mass Handley analysis for all reps...")
+    optList_bm_allReps <- list()
+    for (this.rep in seq_len(dim(countCube)[3])) {
+      this.n <- length(unique(unlist(sapply(repIntTaxa[[this.rep]], function(x) x))))
+      optList_bm_allReps[[this.rep]] <- doHandleyTest(thisCounts = t(countCube[,,this.rep]), n=this.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel, this.cores = this.cores)
+      if(this.rep %% run.update == 0) cat("Body Mass Handley Rep:",this.rep, "\n")
+    }
+    end.test <- Sys.time()
+    print(end.test - start.test)
+    
+    ##Herbivores (___ subsampled reps; optimal is 7 breaks, so needs to run through 8 breaks)
+    #runs in about ___ minutes with 2 cores
+    #runs in about ___ minutes with 3 cores ~3 GB at start of 8 rate,
+    #runs in about ___ minutes with 4 cores 
+    #runs in about ___ minutes with 5 cores
+    #runs in about ___ minutes with 6 cores ~1.5 GB per core at 8 rates, ~2.5 per core at 9 rates before killing program
+    
+    if(do.save)
+    {
+      save(optList_bm_allReps, file=paste0(file.path, filename,"optList_bm_allReps.Rdata"))
+    }
+    beep(5)
+  } else {
+    print("Unable to perform. Please select whether the Hadley analysis will be performed over the median species richness (median) and/or all pseudoreplicates (allReps)")
+    }
   
-  repIntTraitAll <- list(OptListTraitMedian = optList_bm_median, OptListTraitAllReps = optList_bm_allReps, countCube = countCube, countBox = countBox)
-  
-  return(repIntTraitAll)
+  #repIntTraitAll <- list(OptListTraitMedian = optList_bm_median, OptListTraitAllReps = optList_bm_allReps, countBox = countBox)
+  #return(repIntTraitAll)
+  return()
 }
 
