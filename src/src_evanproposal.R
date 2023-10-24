@@ -782,51 +782,44 @@ plotRegimeBarplot <- function(optList, prop, intervals,
                               ylab = "Species Richness", ylim = NULL,
                               legend.lwd = 5, legend.cex = 1, legend.seg.len = 1)
 {
-  interval.breaks <- sort(c(intervals[optList[[length(optList)-1]]$optBreaks,2], range(intervals)))
-  
-  par(mfrow = c(1,length(optList[[length(optList)-1]]$optBreaks)+1),
-      oma = c(2,3,0,0), mar = c(2,1,2,2))
-  for(xx in seq_len(length(optList[[length(optList)-1]]$optBreaks)))
+  require(stringr)
+    
+  regime.list <- getRegimeList(optList = optList, intervals = intervals)
+    
+  par(mfrow = c(1,length(regime.list)),
+        oma = c(2,3,0,0), mar = c(2,1,2,2))
+  for(xx in seq_len(length(regime.list)))
   {
+    barplot(height =  apply(prop[regime.list[[xx]],], c(2), median, na.rm = TRUE),
+            ylab = ylab, ylim = ylim, xaxt = "n", 
+            col = rainbow(ncol(prop)))
     if(xx == 1) 
     {
-      regime.intervals <- seq(optList[[length(optList)-1]]$optBreaks[xx], nrow(intervals),1)
-      barplot(height = apply(prop[regime.intervals,], c(2), median, na.rm = TRUE),
-              main = paste0(">", intervals[optList[[length(optList)-1]]$optBreaks[xx],2],"Ma"),
-              ylab = NULL, ylim = ylim, xaxt = "n", 
-              col = rainbow(ncol(prop)))
-      mtext(ylab, side = 2, line = 2.5)
+      mtext(paste0(">", intervals[optList[[length(optList)-1]]$optBreaks[xx],2], "Ma"), line = 0.75)
+    } else if(xx == max(seq_len(length(regime.list))))
+    {
+      mtext(paste0("<", intervals[optList[[length(optList)-1]]$optBreaks[xx],2], "Ma"), line = 0.75)
     } else {
-      regime.intervals <- seq(optList[[length(optList)-1]]$optBreaks[xx]+1, #its +1 so that the regime ends at the break e.g.(break at 41 Ma will have last bin be 41-43Ma with 42 Ma label)
-                              optList[[length(optList)-1]]$optBreaks[xx-1],
-                              1)
-      barplot(height = apply(prop[regime.intervals,], c(2), median, na.rm = TRUE),
-              main = paste0(intervals[optList[[length(optList)-1]]$optBreaks[xx-1],2],
-                            "to",
-                            intervals[optList[[length(optList)-1]]$optBreaks[xx],2],
-                            "Ma"),
-              ylab = NULL, ylim = ylim, xaxt = "n", 
-              col = rainbow(ncol(prop)))
+    mtext(paste0(intervals[optList[[length(optList)-1]]$optBreaks[xx-1],2],
+                 "to",
+                 intervals[optList[[length(optList)-1]]$optBreaks[xx],2],
+                 "Ma"), line = 0.75)
     }
-    
-    if(xx == length(optList[[length(optList)-1]]$optBreaks)) {
-      regime.intervals <- seq(1, optList[[length(optList)-1]]$optBreaks[xx],1)
-      barplot(height = apply(prop[regime.intervals,], c(2), median, na.rm = TRUE),
-              main = paste0("<", intervals[optList[[length(optList)-1]]$optBreaks[xx],2],"Ma"),
-              ylab = NULL, ylim = ylim, xaxt = "n", 
-              col = rainbow(ncol(prop)))
+    if(xx == 1 & !is.null(ylab)) 
+    {
+      mtext(paste0(" Median ", str_to_title(settings$this.rank)," Richness"), line = 2.5, side = 2)
     }
   }
   par(fig = c(0, 1, 0, 1), oma = c(1, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
   plot(0, 0, type = 'l', bty = 'n', xaxt = 'n', yaxt = 'n')
   legend('bottom', y = 1, legend = colnames(prop), title = "Body Mass (kg)", col = rainbow(ncol(prop)), lwd = legend.lwd, xpd = TRUE, horiz = TRUE, cex = legend.cex, seg.len = legend.seg.len, bty = 'n')         
-}
+} 
+  
 
 netChangeBarplot <- function(optList, prop, intervals, 
                              ylab = "Species Richness", ylim = NULL,
                              legend.lwd = 5, legend.cex = 1, legend.seg.len = 1)
 {
-  interval.breaks <- rev(sort(c(intervals[optList[[length(optList)-1]]$optBreaks,2], range(intervals))))
   require(stringr)
   
   regime.list <- getRegimeList(optList = optList, intervals = intervals)
