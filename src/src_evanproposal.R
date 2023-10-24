@@ -240,7 +240,13 @@ getDiversity1stDiff <- function(data.mat, output.rownames = NULL)
 
 getDateTaxa <- function(measure.mat, occs, this.rank = "species")
 {
-  thisRanges <- getTaxonRangesFromOccs(occs = occs, rank = this.rank, random=FALSE)
+  if(settings$this.rank == "genus")
+  {
+    thisRanges <- getTaxonRangesFromOccs(occs = occs, rank = c("species", "genus"), random=FALSE)
+  } else if (settings$this.rank == "species"){
+    thisRanges <- getTaxonRangesFromOccs(occs = occs, rank = "species", random=FALSE)} else {
+    print("Select species or genus for this.rank.")
+    return()}
   rownames(thisRanges) <- gsub(pattern = "[[:space:]]", replacement = "_", x = rownames(thisRanges))
   measure.mat[,c("FO","LO")] <- thisRanges[match(measure.mat$taxon, rownames(thisRanges)),]
   return(measure.mat)
@@ -515,54 +521,68 @@ make_mock_median_prop <- function(nrow = 30, ncol = 5)
 
 taxHandley <- function(repIntTaxa, 
                       occs,
-                      shortFam,
-                      bigList,
+                      #shortFam, #should be list of families in analysis.  Need to determine if those taxa without family will be aggregated together or aggregated by higher level taxonomy (e.g. order or other clade designation)
+                      bigList, #should be list of genus or species in analysis
                       intervals,
-                      reps = 10,
+                      whichHandley = c("median", "allReps"),
                       extra.intvs = 0, 
                       do.parallel=FALSE, 
+                      this.cores = NULL,
                       do.heuristic = FALSE,
                       do.save = FALSE,
-                      run.update = 100) #runs needed to list how many runs completed to date
+                      run.update = 100, #runs needed to list how many runs completed to date
+                      file.path = NULL,
+                      filename = NULL)
 {
   
   ####################################################################################################################################
   ### Handley analysis of taxonomic distributions
-  print("Beginning median taxonomic Handley analysis...")
-  
-  # bigList <- bigList[bigList$order %in% focal.order,]
-  # shortFam <- sort(unique(bigList$family))
-  
-  taxCube <- sapply(repIntTaxa, function(y) sapply(y, function(x) tabulate(match(bigList$family[as.character(bigList$accepted_name) %in% x], shortFam), nbins=length(shortFam)), simplify="array"), simplify="array")
-
-  dimnames(taxCube) <- list(shortFam, rownames(intervals), NULL)
-  med.n <- median(sapply(repIntTaxa, function(x) length(unique(unlist(sapply(x, function(y) y))))))
-  optList_tax_median <- doHandleyTest(thisCounts=apply(taxCube, c(1,2), median, na.rm=TRUE), n=med.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)	
-  
-  print("Beginning taxonomic Handley analysis for all reps...")
-  optList_tax_allReps <- list()
-  for (this.rep in seq_len(reps)) {
-   # taxCube <- sapply(repIntTaxa, function(y) sapply(y, function(x) tabulate(match(bigList$family[as.character(bigList$accepted_name) %in% x], shortFam), nbins=length(shortFam)), simplify="array"), simplify="array") #duplicate code, can be removed if taxcube is made above
-    this.n <- length(unique(unlist(sapply(repIntTaxa[[this.rep]], function(x) x))))
-    optList_tax_allReps[[this.rep]] <- doHandleyTest(taxCube[,,this.rep], n=this.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)	
-    if(this.rep %% run.update == 0) cat("Taxonomic Handley Rep:", this.rep, "\n")
-  }
-  
-  ####################################################################################################################################
-  if(do.save)
+  if(any(whichHandley %in% "median"))
   {
-    if(Sys.info()["sysname"] == "Darwin"){
-      save(optList_tax_median, optList_tax_allReps, file=paste0("~/Dropbox/ungulate_RA/EcologyResults/Taxon_handleyResult_SampleStandardized=", do.subsample, timestamp(),".Rdata"))
-      #load('~/Dropbox/ungulate_RA/EcologyResults/allUngulates/handleyResult##------ Thu Nov  9 02:12:20 2017 ------##_allUngulates.Rdata')
-    } else if(Sys.info()["sysname"] == "Windows"){
-      save(optList_tax_median, optList_tax_allReps, file=paste0("C:/Users/Blaire/Dropbox/ungulate_RA/EcologyResults/Taxon_handleyResult_SampleStandardized=", do.subsample, timestamp(),".Rdata"))
-      # load('~/Dropbox/ungulate_RA/EcologyResults/allUngulates/handleyResult##------ Thu Nov  9 02:12:20 2017 ------##_allUngulates.Rdata')
+    print("Beginning median taxonomic Handley analysis...")
+    
+    # bigList <- bigList[bigList$order %in% focal.order,]
+    # shortFam <- sort(unique(bigList$family))
+    
+#    taxCube <- sapply(repIntTaxa, function(y) sapply(y, function(x) tabulate(match(bigList$family[as.character(bigList$accepted_name) %in% x], shortFam), nbins=length(shortFam)), simplify="array"), simplify="array")
+    taxCube <- sapply(repIntTaxa, function(y) sapply(y, function(x) tabulate(match(bigList$family[as.character(bigList$accepted_name) %in% x], unique(bigList$family)), nbins=length(unique(bigList$family))), simplify="array"), simplify="array")
+    
+#   taxCube <- sapply(repIntTaxa, function(y) sapply(y, function(x) tabulate(bin=as.factor(bigList$family[as.character(bigList$accepted_name) %in% x]), nbins=length(bigList$family)), simplify="array"), simplify="array")
+    
+    
+    dimnames(taxCube) <- list(unique(bigList$family), rownames(intervals), NULL)
+    #med.n <- median(sapply(repIntTaxa, function(x) length(unique(unlist(sapply(x, function(y) y))))))
+    med.n <- nrow(measure.mat)
+    optList_tax_median <- doHandleyTest(thisCounts=apply(taxCube, c(1,2), median, na.rm=TRUE), n=med.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)	
+    
+    if(do.save)
+    {
+      save(optList_tax_median, bigList, file=paste0(file.path, filename,"_optList_tax_median.Rdata"))
     }
+    beep(3)
+  
+  } else if(any(whichHandley %in% "allReps")) {
+    print("Beginning taxonomic Handley analysis for all reps...")
+    optList_tax_allReps <- list()
+    for (this.rep in seq_len(reps)) {
+     # taxCube <- sapply(repIntTaxa, function(y) sapply(y, function(x) tabulate(match(bigList$family[as.character(bigList$accepted_name) %in% x], shortFam), nbins=length(shortFam)), simplify="array"), simplify="array") #duplicate code, can be removed if taxcube is made above
+      this.n <- length(unique(unlist(sapply(repIntTaxa[[this.rep]], function(x) x))))
+      optList_tax_allReps[[this.rep]] <- doHandleyTest(taxCube[,,this.rep], n=this.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)	
+      if(this.rep %% run.update == 0) cat("Taxonomic Handley Rep:", this.rep, "\n")
+    }
+    
+    if(do.save)
+    {
+      save(optList_bm_allReps, bigList, file=paste0(file.path, filename,"_optList_bm_allReps.Rdata"))
+    }
+    beep(5)
+  } else {
+    print("Unable to perform. Please select whether the Hadley analysis will be performed over the median species richness (median) and/or all pseudoreplicates (allReps)")
   }
   
-  repIntTaxaAll <- list(OptListTaxMedian = optList_tax_median, OptListTaxAllReps = optList_tax_allReps, taxCube = taxCube)
-  
-  return(repIntTaxaAll)
+#  repIntTaxaAll <- list(OptListTaxMedian = optList_tax_median, OptListTaxAllReps = optList_tax_allReps, taxCube = taxCube)
+ # return(repIntTaxaAll)
+  return()
 }
 
 traitHandley <- function(countCube,
@@ -599,7 +619,7 @@ traitHandley <- function(countCube,
     
     if(do.save)
     {
-      save(optList_bm_median, file=paste0(file.path, filename,"optList_bm_median.Rdata"))
+      save(optList_bm_median, bigList, file=paste0(file.path, filename,"_optList_bm_median.Rdata"))
     }
     beep(3)
     
@@ -624,7 +644,7 @@ traitHandley <- function(countCube,
     
     if(do.save)
     {
-      save(optList_bm_allReps, file=paste0(file.path, filename,"optList_bm_allReps.Rdata"))
+      save(optList_bm_allReps, bigList, file=paste0(file.path, filename,"_optList_bm_allReps.Rdata"))
     }
     beep(5)
   } else {
@@ -636,3 +656,216 @@ traitHandley <- function(countCube,
   return()
 }
 
+shoulderPlot <- function(measure.mat, plot.y, intervals, occs, bigList, repIntTaxa = NULL, optList_bm_median = NULL, quants = NULL, this.rank = settings$this.rank,
+                         main = NULL, ylab = NULL, ylim = NULL, yaxp = NULL, yaxt = "s", xlab = NULL, xlim = NULL, xaxp = c(55,5,10), xaxt = "s", cex.axis = 1.5, cex.lab = 1.5, 
+                         col.axis = "black", col.lab = "black",
+                         specOcc.col = "gray0", specOcc.alpha = 0.5,
+                         plot.breaks = FALSE, manual.breaks = NULL, break.text = TRUE, break.col = "firebrick4", breaks.lwd = 1.5, breaks.cex = 0.5, nudge.break.txt = 0,
+                         do.subepochs=TRUE, overlay.labels = FALSE, overlay.color=TRUE, thisAlpha.intervals=0.33, thisAlpha.text = 0.33, borderCol="white", invertTime=FALSE, scale.cex=0.75, scale.headers = 0.95, text.offset = 0.025,
+                         do.quants = FALSE, poly.col = "darkorange4", median.col = c("goldenrod1", "darkorange4", "darkorange1"))
+{
+  
+  #for later versions make plot.x so user can define x axis but for now keep as $FO
+  
+  #check that measure.mat has FO and LO
+  if(!"FO" %in% colnames(measure.mat) || !"LO" %in% colnames(measure.mat)) measure.mat <- getDateTaxa(measure.mat = measure.mat, occs = occs, this.rank = this.rank)
+  
+  #par(mar=c(4,4,2.5,0.5))
+  # quartz(width=12, height=6)
+  if(is.null(xlim)) xlim <- c(max(intervals), min(intervals))
+  
+  plot(measure.mat$FO, measure.mat[,plot.y], type="n", xlim= xlim, xaxp = xaxp, xaxt = xaxt, xlab = xlab, ylim=ylim, yaxp = yaxp, yaxt = yaxt, ylab = ylab, main = main, cex.axis = cex.axis, cex.lab = cex.lab, col.axis = col.axis, col.lab = col.lab)
+  # plot(measure.mat$FO, measure.mat$bodyMass, xlim=c(max(intervals), min(intervals)), type="n", ylab="log-Body Mass (kg)", xaxp =c(50,0,5), xlab="Time (Ma)", cex.axis=1, cex.lab=1, col="gray75", fg="gray75", bg="gray75", col.axis="gray75", col.lab="gray75") #alter xaxpto change x-axis values
+  # rect(-10e6, -10e6, 10e6, 10e6, col="white")
+  overlayCzTimescale(do.subepochs= do.subepochs, color = overlay.color, thisAlpha.text = thisAlpha.text, thisAlpha.intervals = thisAlpha.intervals, borderCol = borderCol, invertTime = invertTime, scale.cex = scale.cex, scale.headers = scale.headers, text.offset = text.offset)
+  
+# famColors <- rainbow(length(bigList$family))
+#  colorList <- famColors[match(bigList$family[as.character(bigList$accepted_name) %in% measure.mat$taxon], bigList$family)]
+# colorList[is.na(colorList)] <- "gray25"
+  
+#  orderColors <- array(NA, dim=nrow(measure.mat))
+  # orderColors[bigList$order[match(measure.mat$taxon, bigList$accepted_name)]=="Perissodactyla"] <- "dodgerblue4"
+  # orderColors[bigList$order[match(measure.mat$taxon, bigList$accepted_name)] =="Artiodactyla"] <- "deeppink4"
+  
+  for (i in seq_len(nrow(measure.mat))) {
+    # lines(x=c(this["FO"], x["LO"]), y=c(x["bodyMass"], x["bodyMass"]), lwd=3, pch=21, col=famColors[match(bigList[match(measure.mat$taxon, bigList[,1]),2], shortFam)])
+    # lines(x=c(measure.mat$FO[i], measure.mat$LO[i]), y=c(measure.mat$bodyMass[i], measure.mat$bodyMass[i]), lwd=0.5, pch=21, col=alphaColor(colorList[i], 0.75))
+    # lines(x=c(thisRanges[match(measure.mat$taxon[i], rownames(thisRanges)),"FO"], thisRanges[match(measure.mat$taxon[i], rownames(thisRanges)),"LO"]), y=c(measure.mat$bodyMass[i], measure.mat$bodyMass[i]), lwd=0.5, pch=21, col=alphaColor("gray0", 0.75)) #
+    if (is.finite(measure.mat$FO[i]) & is.finite(measure.mat$LO[i]) & measure.mat$FO[i] != measure.mat$LO[i]) lines(x=measure.mat[i,c("FO","LO")], y=c(measure.mat[,plot.y][i], measure.mat[,plot.y][i]), lwd=0.75, pch=21, col=alphaColor(specOcc.col, specOcc.alpha)) #alphaColor(orderColors[i], 0.5)
+  }
+  points(measure.mat[complete.cases(measure.mat[ ,c("FO","LO")]) & measure.mat$FO == measure.mat$LO, c("FO", plot.y)], pch=21, col=alphaColor(specOcc.col, specOcc.alpha), cex=0.25) #this line is not generating the proper output for the final graph due to c("FO","bodyMass") causing a  "undefined columns selected" error
+  
+  if(plot.breaks)
+  {
+    if(is.null(manual.breaks))
+    {
+      # optList_bm <- doHandleyTest(thisCounts=apply(countCube, c(1,2), median, na.rm=TRUE), n=med.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)	# based on means
+      # optList_bm <- doHandleyTest(thisCounts=apply(countCube, c(1,2), median, na.rm=TRUE), sig=0.01, do.heuristic=TRUE, do.parallel=do.parallel)	# based on median
+      abline(v=sort(c(intervals[optList_bm_median[[length(optList_bm_median)-1]]$optBreaks,2], range(intervals))), lwd= breaks.lwd, col = break.col) #ranges used to get start and stop of intervals since this method will find them as distinct changes (e.g, nothing to something and vice versa)
+      if(break.text)
+      {
+       # text(x= sort((c(max(intervals), intervals[optList_bm_median[[length(optList_bm_median)-1]]$optBreaks,2]) - 0.35)), y=par()$usr[3] + nudge.break.txt, labels=rev(seq_len(length(optList_bm_median[[length(optList_bm_median)-1]]$optBreaks) + 1)), pos=3, cex= breaks.cex, col=break.col)
+        text(x= sort((c(max(intervals), intervals[optList_bm_median[[length(optList_bm_median)-1]]$optBreaks,2]) - 0.35)), y=par()$usr[3] + nudge.break.txt, labels= paste(sort(c(max(intervals), intervals[optList_bm_median[[length(optList_bm_median)-1]]$optBreaks,2])), "Ma"), adj=c(0,0),cex= breaks.cex, col=break.col)
+      }
+    }
+    
+    if(!is.null(manual.breaks))
+    {
+      abline(v= manual.breaks, lwd= breaks.lwd, col = break.col)
+      if(break.text)
+      {
+      #  text(x= manual.breaks - 0.35, y=par()$usr[3] + nudge.break.txt, labels= manual.breaks, pos=3, cex= breaks.cex, col = break.col)
+        text(x= manual.breaks - 0.35, y=par()$usr[3] + nudge.break.txt, labels= paste(manual.breaks, "Ma"), adj=c(0,0), cex= breaks.cex, col = break.col)
+      }
+    }
+  }
+  
+  if(do.quants)
+  {
+    #make function to run Handley method and run the quants
+    if(is.null(quants)) quants <- apply(sapply(repIntTaxa, function(y) sapply(y, function(x) quantile(measure.mat[x,plot.y], probs=c(0, 0.25, 0.5, 0.75, 1.0), na.rm=TRUE)), simplify = "array"), c(1,2), median, na.rm=TRUE)
+    polygon(c(rowMeans(intervals), rev(rowMeans(intervals))), c(quants[1,], rev(quants[5,])), col=alphaColor(poly.col, 0.25), border=poly.col)
+    polygon(c(rowMeans(intervals), rev(rowMeans(intervals))), c(quants[2,], rev(quants[4,])), col=alphaColor(poly.col, 0.25), border=poly.col)
+    lines(rowMeans(intervals), quants[3,], col=alphaColor(median.col[1], 0.5), lwd=5)
+    lines(rowMeans(intervals), quants[3,], col=alphaColor(median.col[2], 1.0), lwd=3)
+    points(rowMeans(intervals), quants[3,], col=alphaColor(median.col[3], 0.5), cex=0.5)
+    box(lwd=1)
+  }
+}
+
+
+plotRegimeBoxplot <- function(optList, prop, intervals, 
+                              ylab = "Species Richness", ylim = NULL,
+                              legend.lwd = 5, legend.cex = 1, legend.seg.len = 1)
+{
+  interval.breaks <- sort(c(intervals[optList[[length(optList)-1]]$optBreaks,2], range(intervals)))
+  
+  par(mfrow = c(1,length(optList[[length(optList)-1]]$optBreaks)+1),
+      oma = c(2,3,0,0), mar = c(2,1,2,2))
+  for(xx in seq_len(length(optList[[length(optList)-1]]$optBreaks)))
+  {
+    if(xx == 1) 
+    {
+      regime.intervals <- seq(optList[[length(optList)-1]]$optBreaks[xx], nrow(intervals),1)
+      boxplot(prop[regime.intervals,], 
+              main = paste0(">", intervals[optList[[length(optList)-1]]$optBreaks[xx],2],"Ma"),
+              ylab = NULL, ylim = ylim, xaxt = "n", 
+              col = rainbow(ncol(prop)))
+      mtext(ylab, side = 2, line = 2.5)
+    } else {
+      regime.intervals <- seq(optList[[length(optList)-1]]$optBreaks[xx]+1, #its +1 so that the regime ends at the break e.g.(break at 41 Ma will have last bin be 41-43Ma with 42 Ma label)
+                              optList[[length(optList)-1]]$optBreaks[xx-1],
+                              1)
+      boxplot(prop[regime.intervals,], 
+              main = paste0(intervals[optList[[length(optList)-1]]$optBreaks[xx-1],2],
+                            "to",
+                            intervals[optList[[length(optList)-1]]$optBreaks[xx],2],
+                            "Ma"),
+              ylab = NULL, ylim = ylim, xaxt = "n", 
+              col = rainbow(ncol(prop)))
+    }
+    
+    if(xx == length(optList[[length(optList)-1]]$optBreaks)) {
+      regime.intervals <- seq(1, optList[[length(optList)-1]]$optBreaks[xx],1)
+      boxplot(prop[regime.intervals,], 
+              main = paste0("<", intervals[optList[[length(optList)-1]]$optBreaks[xx],2],"Ma"),
+              ylab = NULL, ylim = ylim, xaxt = "n", 
+              col = rainbow(ncol(prop)))
+    }
+  }
+  par(fig = c(0, 1, 0, 1), oma = c(1, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+  plot(0, 0, type = 'l', bty = 'n', xaxt = 'n', yaxt = 'n')
+  legend('bottom', y = 1, legend = colnames(prop), title = "Body Mass (kg)", col = rainbow(ncol(prop)), lwd = legend.lwd, xpd = TRUE, horiz = TRUE, cex = legend.cex, seg.len = legend.seg.len, bty = 'n')         
+}
+
+plotRegimeBarplot <- function(optList, prop, intervals, 
+                              ylab = "Species Richness", ylim = NULL,
+                              legend.lwd = 5, legend.cex = 1, legend.seg.len = 1)
+{
+  interval.breaks <- sort(c(intervals[optList[[length(optList)-1]]$optBreaks,2], range(intervals)))
+  
+  par(mfrow = c(1,length(optList[[length(optList)-1]]$optBreaks)+1),
+      oma = c(2,3,0,0), mar = c(2,1,2,2))
+  for(xx in seq_len(length(optList[[length(optList)-1]]$optBreaks)))
+  {
+    if(xx == 1) 
+    {
+      regime.intervals <- seq(optList[[length(optList)-1]]$optBreaks[xx], nrow(intervals),1)
+      barplot(height = apply(prop[regime.intervals,], c(2), median, na.rm = TRUE),
+              main = paste0(">", intervals[optList[[length(optList)-1]]$optBreaks[xx],2],"Ma"),
+              ylab = NULL, ylim = ylim, xaxt = "n", 
+              col = rainbow(ncol(prop)))
+      mtext(ylab, side = 2, line = 2.5)
+    } else {
+      regime.intervals <- seq(optList[[length(optList)-1]]$optBreaks[xx]+1, #its +1 so that the regime ends at the break e.g.(break at 41 Ma will have last bin be 41-43Ma with 42 Ma label)
+                              optList[[length(optList)-1]]$optBreaks[xx-1],
+                              1)
+      barplot(height = apply(prop[regime.intervals,], c(2), median, na.rm = TRUE),
+              main = paste0(intervals[optList[[length(optList)-1]]$optBreaks[xx-1],2],
+                            "to",
+                            intervals[optList[[length(optList)-1]]$optBreaks[xx],2],
+                            "Ma"),
+              ylab = NULL, ylim = ylim, xaxt = "n", 
+              col = rainbow(ncol(prop)))
+    }
+    
+    if(xx == length(optList[[length(optList)-1]]$optBreaks)) {
+      regime.intervals <- seq(1, optList[[length(optList)-1]]$optBreaks[xx],1)
+      barplot(height = apply(prop[regime.intervals,], c(2), median, na.rm = TRUE),
+              main = paste0("<", intervals[optList[[length(optList)-1]]$optBreaks[xx],2],"Ma"),
+              ylab = NULL, ylim = ylim, xaxt = "n", 
+              col = rainbow(ncol(prop)))
+    }
+  }
+  par(fig = c(0, 1, 0, 1), oma = c(1, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+  plot(0, 0, type = 'l', bty = 'n', xaxt = 'n', yaxt = 'n')
+  legend('bottom', y = 1, legend = colnames(prop), title = "Body Mass (kg)", col = rainbow(ncol(prop)), lwd = legend.lwd, xpd = TRUE, horiz = TRUE, cex = legend.cex, seg.len = legend.seg.len, bty = 'n')         
+}
+
+netChangeBarplot <- function(optList, prop, intervals, 
+                             ylab = "Species Richness", ylim = NULL,
+                             legend.lwd = 5, legend.cex = 1, legend.seg.len = 1)
+{
+  interval.breaks <- rev(sort(c(intervals[optList[[length(optList)-1]]$optBreaks,2], range(intervals))))
+  require(stringr)
+  
+  regime.list <- getRegimeList(optList = optList, intervals = intervals)
+  
+  par(mfrow = c(1,length(optList[[length(optList)-1]]$optBreaks)),
+      oma = c(2,3,0,0), mar = c(2,1,2,2))
+  for(xx in seq_len(length(regime.list)-1))
+  {
+    barplot(height =  apply(prop[regime.list[[xx+1]],], c(2), median, na.rm = TRUE) - apply(prop[regime.list[[xx]],], c(2), median, na.rm = TRUE),
+            ylab = ylab, ylim = ylim, xaxt = "n", 
+            col = rainbow(ncol(prop)))
+    mtext(paste0(intervals[optList[[length(optList)-1]]$optBreaks[xx],2], " Ma"), line = 0.75)
+    if(xx == 1 & !is.null(ylab)) 
+    {
+      mtext(paste0("\u394", " Median ", str_to_title(settings$this.rank)," Richness"), line = 2.5, side = 2)
+    }
+  }
+  par(fig = c(0, 1, 0, 1), oma = c(1, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+  plot(0, 0, type = 'l', bty = 'n', xaxt = 'n', yaxt = 'n')
+  legend('bottom', y = 1, legend = colnames(prop), title = "Body Mass (kg)", col = rainbow(ncol(prop)), lwd = legend.lwd, xpd = TRUE, horiz = TRUE, cex = legend.cex, seg.len = legend.seg.len, bty = 'n')         
+}
+
+getRegimeList <- function(optList, intervals)
+{
+  regime.list <- list()
+  for(xx in seq_len(length(optList[[length(optList)-1]]$optBreaks)))
+  {
+    if(xx == 1) 
+    {
+      regime.list[[1]] <- seq(optList[[length(optList)-1]]$optBreaks[xx]+1, nrow(intervals),1)
+    } else {
+      regime.list[[xx]]<- seq(optList[[length(optList)-1]]$optBreaks[xx]+1, #its +1 so that the regime ends at the break e.g.(break at 41 Ma will have last bin be 41-43Ma with 42 Ma label)
+                              optList[[length(optList)-1]]$optBreaks[xx-1],
+                              1)
+    }
+    if(xx == length(optList[[length(optList)-1]]$optBreaks)) 
+    {
+      regime.list[[xx+1]]<- seq(1, optList[[length(optList)-1]]$optBreaks[xx],1)
+    }
+  }
+  return(regime.list)
+}
