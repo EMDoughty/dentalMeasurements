@@ -520,6 +520,7 @@ make_mock_median_prop <- function(nrow = 30, ncol = 5)
 }
 
 taxHandley <- function(repIntTaxa, 
+                       measure.mat,
                       occs,
                       #shortFam, #should be list of families in analysis.  Need to determine if those taxa without family will be aggregated together or aggregated by higher level taxonomy (e.g. order or other clade designation)
                       bigList, #should be list of genus or species in analysis
@@ -619,7 +620,7 @@ traitHandley <- function(countCube,
     
     if(do.save)
     {
-      save(optList_bm_median, bigList, file=paste0(file.path, filename,"_optList_bm_median.Rdata"))
+      save(optList_bm_median, file=paste0(file.path, filename,"_optList_bm_median.Rdata"))
     }
     beep(3)
     
@@ -644,7 +645,7 @@ traitHandley <- function(countCube,
     
     if(do.save)
     {
-      save(optList_bm_allReps, bigList, file=paste0(file.path, filename,"_optList_bm_allReps.Rdata"))
+      save(optList_bm_allReps, file=paste0(file.path, filename,"_optList_bm_allReps.Rdata"))
     }
     beep(5)
   } else {
@@ -734,9 +735,9 @@ shoulderPlot <- function(measure.mat, plot.y, intervals, occs, bigList, repIntTa
 }
 
 
-plotRegimeBoxplot <- function(optList, prop, intervals, 
+plotRegimeBoxplot <- function(optList, prop, intervals, settings,
                               ylab = "Species Richness", ylim = NULL,
-                              legend.lwd = 5, legend.cex = 1, legend.seg.len = 1)
+                              plot.legend = TRUE, legend.lwd = 5, legend.cex = 1, legend.seg.len = 1)
 {
   require(stringr)
   
@@ -754,7 +755,7 @@ plotRegimeBoxplot <- function(optList, prop, intervals,
       mtext(paste0(">", intervals[optList[[length(optList)-1]]$optBreaks[xx],2], " Ma"), line = 0.75)
     } else if(xx == max(seq_len(length(regime.list))))
     {
-      mtext(paste0("<", intervals[optList[[length(optList)-1]]$optBreaks[xx],2], " Ma"), line = 0.75)
+      mtext(paste0("<", intervals[optList[[length(optList)-1]]$optBreaks[xx-1],2], " Ma"), line = 0.75)
     } else {
       mtext(paste0(intervals[optList[[length(optList)-1]]$optBreaks[xx-1],2],
                    " to ",
@@ -772,12 +773,12 @@ plotRegimeBoxplot <- function(optList, prop, intervals,
 } 
 
 
-plotRegimeBarplot <- function(optList, prop, intervals, 
+plotRegimeBarplot <- function(optList, prop, intervals, settings,
                               ylab = "Species Richness", ylim = NULL,
-                              legend.lwd = 5, legend.cex = 1, legend.seg.len = 1)
+                              plot.legend = TRUE, legend.lwd = 5, legend.cex = 1, legend.seg.len = 1)
 {
   require(stringr)
-    
+  
   regime.list <- getRegimeList(optList = optList, intervals = intervals)
     
   par(mfrow = c(1,length(regime.list)),
@@ -792,7 +793,7 @@ plotRegimeBarplot <- function(optList, prop, intervals,
       mtext(paste0(">", intervals[optList[[length(optList)-1]]$optBreaks[xx],2]," Ma"), line = 0.75)
     } else if(xx == max(seq_len(length(regime.list))))
     {
-      mtext(paste0("<", intervals[optList[[length(optList)-1]]$optBreaks[xx],2], " Ma"), line = 0.75)
+      mtext(paste0("<", intervals[optList[[length(optList)-1]]$optBreaks[xx-1],2], " Ma"), line = 0.75)
     } else {
     mtext(paste0(intervals[optList[[length(optList)-1]]$optBreaks[xx-1],2],
                  " to ",
@@ -810,9 +811,9 @@ plotRegimeBarplot <- function(optList, prop, intervals,
 } 
   
 
-netChangeBarplot <- function(optList, prop, intervals, 
+netChangeBarplot <- function(optList, prop, intervals, settings, 
                              ylab = "Species Richness", ylim = NULL,
-                             legend.lwd = 5, legend.cex = 1, legend.seg.len = 1)
+                             plot.legend = TRUE, legend.lwd = 5, legend.cex = 1, legend.seg.len = 1)
 {
   require(stringr)
   
@@ -826,7 +827,7 @@ netChangeBarplot <- function(optList, prop, intervals,
             ylab = ylab, ylim = ylim, xaxt = "n", 
             col = rainbow(ncol(prop)))
     mtext(paste0(intervals[optList[[length(optList)-1]]$optBreaks[xx],2], " Ma"), line = 0.75)
-    if(xx == 1 & !is.null(ylab)) 
+    if(xx == 1 & is.null(ylab)) 
     {
       mtext(paste0("\u394", " Median ", str_to_title(settings$this.rank)," Richness"), line = 2.5, side = 2)
     }
