@@ -240,13 +240,8 @@ getDiversity1stDiff <- function(data.mat, output.rownames = NULL)
 
 getDateTaxa <- function(measure.mat, occs, this.rank = "species")
 {
-  if(settings$this.rank == "genus")
-  {
-    thisRanges <- getTaxonRangesFromOccs(occs = occs, rank = c("species", "genus"), random=FALSE)
-  } else if (settings$this.rank == "species"){
-    thisRanges <- getTaxonRangesFromOccs(occs = occs, rank = "species", random=FALSE)} else {
-    print("Select species or genus for this.rank.")
-    return()}
+  thisRanges <- getTaxonRangesFromOccs(occs = occs, rank = this.rank, random=FALSE)
+
   rownames(thisRanges) <- gsub(pattern = "[[:space:]]", replacement = "_", x = rownames(thisRanges))
   measure.mat[,c("FO","LO")] <- thisRanges[match(measure.mat$taxon, rownames(thisRanges)),]
   return(measure.mat)
@@ -558,7 +553,7 @@ taxHandley <- function(repIntTaxa,
     
     if(do.save)
     {
-      save(optList_tax_median, bigList, file=paste0(file.path, filename,"_optList_tax_median.Rdata"))
+      save(optList_tax_median, taxCube, bigList, file=paste0(file.path, filename,"_optList_tax_median.Rdata"))
     }
     beep(3)
   
@@ -574,7 +569,7 @@ taxHandley <- function(repIntTaxa,
     
     if(do.save)
     {
-      save(optList_bm_allReps, bigList, file=paste0(file.path, filename,"_optList_bm_allReps.Rdata"))
+      save(optList_tax_allReps, taxCube, bigList, file=paste0(file.path, filename,"_optList_bm_allReps.Rdata"))
     }
     beep(5)
   } else {
