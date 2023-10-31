@@ -852,3 +852,30 @@ getRegimeList <- function(optList, intervals)
   }
   return(regime.list)
 }
+
+comparePBDB_NOW_collectionDurations <- function()
+{
+  pbdb_NOW_map <- read.csv("~/Dropbox/Code/R/dentalMeasurements/dat/pbdb_NOW_map.csv")
+  NOW_loc_dates <- read.csv("~/Dropbox/Code/R/dentalMeasurements/dat/NOW_loc_dates.csv")
+  
+  NOW_loc_dates$diffNOW <- NOW_loc_dates$MAX_AGE - NOW_loc_dates$MIN_AGE
+
+  compareDates <- cbind(pbdb_NOW_map[,c("collection_no", "NOW_loc","early_interval", "late_interval", "max_ma", "min_ma", "diff")],
+                        NOW_loc_dates[match(pbdb_NOW_map$NOW_loc, NOW_loc_dates$LOC_SYNONYMS),c(c("BFA_MAX", "BFA_MIN", "MAX_AGE", "MIN_AGE","diffNOW", "CHRON"))])
+  
+  par(mfrow = c(1,2))
+  hist(compareDates$diff, breaks = c(seq(-1,25,1)), main = "PBDB Dates", ylim = c(0, 3500), xlab = "Species Duration (Ma)")
+  hist(compareDates$diffNOW, breaks = c(seq(-1,25,1)), main = "NOW Dates", ylim = c(0,3500), xlab = "Species Duration (Ma)")
+  return()
+}
+
+swapMax&MinDates <- function(nowDates, max.col = "MAX_AGE", min.col = "MIN_AGE")
+{
+  temp.max <- nowDates[,max.col]
+  temp.min <- nowDates[,min.col]
+  
+  nowDates[, min.col] <- temp.max
+  nowDates[, max.col] <- temp.min
+  
+  return(nowDates)
+}
