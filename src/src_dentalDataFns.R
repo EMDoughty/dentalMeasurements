@@ -1,8 +1,8 @@
 require(compiler)
 # require(MASS)
-source("~/Dropbox/code/R/common_src/occFns.R", chdir = TRUE)
+source("~/Dropbox/Code/R/common_src/occFns.R", chdir = TRUE)
 
-getSpecimenMatFromAmandaMeasurements <- function(filename = "~/Dropbox/code/R/dentalMeasurements/dat/amanda_specimens.csv") {
+getSpecimenMatFromAmandaMeasurements <- function(filename = "~/Dropbox/Code/R/dentalMeasurements/dat/amanda_specimens.csv") {
 	require(abind)
 	dat <- read.csv(filename, strip.white = TRUE)
 
@@ -41,7 +41,7 @@ getBlastoMeasuresOneSpecimen <- function(this.block) {
 	data.frame(matrix(this.m, nrow = 1, dimnames = list(NULL, this.dim)))
 }
 
-getSpecimenMatFromBlastoMeasurements <- function(filename="~/Dropbox/code/R/dentalMeasurements/dat/blasto_Birlenbach20140207.csv") {
+getSpecimenMatFromBlastoMeasurements <- function(filename="~/Dropbox/Code/R/dentalMeasurements/dat/blasto_Birlenbach20140207.csv") {
 	dat <- read.csv(filename, strip.white = TRUE)
 	specimen.vec <- sort(unique(dat$specimen))
 	this.dim <- unique(dat$dim)
@@ -52,12 +52,12 @@ getSpecimenMatFromBlastoMeasurements <- function(filename="~/Dropbox/code/R/dent
 	specimen.mat[!is.finite(specimen.mat)] <- NA
 	specimen.mat <- data.frame(specimen=specimen.vec, specimen.mat)
 
-	specimen.mat <- merge(read.csv("~/Dropbox/code/R/dentalMeasurements/dat/blasto_info2.csv", strip.white = TRUE), specimen.mat, by = "specimen", all = TRUE, sort=FALSE)
+	specimen.mat <- merge(read.csv("~/Dropbox/Code/R/dentalMeasurements/dat/blasto_info2.csv", strip.white = TRUE), specimen.mat, by = "specimen", all = TRUE, sort=FALSE)
 	colnames(specimen.mat)[colnames(specimen.mat) == "sp_current"] <- "identified.name"
 	specimen.mat
 }
 
-getSpecimenMatFromLiteratureMeasurements <- function(filename = "~/Dropbox/code/R/dentalMeasurements/dat/ungulate_literature.csv") {
+getSpecimenMatFromLiteratureMeasurements <- function(filename = "~/Dropbox/Code/R/dentalMeasurements/dat/ungulate_literature.csv") {
 	dat <- read.csv(filename, strip.white = TRUE)
 	# dat <- dat[apply(is.finite(data.matrix(dat[,3:ncol(dat)])), 1, any),] # removes taxa with no measurements
 	dat
@@ -126,10 +126,10 @@ getToothRowLengths <- function(taxon) {
 
 getExantMat <- function() {
 	lab <- c("p2", "p3", "p4", "m1", "m2", "m3")
-#	widths <- read.csv("~/Dropbox/code/R/cooperExtantDental/dat/widths_cooper.csv", stringsAsFactors=FALSE, strip.white=TRUE) original line
-	widths <- read.csv("~/Dropbox/code/R/dentalMeasurements/dat/widths_cooper.csv", stringsAsFactors=FALSE, strip.white=TRUE) # changed this line so it matches with directory on github
-#	widths <- merge(widths, read.csv("~/Dropbox/code/R/cooperExtantDental/dat/widths_roberto.csv", stringsAsFactors=FALSE, strip.white=TRUE), all=TRUE, sort=FALSE) original line
-	widths <- merge(widths, read.csv("~/Dropbox/code/R/dentalMeasurements/dat/widths_roberto.csv", stringsAsFactors=FALSE, strip.white=TRUE), all=TRUE, sort=FALSE) # changed this line so it matches with directory on github
+#	widths <- read.csv("~/Dropbox/Code/R/cooperExtantDental/dat/widths_cooper.csv", stringsAsFactors=FALSE, strip.white=TRUE) original line
+	widths <- read.csv("~/Dropbox/Code/R/dentalMeasurements/dat/widths_cooper.csv", stringsAsFactors=FALSE, strip.white=TRUE) # changed this line so it matches with directory on github
+#	widths <- merge(widths, read.csv("~/Dropbox/Code/R/cooperExtantDental/dat/widths_roberto.csv", stringsAsFactors=FALSE, strip.white=TRUE), all=TRUE, sort=FALSE) original line
+	widths <- merge(widths, read.csv("~/Dropbox/Code/R/dentalMeasurements/dat/widths_roberto.csv", stringsAsFactors=FALSE, strip.white=TRUE), all=TRUE, sort=FALSE) # changed this line so it matches with directory on github
 	w_means <-sapply(lab, function(x) rowMeans(widths[,grepl(x, colnames(widths))], na.rm=TRUE))
 	w_means[!is.finite(data.matrix(w_means))] <- NA
 	w_means <- data.frame(specimen=widths[,1], w_means)
@@ -138,10 +138,10 @@ getExantMat <- function() {
 	colnames(w_means) <- sapply(colnames(w_means), function(x) paste(x, "_w", sep=""))
 	colnames(w_means)[1] <- "specimen"
 	
-#	lengths <- read.csv("~/Dropbox/code/R/cooperExtantDental/dat/lengths_cooper.csv", stringsAsFactors=FALSE, strip.white=TRUE) original line
+#	lengths <- read.csv("~/Dropbox/Code/R/cooperExtantDental/dat/lengths_cooper.csv", stringsAsFactors=FALSE, strip.white=TRUE) original line
 	lengths <- read.csv("~/Dropbox/Code/R/dentalMeasurements/dat/lengths_cooper.csv", stringsAsFactors=FALSE, strip.white=TRUE) # changed this line so it matches with directory on github
-#	lengths <- merge(lengths, read.csv("~/Dropbox/code/R/cooperExtantDental/dat/lengths_roberto.csv", stringsAsFactors=FALSE, strip.white=TRUE), all=TRUE, sort=FALSE) original line	
-	lengths <- merge(lengths, read.csv("~/Dropbox/code/R/dentalMeasurements/dat/lengths_roberto.csv", stringsAsFactors=FALSE, strip.white=TRUE), all=TRUE, sort=FALSE) # changed this line so it matches with directory on github
+#	lengths <- merge(lengths, read.csv("~/Dropbox/Code/R/cooperExtantDental/dat/lengths_roberto.csv", stringsAsFactors=FALSE, strip.white=TRUE), all=TRUE, sort=FALSE) original line	
+	lengths <- merge(lengths, read.csv("~/Dropbox/Code/R/dentalMeasurements/dat/lengths_roberto.csv", stringsAsFactors=FALSE, strip.white=TRUE), all=TRUE, sort=FALSE) # changed this line so it matches with directory on github
 	l_means <- data.frame(sapply(lab, function(x) rowMeans(lengths[,grepl(x, colnames(lengths))], na.rm=TRUE)))
 	l_means <- cbind(specimen=lengths[,1], l_means)
 	w_means[is.nan(data.matrix(w_means))] <- NA
@@ -159,8 +159,8 @@ getExantMat <- function() {
 
 getArchaicMat <- function() { 
   #changed 2023_9_6 to added if statement as I (Evan) added identified.name as a field when cleaning the archaic dataset
-  #2023_9_26 reverted to original code (Evan) since using the identified "verbatim" name will fail to keep the taxonomy of partial synonyms correct.  Must use the accepted name in its place.
-	dat <- read.csv("~/Dropbox/code/R/dentalMeasurements/dat/ArchaicUngulate_UploadFile_Master.csv", stringsAsFactors=TRUE, strip.white=TRUE)
+  #2023_9_26 reverted to original Code (Evan) since using the identified "verbatim" name will fail to keep the taxonomy of partial synonyms correct.  Must use the accepted name in its place.
+	dat <- read.csv("~/Dropbox/Code/R/dentalMeasurements/dat/ArchaicUngulate_UploadFile_Master.csv", stringsAsFactors=TRUE, strip.white=TRUE)
 	
 	dat$verbatim.name <- dat$identified.name
 	if(any(colnames(dat) %in% "accepted_name"))
@@ -231,8 +231,8 @@ getMeasureMatWithBodyMasses <- function(settings, append.archaic=TRUE, append.ex
 	tax.vec <- tax.vec[!tax.vec %in% rownames(measure.mat)]
 	measure.mat <- appendMissingPaleoDBSpecies(measure.mat, tax.vec) # species missing from the measurements are appended, and will receive a body mass estimate based on their cogeners
 
-	source('~/Dropbox/code/R/dentalMeasurements/src/src_bodyMassEstimation.R', chdir = TRUE)
-	measure.mat <- appendRegressionCategories(measure.mat = measure.mat, regMat=read.csv(file="~/Dropbox/code/R/dentalMeasurements/dat/regressionLabelsJDM.csv"), focal.tax=settings$focal.tax)
+	source('~/Dropbox/Code/R/dentalMeasurements/src/src_bodyMassEstimation.R', chdir = TRUE)
+	measure.mat <- appendRegressionCategories(measure.mat = measure.mat, regMat=read.csv(file="~/Dropbox/Code/R/dentalMeasurements/dat/regressionLabelsJDM.csv"), focal.tax=settings$focal.tax)
 	measure.mat <- approxBodyMass(measure.mat = measure.mat)
 	measure.mat <- measure.mat[is.finite(measure.mat$bodyMass),]		#### clears taxa without body mass estimate
 

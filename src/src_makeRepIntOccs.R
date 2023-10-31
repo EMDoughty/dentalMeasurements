@@ -1,4 +1,4 @@
-source("~/Dropbox/code/R/common_src/strat.R")
+source("~/Dropbox/Code/R/common_src/strat.R")
 ### occs, interval must be global
 
 ################################################################################################################################################
