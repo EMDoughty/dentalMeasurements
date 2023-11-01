@@ -853,29 +853,50 @@ getRegimeList <- function(optList, intervals)
   return(regime.list)
 }
 
-comparePBDB_NOW_collectionDurations <- function()
+comparePBDB_NOW_collectionDurations <- function(occs)
 {
   pbdb_NOW_map <- read.csv("~/Dropbox/Code/R/dentalMeasurements/dat/pbdb_NOW_map.csv")
   NOW_loc_dates <- read.csv("~/Dropbox/Code/R/dentalMeasurements/dat/NOW_loc_dates.csv")
   
+  #remove PBDB rows that are empty
+  pbdb_NOW_map <- pbdb_NOW_map[rowSums(is.na(pbdb_NOW_map)) != ncol(pbdb_NOW_map),]
+  
+  #remove rows without age values
+  NOW_loc_dates <- NOW_loc_dates[!is.na(NOW_loc_dates$MAX_AGE) | !is.na(NOW_loc_dates$MIN_AGE),]
+
+  #some of NOW_loc_dates are in the wrong date column
+  #temp.max <- NOW_loc_dates[NOW_loc_dates$MAX_AGE < NOW_loc_dates$MIN_AGE & is.finite(NOW_loc_dates$MAX_AGE) & is.finite(NOW_loc_dates$MIN_AGE), "MAX_AGE"] 
+  #temp.min <- NOW_loc_dates[NOW_loc_dates$MAX_AGE < NOW_loc_dates$MIN_AGE & is.finite(NOW_loc_dates$MAX_AGE) & is.finite(NOW_loc_dates$MIN_AGE), "MIN_AGE"]
+  
+  #NOW_loc_dates[NOW_loc_dates$MAX_AGE < NOW_loc_dates$MIN_AGE & is.finite(NOW_loc_dates$MAX_AGE) & is.finite(NOW_loc_dates$MIN_AGE), "MAX_AGE"]  <- temp.min
+  #NOW_loc_dates[NOW_loc_dates$MAX_AGE < NOW_loc_dates$MIN_AGE & is.finite(NOW_loc_dates$MAX_AGE) & is.finite(NOW_loc_dates$MIN_AGE), "MIN_AGE"] <- temp.max
+  
+  NOW_loc_dates$MAX_AGE[NOW_loc_dates$MAX_AGE==64.81] <- 63.81	### fixes erroneous date of Pu3/To1 boundary in NOW databasae
+  NOW_loc_dates$MIN_AGE[NOW_loc_dates$MIN_AGE==64.81] <- 63.81	### fixes erroneous date of Pu3/To1 boundary in NOW databasae
+
   NOW_loc_dates$diffNOW <- NOW_loc_dates$MAX_AGE - NOW_loc_dates$MIN_AGE
 
   compareDates <- cbind(pbdb_NOW_map[,c("collection_no", "NOW_loc","early_interval", "late_interval", "max_ma", "min_ma", "diff")],
                         NOW_loc_dates[match(pbdb_NOW_map$NOW_loc, NOW_loc_dates$LOC_SYNONYMS),c(c("BFA_MAX", "BFA_MIN", "MAX_AGE", "MIN_AGE","diffNOW", "CHRON"))])
   
-  par(mfrow = c(1,2))
-  hist(compareDates$diff, breaks = c(seq(-1,25,1)), main = "PBDB Dates", ylim = c(0, 3500), xlab = "Species Duration (Ma)")
-  hist(compareDates$diffNOW, breaks = c(seq(-1,25,1)), main = "NOW Dates", ylim = c(0,3500), xlab = "Species Duration (Ma)")
-  return()
-}
+  #empty rows are present after this step but are not getting removed
+  #compareDates <- compareDates[rowSums(is.na(compareDates)) != ncol(compareDates),]
+  #compareDates <- compareDates[is.na(compareDates$MAX_AGE) | is.na(compareDates$MIN_AGE),] 
 
-swapMax&MinDates <- function(nowDates, max.col = "MAX_AGE", min.col = "MIN_AGE")
-{
-  temp.max <- nowDates[,max.col]
-  temp.min <- nowDates[,min.col]
+  par(mfrow = c(2,2))
+  hist(compareDates$diff, breaks = c(seq(0,25,1)), main = "PBDB Collections and Dates", ylim = c(0, 3500), xlim = c(0,25), xlab = "Collection Duration (Ma)")
+  hist(compareDates$diffNOW, breaks = c(seq(0,25,1)), main = "PBDB Collections and NOW Dates", ylim = c(0,3500), xlim = c(0,25), xlab = "Collection Duration (Ma)")
   
-  nowDates[, min.col] <- temp.max
-  nowDates[, max.col] <- temp.min
+  # how do occurrences change
+  #par(mfrow = c(2,2))
+  hist(occs$max_ma - occs$min_ma, breaks = c(seq(0,30,1)), main = "PBDB Occs and Dates", ylim = c(0, 15000), xlim = c(0,25), xlab = "Occurrence Duration (Ma)")
   
-  return(nowDates)
+  occs$NOW_loc <- getNOWLocalityCodesFromPBDBCollectionNo(occs$collection_no)
+  occs <- data.frame(occs, getNOWDatesMatFromLocCodes(occs$NOW_loc))
+  occs$max_ma[is.finite(occs$MAX_AGE)] <- occs$MAX_AGE[is.finite(occs$MAX_AGE)]
+  occs$min_ma[is.finite(occs$MIN_AGE)] <- occs$MIN_AGE[is.finite(occs$MIN_AGE)]
+  
+  hist(occs$max_ma - occs$min_ma, breaks = c(seq(0,30,1)), main = "PBDB Occs and NOW Dates", ylim = c(0, 25000), xlim = c(0,25), xlab = "Occurrence Duration (Ma)")
+  
+  return()
 }
