@@ -309,7 +309,8 @@ plotSigmasForOneRep <- function(this.rez, intervals) {
 }
 
 plotAllRezListSigmas <- function(rez.list, intervals) {
-	source("https://dl.dropbox.com/s/dozeb8o2pxu4sbj/CzTimescale.R")
+	#source("https://dl.dropbox.com/s/dozeb8o2pxu4sbj/CzTimescale.R")
+  source("~/Dropbox/Code/R/common_src/CzTimescale.R")
 	plot(x=0, xlim=c(55, 0), ylim=c(0,0.15))
 	overlayCzTimescale(do.subepochs=TRUE)
 	sapply(rez.list, plotSigmasForOneRep, intervals=intervals)

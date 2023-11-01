@@ -41,14 +41,14 @@ getBodyMassVectorFromMeasureMatAllMeasures <- function(measure.mat, linked.files
 	if (linked.files) {
 		# reg.list <- list(ruminantia=read.csv("https://dl.dropbox.com/s/dcd0bs1x5v9e7lh/regRuminantia.csv"), perissodactyla=read.csv("https://dl.dropbox.com/s/04k387q7yh4wp9u/regPerissodactyla.csv"), ungulate=read.csv("https://dl.dropbox.com/s/310ayur1s1dc8sl/regAllUngulates.csv"))
 	} else {
-		reg.list <- list(ruminantia=read.csv("~/Dropbox/code/R/dentalMeasurements/dat/regRuminantia.csv"), 
-						perissodactyla=read.csv("~/Dropbox/code/R/dentalMeasurements/dat/regPerissodactyla.csv"), 
-						ungulate=read.csv("~/Dropbox/code/R/dentalMeasurements/dat/regAllUngulates.csv"),
-						DamuthUngulate=read.csv("~/Dropbox/code/R/dentalMeasurements/dat/regAllArchaicUngulates.csv"),
-						DamuthAllSelenodonts=read.csv("~/Dropbox/code/R/dentalMeasurements/dat/regArchaicAllSelenodonts.csv"),
-						DamuthNonSelenodonts=read.csv("~/Dropbox/code/R/dentalMeasurements/dat/regArchaicNonselenodonts.csv"),
-						DamuthSelenodontBrowsers=read.csv("~/Dropbox/code/R/dentalMeasurements/dat/regArchaicSelenodontBrowsers.csv"),
-						DamuthSelenodontNonBrowsers=read.csv("~/Dropbox/code/R/dentalMeasurements/dat/regArchaicSelenodontNonBrowsers.csv"))			
+		reg.list <- list(ruminantia=read.csv("~/Dropbox/Code/R/dentalMeasurements/dat/regRuminantia.csv"), 
+						perissodactyla=read.csv("~/Dropbox/Code/R/dentalMeasurements/dat/regPerissodactyla.csv"), 
+						ungulate=read.csv("~/Dropbox/Code/R/dentalMeasurements/dat/regAllUngulates.csv"),
+						DamuthUngulate=read.csv("~/Dropbox/Code/R/dentalMeasurements/dat/regAllArchaicUngulates.csv"),
+						DamuthAllSelenodonts=read.csv("~/Dropbox/Code/R/dentalMeasurements/dat/regArchaicAllSelenodonts.csv"),
+						DamuthNonSelenodonts=read.csv("~/Dropbox/Code/R/dentalMeasurements/dat/regArchaicNonselenodonts.csv"),
+						DamuthSelenodontBrowsers=read.csv("~/Dropbox/Code/R/dentalMeasurements/dat/regArchaicSelenodontBrowsers.csv"),
+						DamuthSelenodontNonBrowsers=read.csv("~/Dropbox/Code/R/dentalMeasurements/dat/regArchaicSelenodontNonBrowsers.csv"))			
 	}
 	reg.list <- lapply(reg.list, appendStDevToReg)
 	

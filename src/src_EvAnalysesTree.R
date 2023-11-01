@@ -1,4 +1,4 @@
-source('~/Dropbox/code/R/common_src/occFns.R', chdir = TRUE)
+source('~/Dropbox/Code/R/common_src/occFns.R', chdir = TRUE)
 require(phytools)
 
 ####	returns a single tree, dated, resolved, etc.
@@ -452,10 +452,10 @@ getWildcardTrees <- function(wildcard.positions) {
 getTreeFiles <- function() {
   # have if else statements for different computers (PC vs Mac)
   if(Sys.info()["sysname"] == "Darwin"){
-    tree.backbone <- read.nexus("~/Dropbox/code/R/dentalMeasurements/NAUngulata_Trees/BackBoneTrees/2017_3_24_UngulataBackboneTree")
-    clade.definitions <- read.csv("~/Dropbox/code/R/dentalMeasurements/NAUngulata_Trees/2017_3_20_CladeMRCADefinitions.csv", stringsAsFactors = FALSE)
-    wildcard.positions <- read.csv("~/Dropbox/code/R/dentalMeasurements/NAUngulata_Trees/2017_4_17_WildcardDestinations.csv", stringsAsFactors = FALSE)
-    regressCat <- read.csv("~/Dropbox/code/R/dentalMeasurements/dat/regressionLabelsJDM.csv")
+    tree.backbone <- read.nexus("~/Dropbox/Code/R/dentalMeasurements/NAUngulata_Trees/BackBoneTrees/2017_3_24_UngulataBackboneTree")
+    clade.definitions <- read.csv("~/Dropbox/Code/R/dentalMeasurements/NAUngulata_Trees/2017_3_20_CladeMRCADefinitions.csv", stringsAsFactors = FALSE)
+    wildcard.positions <- read.csv("~/Dropbox/Code/R/dentalMeasurements/NAUngulata_Trees/2017_4_17_WildcardDestinations.csv", stringsAsFactors = FALSE)
+    regressCat <- read.csv("~/Dropbox/Code/R/dentalMeasurements/dat/regressionLabelsJDM.csv")
     # setwd('~/Dropbox/ungulate_RA/RCode/Results')
   } else if(Sys.info()["sysname"] == "Windows"){
     #Need way to replace "Van Valkenburgh Lab" in automated fashion

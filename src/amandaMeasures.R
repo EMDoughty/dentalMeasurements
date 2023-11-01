@@ -1,4 +1,4 @@
-source('~/Dropbox/code/R/dentalMeasurements/src/src_dentalDataFns.R', chdir = TRUE)
+source('~/Dropbox/Code/R/dentalMeasurements/src/src_dentalDataFns.R', chdir = TRUE)
 	
 ####################################################################################################################################
 #### read occurrence data
@@ -143,7 +143,8 @@ cor.test(pcaLo$rotation[, pc_v], pcaUp$rotation[, pc_v], method="pearson")
 #### check correlation between PC3 and hypsodonty (horse data)
 ####################################################################################################################################
 
-dat.hyps <- read.csv("~/Desktop/horse_isotopes_2006_all.csv")
+#dat.hyps <- read.csv("~/Desktop/horse_isotopes_2006_all.csv")
+dat.hyps <- read.csv("~/Dropbox/Code/R/dentalMeasurements/dat/horse_isotopes_2006_all.csv")
 names(dat.hyps)[names(dat.hyps)=="species"] <- "sp_name"
 dat.hyps$species <- paste(dat.hyps$Genus, dat.hyps$sp_name, sep="_")
 
@@ -157,7 +158,7 @@ cor.test(dat$HI, dat$PC3, method="spearman")
 #### check correlation between PC3 and hypsodonty (mostly artiodactyl data from Mendoza and Palmquist 2008)
 ####################################################################################################################################
 
-dat.hyps <- read.csv("~/Dropbox/code/common_dat/Mendoza&Palmqvist_2008.csv")
+dat.hyps <- read.csv("~/Dropbox/Code/common_dat/Mendoza&Palmqvist_2008.csv")
 dat.hyps$binomial <- gsub(pattern = " ", replacement = "_", x = dat.hyps$binomial)
 names(dat.hyps)[names(dat.hyps)=="species"] <- "sp_name"
 names(dat.hyps)[names(dat.hyps)=="binomial"] <- "species"

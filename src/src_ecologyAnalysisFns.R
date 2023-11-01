@@ -470,7 +470,7 @@ getTaxaInOneLoc <- function(thisLoc) {
 }
 
 getTaxaInJanisLocs <- function() {
-	locs <- read.csv("~/Dropbox/code/R/amandaTeeth/dat/janis_et_al_2000_Localities.csv")
+	locs <- read.csv("~/Dropbox/Code/R/amandaTeeth/dat/janis_et_al_2000_Localities.csv")
 	locNames <- unique(locs$name)
 	locList <- lapply(locNames, getTaxaInOneLoc)
 	names (locList) <- locNames
@@ -498,7 +498,7 @@ testNewTaxaOneRep <- function (intTaxa, thisVec, test=c("ks", "mw")) {
 }
 
 getHypsodontyFromSample <- function(thisRep) {
-	hyps <- read.csv("~/Dropbox/code/common_dat/hypsodonty.csv", header=TRUE)
+	hyps <- read.csv("~/Dropbox/Code/common_dat/hypsodonty.csv", header=TRUE)
 	hyps$hypsodonty[hyps$hypsodonty=="unknown"] <- NA
 	hyps$hypsodonty <- ordered(hyps$hypsodonty, levels=c("brachydont", "mesodont", "hypsodont"))
 	thisHyps <- sapply(thisRep, FUN=function(x) hyps$hypsodonty[hyps$taxon %in% x])
