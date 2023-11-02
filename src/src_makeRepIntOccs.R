@@ -48,9 +48,9 @@ getRepIntOccsAllReps <- function(settings,
 	} 
 	
 	if (save.to.file) {
-		if(Sys.info()["sysname"] == "Darwin"){
+	#	if(Sys.info()["sysname"] == "Darwin"){
 			save(settings, repIntOccs, file=paste0(file.path, file.name, "_", gsub(pattern=" ", replacement="_", x=date()),".Rdata"))
-		} 
+	#	} 
 		print("**** repIntOccs saved to file...")
 	}
 	print("Done...")
@@ -113,9 +113,9 @@ getRepIntTaxaFromRepIntOccs <- function(repIntOccs,
 	} else repIntTaxa <- lapply(repIntOccs, getIntTaxaFromOneRepIntOccs, settings)
 	
 	if (save.to.file) {
-		if(Sys.info()["sysname"] == "Darwin"){
+	#	if(Sys.info()["sysname"] == "Darwin"){
 			save(settings, repIntTaxa, file=paste0(file.path, file.name, "_rangethrough=", settings$do.rangethrough, "_", gsub(pattern=" ", replacement="_", x=date()),".Rdata"))
-		} 
+	#	} 
 		print("**** repIntTaxa saved to file...")		
 	}
 	if (return.box) return(repIntTaxa)
