@@ -691,31 +691,6 @@ shoulderPlot <- function(measure.mat, plot.y, intervals, occs, bigList, repIntTa
   }
   points(measure.mat[complete.cases(measure.mat[ ,c("FO","LO")]) & measure.mat$FO == measure.mat$LO, c("FO", plot.y)], pch=21, col=alphaColor(specOcc.col, specOcc.alpha), cex=0.25) #this line is not generating the proper output for the final graph due to c("FO","bodyMass") causing a  "undefined columns selected" error
   
-  if(plot.breaks)
-  {
-    if(is.null(manual.breaks))
-    {
-      # optList_bm <- doHandleyTest(thisCounts=apply(countCube, c(1,2), median, na.rm=TRUE), n=med.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)	# based on means
-      # optList_bm <- doHandleyTest(thisCounts=apply(countCube, c(1,2), median, na.rm=TRUE), sig=0.01, do.heuristic=TRUE, do.parallel=do.parallel)	# based on median
-      abline(v=sort(c(intervals[optList_bm_median[[length(optList_bm_median)-1]]$optBreaks,2], range(intervals))), lwd= breaks.lwd, col = break.col) #ranges used to get start and stop of intervals since this method will find them as distinct changes (e.g, nothing to something and vice versa)
-      if(break.text)
-      {
-       # text(x= sort((c(max(intervals), intervals[optList_bm_median[[length(optList_bm_median)-1]]$optBreaks,2]) - 0.35)), y=par()$usr[3] + nudge.break.txt, labels=rev(seq_len(length(optList_bm_median[[length(optList_bm_median)-1]]$optBreaks) + 1)), pos=3, cex= breaks.cex, col=break.col)
-        text(x= sort((c(max(intervals), intervals[optList_bm_median[[length(optList_bm_median)-1]]$optBreaks,2]) - 0.35)), y=par()$usr[3] + nudge.break.txt, labels= paste(sort(c(max(intervals), intervals[optList_bm_median[[length(optList_bm_median)-1]]$optBreaks,2])), "Ma"), adj=c(0,0),cex= breaks.cex, col=break.col)
-      }
-    }
-    
-    if(!is.null(manual.breaks))
-    {
-      abline(v= manual.breaks, lwd= breaks.lwd, col = break.col)
-      if(break.text)
-      {
-      #  text(x= manual.breaks - 0.35, y=par()$usr[3] + nudge.break.txt, labels= manual.breaks, pos=3, cex= breaks.cex, col = break.col)
-        text(x= manual.breaks - 0.35, y=par()$usr[3] + nudge.break.txt, labels= paste(manual.breaks, "Ma"), adj=c(0,0), cex= breaks.cex, col = break.col)
-      }
-    }
-  }
-  
   if(do.quants)
   {
     #make function to run Handley method and run the quants
@@ -727,6 +702,31 @@ shoulderPlot <- function(measure.mat, plot.y, intervals, occs, bigList, repIntTa
     points(rowMeans(intervals), quants[3,], col=alphaColor(median.col[3], 0.5), cex=0.5)
     box(lwd=1)
   }
+  
+  if(plot.breaks)
+  {
+    if(is.null(manual.breaks))
+    {
+      # optList_bm <- doHandleyTest(thisCounts=apply(countCube, c(1,2), median, na.rm=TRUE), n=med.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)	# based on means
+      # optList_bm <- doHandleyTest(thisCounts=apply(countCube, c(1,2), median, na.rm=TRUE), sig=0.01, do.heuristic=TRUE, do.parallel=do.parallel)	# based on median
+      abline(v=sort(c(intervals[optList_bm_median[[length(optList_bm_median)-1]]$optBreaks,2], range(intervals))), lwd= breaks.lwd, col = break.col) #ranges used to get start and stop of intervals since this method will find them as distinct changes (e.g, nothing to something and vice versa)
+      if(break.text)
+      {
+        # text(x= sort((c(max(intervals), intervals[optList_bm_median[[length(optList_bm_median)-1]]$optBreaks,2]) - 0.35)), y=par()$usr[3] + nudge.break.txt, labels=rev(seq_len(length(optList_bm_median[[length(optList_bm_median)-1]]$optBreaks) + 1)), pos=3, cex= breaks.cex, col=break.col)
+        text(x= sort((c(max(intervals), intervals[optList_bm_median[[length(optList_bm_median)-1]]$optBreaks,2]) - 0.35)), y=par()$usr[3] + nudge.break.txt, labels= paste(sort(c(max(intervals), intervals[optList_bm_median[[length(optList_bm_median)-1]]$optBreaks,2])), "Ma"), adj=c(0,0),cex= breaks.cex, col=break.col)
+      }
+    }
+    
+    if(!is.null(manual.breaks))
+    {
+      abline(v= manual.breaks, lwd= breaks.lwd, col = break.col)
+      if(break.text)
+      {
+        #  text(x= manual.breaks - 0.35, y=par()$usr[3] + nudge.break.txt, labels= manual.breaks, pos=3, cex= breaks.cex, col = break.col)
+        text(x= manual.breaks - 0.35, y=par()$usr[3] + nudge.break.txt, labels= paste(manual.breaks, "Ma"), adj=c(0,0), cex= breaks.cex, col = break.col)
+      }
+    }
+  }
 }
 
 
@@ -735,11 +735,13 @@ plotRegimeBoxplot <- function(optList, prop, intervals, settings,
                               plot.legend = TRUE, legend.lwd = 5, legend.cex = 1, legend.seg.len = 1)
 {
   require(stringr)
-  
+ 
   regime.list <- getRegimeList(optList = optList, intervals = intervals)
   
+  if(length(ylim) < 2 & ylim[1] %in% "rounded") ylim <- c(0, round(max(unlist(lapply(regime.list, function(x) max(prop[x,]))))/5)*5)
+  
   par(mfrow = c(1,length(regime.list)),
-      oma = c(2,3,0,0), mar = c(2,1,2,2))
+      oma = c(3,3,0,0), mar = c(2,1,2,2))
   for(xx in seq_len(length(regime.list)))
   {
     boxplot(prop[regime.list[[xx]],], 
@@ -776,8 +778,10 @@ plotRegimeBarplot <- function(optList, prop, intervals, settings,
   
   regime.list <- getRegimeList(optList = optList, intervals = intervals)
     
+  if(length(ylim) < 2 & ylim[1] %in% "rounded") ylim <- c(0, round(max(unlist(lapply(regime.list, function(x) max(prop[x,]))))/5)*5)
+  
   par(mfrow = c(1,length(regime.list)),
-        oma = c(2,3,0,0), mar = c(2,1,2,2))
+        oma = c(3,3,0,0), mar = c(2,1,2,2))
   for(xx in seq_len(length(regime.list)))
   {
     barplot(height =  apply(prop[regime.list[[xx]],], c(2), median, na.rm = TRUE),
@@ -813,6 +817,16 @@ netChangeBarplot <- function(optList, prop, intervals, settings,
   require(stringr)
   
   regime.list <- getRegimeList(optList = optList, intervals = intervals)
+  
+  if(length(ylim) < 2 & ylim[1] %in% "rounded")
+  {
+    temp.test <- list()                                                                                                         
+    for(xx in seq_len(length(regime.list)-1))
+    {
+      temp.test[[xx]] <- apply(prop[regime.list[[xx+1]],], c(2), median, na.rm = TRUE) - apply(prop[regime.list[[xx]],], c(2), median, na.rm = TRUE)
+    }
+    ylim <- c(round(min(unlist(temp.test))/5)*5, round(max(unlist(temp.test)/5))*5)
+  }
   
   par(mfrow = c(1,length(optList[[length(optList)-1]]$optBreaks)),
       oma = c(2,3,0,0), mar = c(2,1,2,2))
