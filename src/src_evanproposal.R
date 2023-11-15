@@ -603,7 +603,8 @@ traitHandley <- function(countCube,
     countBox <- apply(countCube, c(1,2), quantile, probs=c(0.025, 0.5, 0.975), na.rm=TRUE)
     
     start.test <- Sys.time()
-    optList_bm_median <- doHandleyTest(thisCounts = t(countBox[2,,]), n=nrow(measure.mat), do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel = do.parallel, this.cores = this.cores)
+    optList_bm_median <- doHandleyTest(thisCounts = t(countBox[2,,]), n=nrow(measure.mat), do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel = do.parallel, this.cores = this.cores, 
+                                       objectSize.filepath = paste0(file.path, "objectFileSize.txt"))
     end.test <- Sys.time()
     print(end.test - start.test)
     beep(3)
@@ -915,3 +916,16 @@ comparePBDB_NOW_collectionDurations <- function(occs)
   
   return()
 }
+
+writeObjectSizeToFile <- function(nrates, object, object_name, file.path)
+{
+  #check if file has been created if not begin it
+  write(paste0(quote(nrates), ":", nrates," ", object_name,":", format(object.size(object), units = "auto", standard = "SI")), file = file.path, append = TRUE)
+  
+  return()
+}
+  
+  
+  
+  
+  

@@ -407,7 +407,7 @@ getHeuristicBreaklist <- function(n.intv, oldIntBreaks, extra.intvs=1) {
 	unique(master.break.list)
 }
 
-doHandleyTest <- function(thisCounts, n, use.LRT=FALSE, sig=0.01, do.heuristic=TRUE, extra.intvs=0, do.parallel=FALSE, this.cores=NULL) {
+doHandleyTest <- function(thisCounts, n, use.LRT=FALSE, sig=0.01, do.heuristic=TRUE, extra.intvs=0, do.parallel=FALSE, this.cores=NULL, objectSize.filepath = NULL) {
 	if (do.parallel) {
 		require(parallel)
 		if (is.null(this.cores)) this.cores <- detectCores() - 2
@@ -438,14 +438,14 @@ doHandleyTest <- function(thisCounts, n, use.LRT=FALSE, sig=0.01, do.heuristic=T
 			# breakList <- sample(breakList, size=length(breakList))	#randomly reorders breakList to avoid solidifying the "early" breaks
 		} else breakList <- combn(x=nrow(intervals), m=nrates-1, simplify=FALSE)
 
-		print(object.size(breakList), units = "auto", standard = "SI")
+		if(!is.null(objectSize.filepath)) writeObjectSizeToFile(nrates = nrates, object = breakList, object_name = "breakList", file.path = objectSize.filepath)
 		
 		# if (do.parallel) { lnL <- simplify2array(mclapply(X=breakList, FUN=getLikelihoodOneSetIntBreaks_heuristic, oldIntBreaks=oldIntBreaks, thisCounts=thisCounts, mc.cores=detectCores()-2))
 		# } else lnL <- sapply(X=breakList, FUN=getLikelihoodOneSetIntBreaks_heuristic, oldIntBreaks=oldIntBreaks, thisCounts=thisCounts)
 		if (do.parallel) { lnL <- simplify2array(mclapply(X=breakList, FUN=getLikelihoodOneSetIntBreaks, thisCounts=thisCounts, mc.cores=this.cores))
 		} else lnL <- sapply(X=breakList, FUN=getLikelihoodOneSetIntBreaks, thisCounts=thisCounts)
 		
-		print(object.size(lnL), units = "auto", standard = "SI")
+		if(!is.null(objectSize.filepath)) writeObjectSizeToFile(nrates = nrates, lnL, "lnL", file.path = objectSize.filepath)
 		# for (this.break in seq_along(breakList)) print(getLikelihoodOneSetIntBreaks_heuristic(newBreak=breakList[this.break], thisCounts=thisCounts))
 		# for (this.break in seq_along(breakList)) print(getLikelihoodOneSetIntBreaks(intBreaks=breakList[[this.break]], thisCounts=thisCounts))
 
@@ -460,7 +460,7 @@ doHandleyTest <- function(thisCounts, n, use.LRT=FALSE, sig=0.01, do.heuristic=T
 								  k=k,
 								  n=n)
 
-		print(object.size(optList), units = "auto", standard = "SI")
+		if(!is.null(objectSize.filepath)) writeObjectSizeToFile(nrates = nrates, optList, "optList", file.path = objectSize.filepath)
 		
 		if (use.LRT) { if (pchisq(q=(2 * (optList[[nrates]]$optlnL - optList[[nrates-1]]$optlnL)), df=n.hist.classes, lower.tail=FALSE) >= sig) flag=TRUE
 		} else if (optList[[nrates]]$AICc > optList[[nrates - 1]]$AICc) flag=TRUE
