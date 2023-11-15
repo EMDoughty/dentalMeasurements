@@ -370,7 +370,8 @@ getTaxonomyForOneBaseTaxon_AcceptedName <- function(this.taxon)
   this.names[,c("phylum", "class", "order", "family", "genus", "accepted_name","taxon_name")]
 }
 
-correl.scatter.plot <- function(prop1, prop2, point.labels, 
+correl.scatter.plot <- function(prop1, prop2, point.labels,
+                                mar = c(2,2,1,1), oma = c(2,4,4,2),
                                 axis.lims = FALSE, xlim = NULL, xlim.nudge = c(0,0), ylim = NULL, ylim.nudge=c(0,0),
                                 col = alphaColor(rev(COL2("RdYlBu", n = length(prop1[,yy]))), alpha = 1),
                                 plot.single.correl = NULL)
@@ -390,7 +391,7 @@ correl.scatter.plot <- function(prop1, prop2, point.labels,
     for.yy <- seq_len(ncol(prop1))
   }
   
-  par(mfrow = c(par.mfrow.rows,par.mfrow.cols), mar = c(2,2,1,1), oma = c(2,4,4,2))
+  par(mfrow = c(par.mfrow.rows,par.mfrow.cols), mar = mar, oma = oma)
   for(xx in for.xx)
   {
     for(yy in for.yy)
@@ -549,7 +550,7 @@ taxHandley <- function(repIntTaxa,
     dimnames(taxCube) <- list(unique(bigList$family), rownames(intervals), NULL)
     #med.n <- median(sapply(repIntTaxa, function(x) length(unique(unlist(sapply(x, function(y) y))))))
     med.n <- nrow(measure.mat)
-    optList_tax_median <- doHandleyTest(thisCounts=apply(taxCube, c(1,2), median, na.rm=TRUE), n=med.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)	
+    optList_tax_median <- doHandleyTest(thisCounts=apply(taxCube, c(1,2), median, na.rm=TRUE), n=med.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel, this.cores = this.cores)	
     
     if(do.save)
     {
@@ -563,7 +564,7 @@ taxHandley <- function(repIntTaxa,
     for (this.rep in seq_len(reps)) {
      # taxCube <- sapply(repIntTaxa, function(y) sapply(y, function(x) tabulate(match(bigList$family[as.character(bigList$accepted_name) %in% x], shortFam), nbins=length(shortFam)), simplify="array"), simplify="array") #duplicate code, can be removed if taxcube is made above
       this.n <- length(unique(unlist(sapply(repIntTaxa[[this.rep]], function(x) x))))
-      optList_tax_allReps[[this.rep]] <- doHandleyTest(taxCube[,,this.rep], n=this.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel)	
+      optList_tax_allReps[[this.rep]] <- doHandleyTest(taxCube[,,this.rep], n=this.n, sig=0.01, do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel=do.parallel, this.cores = this.cores)	
       if(this.rep %% run.update == 0) cat("Taxonomic Handley Rep:", this.rep, "\n")
     }
     
@@ -602,7 +603,7 @@ traitHandley <- function(countCube,
     countBox <- apply(countCube, c(1,2), quantile, probs=c(0.025, 0.5, 0.975), na.rm=TRUE)
     
     start.test <- Sys.time()
-    optList_bm_median <- doHandleyTest(thisCounts = t(countBox[2,,]), n=nrow(measure.mat), do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel = TRUE, this.cores = this.cores)
+    optList_bm_median <- doHandleyTest(thisCounts = t(countBox[2,,]), n=nrow(measure.mat), do.heuristic=do.heuristic, extra.intvs=extra.intvs, do.parallel = do.parallel, this.cores = this.cores)
     end.test <- Sys.time()
     print(end.test - start.test)
     beep(3)

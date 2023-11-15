@@ -438,10 +438,14 @@ doHandleyTest <- function(thisCounts, n, use.LRT=FALSE, sig=0.01, do.heuristic=T
 			# breakList <- sample(breakList, size=length(breakList))	#randomly reorders breakList to avoid solidifying the "early" breaks
 		} else breakList <- combn(x=nrow(intervals), m=nrates-1, simplify=FALSE)
 
+		print(object.size(breakList), units = "auto", standard = "SI")
+		
 		# if (do.parallel) { lnL <- simplify2array(mclapply(X=breakList, FUN=getLikelihoodOneSetIntBreaks_heuristic, oldIntBreaks=oldIntBreaks, thisCounts=thisCounts, mc.cores=detectCores()-2))
 		# } else lnL <- sapply(X=breakList, FUN=getLikelihoodOneSetIntBreaks_heuristic, oldIntBreaks=oldIntBreaks, thisCounts=thisCounts)
 		if (do.parallel) { lnL <- simplify2array(mclapply(X=breakList, FUN=getLikelihoodOneSetIntBreaks, thisCounts=thisCounts, mc.cores=this.cores))
 		} else lnL <- sapply(X=breakList, FUN=getLikelihoodOneSetIntBreaks, thisCounts=thisCounts)
+		
+		print(object.size(lnL), units = "auto", standard = "SI")
 		# for (this.break in seq_along(breakList)) print(getLikelihoodOneSetIntBreaks_heuristic(newBreak=breakList[this.break], thisCounts=thisCounts))
 		# for (this.break in seq_along(breakList)) print(getLikelihoodOneSetIntBreaks(intBreaks=breakList[[this.break]], thisCounts=thisCounts))
 
@@ -456,6 +460,8 @@ doHandleyTest <- function(thisCounts, n, use.LRT=FALSE, sig=0.01, do.heuristic=T
 								  k=k,
 								  n=n)
 
+		print(object.size(optList), units = "auto", standard = "SI")
+		
 		if (use.LRT) { if (pchisq(q=(2 * (optList[[nrates]]$optlnL - optList[[nrates-1]]$optlnL)), df=n.hist.classes, lower.tail=FALSE) >= sig) flag=TRUE
 		} else if (optList[[nrates]]$AICc > optList[[nrates - 1]]$AICc) flag=TRUE
 					
