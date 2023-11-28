@@ -119,7 +119,7 @@ data.coverage <- function(clades, clade.level = "family", clade.ranked = TRUE, d
   return(output.list)
 }
 
-getCorrelationPlot <- function(prop1, prop2, mar = c(0,0,0,0), cl.pos = NULL, tl.pos = c("lt"), sig.level = c(0.001, 0.01, 0.05), insig = 'label_sig')
+getCorrelationPlot <- function(prop1, prop2, mar = c(0,0,0,0), cl.pos = NULL, tl.pos = c("lt"), sig.level = c(0.001, 0.01, 0.05), insig = 'label_sig', number.digits = 3)
 {
   corr.results.both <- cor.p <- matrix(nrow = ncol(prop1), ncol= ncol(prop2)) 
   dimnames(corr.results.both) <- dimnames(cor.p) <- list(colnames(prop1), colnames(prop2))
@@ -137,13 +137,13 @@ getCorrelationPlot <- function(prop1, prop2, mar = c(0,0,0,0), cl.pos = NULL, tl
   }
   
   corrplot::corrplot(corr.results.both,  mar = mar, p.mat = cor.p,
-                     cl.align.text = 'l', cl.pos = cl.pos,
+                     cl.align.text = 'l', cl.pos = cl.pos, cl.cex = 1,
                      #addCoef.col = 'black',
                      addgrid.col = 'black',
                      method = "color",
                      na.label = "-",
-                     sig.level = sig.level, insig = insig, 
-                     pch.cex = 1,
+                     sig.level = sig.level, insig = insig, number.digits = number.digits,
+                     pch.cex = 1, number.cex = 1,
                      tl.pos = tl.pos, tl.offset = 1, tl.cex = 1) -> p1
   
   return(list(correl.coef = corr.results.both, p_value = cor.p))
