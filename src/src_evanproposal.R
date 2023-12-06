@@ -119,16 +119,19 @@ data.coverage <- function(clades, clade.level = "family", clade.ranked = TRUE, d
   return(output.list)
 }
 
-getCorrelationPlot <- function(prop1, prop2, mar = c(0,0,0,0), cl.pos = NULL, tl.pos = c("lt"), sig.level = c(0.001, 0.01, 0.05), insig = 'label_sig', number.digits = 3)
+getCorrelationPlot <- function(prop1, prop2, correlation.type = "spearman",mar = c(0,0,0,0), cl.pos = NULL, tl.pos = c("lt"), sig.level = c(0.001, 0.01, 0.05), insig = 'label_sig', number.digits = 3)
 {
   corr.results.both <- cor.p <- matrix(nrow = ncol(prop1), ncol= ncol(prop2)) 
   dimnames(corr.results.both) <- dimnames(cor.p) <- list(colnames(prop1), colnames(prop2))
   
+  if(correlation.type == "pearson") finite.obs <- 3
+  if(correlation.type == "spearman") finite.obs <- 2
+  
   for (xx in seq_len(ncol(prop1))) {
     for (yy in seq_len(ncol(prop2))) {
-      if(sum(complete.cases(prop1[,xx], prop2[,yy]), na.rm = TRUE) < 2) { corr.results.both[xx,yy]  <- NA } else {
+      if(sum(complete.cases(prop1[,xx], prop2[,yy]), na.rm = TRUE) < finite.obs) { corr.results.both[xx,yy]  <- NA } else {
         
-        corr.results.temp <- cor.test(prop1[,xx], prop2[,yy], method = "spearman")
+        corr.results.temp <- cor.test(prop1[,xx], prop2[,yy], method = correlation.type)
         
         corr.results.both[xx,yy] <- corr.results.temp$estimate
         cor.p[xx,yy] <- corr.results.temp$p.value
