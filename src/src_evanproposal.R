@@ -119,7 +119,7 @@ data.coverage <- function(clades, clade.level = "family", clade.ranked = TRUE, d
   return(output.list)
 }
 
-getCorrelationPlot <- function(prop1, prop2, correlation.type = "spearman",mar = c(0,0,0,0), cl.pos = NULL, tl.pos = c("lt"), sig.level = c(0.001, 0.01, 0.05), insig = 'label_sig', number.digits = 3)
+getCorrelationPlot <- function(prop1, prop2, correlation.type = "spearman",mar = c(0,0,0,0), cl.pos = NULL, tl.pos = c("lt"), sig.level = c(0.001, 0.01, 0.05), insig = 'label_sig', number.digits = 3, p_val_correct_type = FALSE, p_val_correct_ntest = NULL)
 {
   corr.results.both <- cor.p <- matrix(nrow = ncol(prop1), ncol= ncol(prop2)) 
   dimnames(corr.results.both) <- dimnames(cor.p) <- list(colnames(prop1), colnames(prop2))
@@ -137,6 +137,11 @@ getCorrelationPlot <- function(prop1, prop2, correlation.type = "spearman",mar =
         cor.p[xx,yy] <- corr.results.temp$p.value
       }
     }
+  }
+  
+  if(p_val_correct_type == "bonferroni") 
+  {
+    if(is.null(p_val_correct_ntest)) cor.p <- cor.p*(ncol(prop1)*ncol(prop2)) else cor.p <- cor.p*(p_val_correct_ntest)
   }
   
   corrplot::corrplot(corr.results.both,  mar = mar, p.mat = cor.p,
@@ -928,7 +933,47 @@ writeObjectSizeToFile <- function(nrates, object, object_name, file.path)
   return()
 }
   
+generatePyrateAnalysisCode <- function(filepathname, python.version = 3,
+                                       iter.num = 10000000, sample.freq = 1000,
+                                       main.algorithm = "RJMCMC", #""
+                                       preserv.model = "NHPP", epoch.boundary.file, TPPgamma.dist = c(1.5,1.5),
+                                       Gamma.Model = FALSE, save.per.lin.rates = FALSE,
+                                       check.rep = NULL)
   
+{
+  pythonscript <- paste0("python", python.version," PyRate.py ", filepathname)
+  
+  if(main.algorithm == "BDMCMC") {main.al.out <- " -A 2"} else {main.al.out <- ""}
+  pythonscript <- paste0(pythonscript, main.al.out)
+  
+  pythonscript <- paste0(pythonscript, " -n ", format(iter.num, scientific = F), " -s ", format(sample.freq, scientific = F))
+  
+  if(preserv.model == "HPP") {pres.mod.out <- " -mHPP"} else if(preserv.model == "TPP") {pres.mod.out <- paste0(" -qShift ",epoch.boundary.file, " -pP ", TPPgamma.dist[1], " ", TPPgamma.dist[2])} else {pres.mod.out <- ""}
+  pythonscript <- paste0(pythonscript, pres.mod.out)
+  
+  if(Gamma.Model) pythonscript <- paste0(pythonscript, " -mG")
+  
+  if(save.per.lin.rates) pythonscript <- paste0(pythonscript, " -log_sp_q_rates")
+  
+  if(!is.null(check.rep)) pythonscript <- paste0(pythonscript, " -j ", check.rep)
+  
+  return(pythonscript)
+}
+
+generatePyratePlotCode <- function(filepathname, python.version = 3,
+                                   iter.num = 10000000, sample.freq = 1000,
+                                   main.algorithm = "RJMCMC", #""
+                                   preserv.model = "NHPP", epoch.boundary.file, TPPgamma.dist = c(1.5,1.5),
+                                   Gamma.Model = FALSE, save.per.lin.rates = FALSE,
+                                   check.rep = NULL)
+  
+{
+  pythonscript <- paste0("python", python.version," PyRate.py ", filepathname)
+  
+  #work in progress
+  
+  return(pythonscript)
+}
   
   
   
