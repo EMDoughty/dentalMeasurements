@@ -554,7 +554,7 @@ taxHandley <- function(repIntTaxa,
     
 #   taxCube <- sapply(repIntTaxa, function(y) sapply(y, function(x) tabulate(bin=as.factor(bigList$family[as.character(bigList$accepted_name) %in% x]), nbins=length(bigList$family)), simplify="array"), simplify="array")
     
-    
+    if(dim(taxCube)[2] != nrow(intervals)) taxCube <- taxCube[,dimnames(taxCube)[[2]] %in% rownames(intervals),]
     dimnames(taxCube) <- list(unique(bigList$family), rownames(intervals), NULL)
     #med.n <- median(sapply(repIntTaxa, function(x) length(unique(unlist(sapply(x, function(y) y))))))
     med.n <- nrow(measure.mat)
