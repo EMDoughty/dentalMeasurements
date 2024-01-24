@@ -663,12 +663,12 @@ traitHandley <- function(countCube,
 }
 
 shoulderPlot <- function(measure.mat, plot.y, intervals, occs, bigList, repIntTaxa = NULL, optList_bm_median = NULL, quants = NULL, this.rank = settings$this.rank,
-                         main = NULL, ylab = NULL, ylim = NULL, yaxp = NULL, yaxt = "s", xlab = NULL, xlim = NULL, xaxp = c(55,5,10), xaxt = "s", cex.axis = 1.5, cex.lab = 1.5, 
+                         main = NULL, ylab = NULL, ylim = NULL, yaxp = NULL, yaxs = "i", yaxt = "s", xlab = NULL, xlim = NULL, xaxp = c(55,5,10), xaxs = "i", xaxt = "s", cex.axis = 1.5, cex.lab = 1.5,
                          col.axis = "black", col.lab = "black",
                          specOcc.col = "gray0", specOcc.alpha = 0.5,
                          plot.breaks = FALSE, manual.breaks = NULL, break.text = TRUE, break.col = "firebrick4", breaks.lwd = 1.5, breaks.cex = 0.5, nudge.break.txt = 0,
-                         do.subepochs=TRUE, overlay.labels = FALSE, overlay.color=TRUE, thisAlpha.intervals=0.33, thisAlpha.text = 0.33, borderCol="white", invertTime=FALSE, scale.cex=0.75, scale.headers = 0.95, text.offset = 0.025,
-                         do.quants = FALSE, poly.col = "darkorange4", median.col = c("goldenrod1", "darkorange4", "darkorange1"))
+                         do.subepochs=TRUE, overlay.labels = FALSE, overlay.color=TRUE, thisAlpha.intervals=0.33, thisAlpha.text = 0.33, borderCol="black", invertTime=FALSE, scale.cex=0.75, scale.headers = 0.95, text.offset = 0.025,
+                         do.quants = FALSE, poly.col = "darkorange4", median.col = c("goldenrod1", "darkorange4", "darkorange1"), poly.alpha = 0.25, median.alpha = 0.5)
 {
   
   #for later versions make plot.x so user can define x axis but for now keep as $FO
@@ -680,7 +680,7 @@ shoulderPlot <- function(measure.mat, plot.y, intervals, occs, bigList, repIntTa
   # quartz(width=12, height=6)
   if(is.null(xlim)) xlim <- c(max(intervals), min(intervals))
   
-  plot(measure.mat$FO, measure.mat[,plot.y], type="n", xlim= xlim, xaxp = xaxp, xaxt = xaxt, xlab = xlab, ylim=ylim, yaxp = yaxp, yaxt = yaxt, ylab = ylab, main = main, cex.axis = cex.axis, cex.lab = cex.lab, col.axis = col.axis, col.lab = col.lab)
+  plot(measure.mat$FO, measure.mat[,plot.y], type="n", xlim= xlim, xaxp = xaxp, xaxs = xaxs, xaxt = xaxt, xlab = xlab, ylim=ylim, yaxp = yaxp, yaxs = yaxs, yaxt = yaxt, ylab = ylab, main = main, cex.axis = cex.axis, cex.lab = cex.lab, col.axis = col.axis, col.lab = col.lab)
   # plot(measure.mat$FO, measure.mat$bodyMass, xlim=c(max(intervals), min(intervals)), type="n", ylab="log-Body Mass (kg)", xaxp =c(50,0,5), xlab="Time (Ma)", cex.axis=1, cex.lab=1, col="gray75", fg="gray75", bg="gray75", col.axis="gray75", col.lab="gray75") #alter xaxpto change x-axis values
   # rect(-10e6, -10e6, 10e6, 10e6, col="white")
   overlayCzTimescale(do.subepochs= do.subepochs, color = overlay.color, thisAlpha.text = thisAlpha.text, thisAlpha.intervals = thisAlpha.intervals, borderCol = borderCol, invertTime = invertTime, scale.cex = scale.cex, scale.headers = scale.headers, text.offset = text.offset)
@@ -705,11 +705,11 @@ shoulderPlot <- function(measure.mat, plot.y, intervals, occs, bigList, repIntTa
   {
     #make function to run Handley method and run the quants
     if(is.null(quants)) quants <- apply(sapply(repIntTaxa, function(y) sapply(y, function(x) quantile(measure.mat[x,plot.y], probs=c(0, 0.25, 0.5, 0.75, 1.0), na.rm=TRUE)), simplify = "array"), c(1,2), median, na.rm=TRUE)
-    polygon(c(rowMeans(intervals), rev(rowMeans(intervals))), c(quants[1,], rev(quants[5,])), col=alphaColor(poly.col, 0.25), border=poly.col)
-    polygon(c(rowMeans(intervals), rev(rowMeans(intervals))), c(quants[2,], rev(quants[4,])), col=alphaColor(poly.col, 0.25), border=poly.col)
-    lines(rowMeans(intervals), quants[3,], col=alphaColor(median.col[1], 0.5), lwd=5)
+    polygon(c(rowMeans(intervals), rev(rowMeans(intervals))), c(quants[1,], rev(quants[5,])), col=alphaColor(poly.col, poly.alpha), border=poly.col)
+    polygon(c(rowMeans(intervals), rev(rowMeans(intervals))), c(quants[2,], rev(quants[4,])), col=alphaColor(poly.col, poly.alpha), border=poly.col)
+    lines(rowMeans(intervals), quants[3,], col=alphaColor(median.col[1], median.alpha), lwd=5)
     lines(rowMeans(intervals), quants[3,], col=alphaColor(median.col[2], 1.0), lwd=3)
-    points(rowMeans(intervals), quants[3,], col=alphaColor(median.col[3], 0.5), cex=0.5)
+    points(rowMeans(intervals), quants[3,], col=alphaColor(median.col[3], median.alpha), cex=0.5)
     box(lwd=1)
   }
   
@@ -741,7 +741,8 @@ shoulderPlot <- function(measure.mat, plot.y, intervals, occs, bigList, repIntTa
 
 
 plotRegimeBoxplot <- function(optList, prop, intervals, settings,
-                              ylab = "Species Richness", ylim = NULL,
+                              use_par = TRUE,
+                              ylab = "Species Richness", ylim = NULL, yaxt = "n", axis.at = NULL,
                               plot.legend = TRUE, legend.lwd = 5, legend.cex = 1, legend.seg.len = 1)
 {
   require(stringr)
@@ -750,13 +751,19 @@ plotRegimeBoxplot <- function(optList, prop, intervals, settings,
   
   if(length(ylim) < 2 & ylim[1] %in% "rounded") ylim <- c(0, round(max(unlist(lapply(regime.list, function(x) max(prop[x,]))))/5)*5)
   
-  par(mfrow = c(1,length(regime.list)),
+  if(!is.null(use_par))
+  {
+    par(mfrow = c(1,length(regime.list)),
       oma = c(3,3,0,0), mar = c(2,1,2,2))
+  }
   for(xx in seq_len(length(regime.list)))
   {
-    boxplot(prop[regime.list[[xx]],], 
-            ylab = ylab, ylim = ylim, xaxt = "n", 
-            col = rainbow(ncol(prop)))
+      boxplot(prop[regime.list[[xx]],], 
+              ylab = ylab, ylim = ylim, xaxt = "n", yaxt = yaxt,
+              col = rainbow(ncol(prop)))
+     if(yaxt == "n" & xx == 1) axis(side = 2, at = axis.at, labels = TRUE)
+     if(yaxt == "n" & xx != 1) axis(side = 2, at = axis.at, labels = FALSE)
+    
     if(xx == 1) 
     {
       mtext(paste0(">", intervals[optList[[length(optList)-1]]$optBreaks[xx],2], " Ma"), line = 0.75)
@@ -774,9 +781,12 @@ plotRegimeBoxplot <- function(optList, prop, intervals, settings,
       mtext(paste0(" Median ", str_to_title(settings$this.rank)," Richness"), line = 2.5, side = 2)
     }
   }
-  par(fig = c(0, 1, 0, 1), oma = c(1, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
-  plot(0, 0, type = 'l', bty = 'n', xaxt = 'n', yaxt = 'n')
-  legend('bottom', y = 1, legend = colnames(prop), title = "Body Mass (kg)", col = rainbow(ncol(prop)), lwd = legend.lwd, xpd = TRUE, horiz = TRUE, cex = legend.cex, seg.len = legend.seg.len, bty = 'n')         
+  if(plot.legend)
+  {
+    par(fig = c(0, 1, 0, 1), oma = c(1, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+    plot(0, 0, type = 'l', bty = 'n', xaxt = 'n', yaxt = 'n')
+    legend('bottom', y = 1, legend = colnames(prop), title = "Body Mass (kg)", col = rainbow(ncol(prop)), lwd = legend.lwd, xpd = TRUE, horiz = TRUE, cex = legend.cex, seg.len = legend.seg.len, bty = 'n')         
+  }
 } 
 
 
@@ -814,9 +824,12 @@ plotRegimeBarplot <- function(optList, prop, intervals, settings,
       mtext(paste0(" Median ", str_to_title(settings$this.rank)," Richness"), line = 2.5, side = 2)
     }
   }
-  par(fig = c(0, 1, 0, 1), oma = c(1, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
-  plot(0, 0, type = 'l', bty = 'n', xaxt = 'n', yaxt = 'n')
-  legend('bottom', y = 1, legend = colnames(prop), title = "Body Mass (kg)", col = rainbow(ncol(prop)), lwd = legend.lwd, xpd = TRUE, horiz = TRUE, cex = legend.cex, seg.len = legend.seg.len, bty = 'n')         
+  if(plot.legend)
+  {
+    par(fig = c(0, 1, 0, 1), oma = c(1, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+    plot(0, 0, type = 'l', bty = 'n', xaxt = 'n', yaxt = 'n')
+    legend('bottom', y = 1, legend = colnames(prop), title = "Body Mass (kg)", col = rainbow(ncol(prop)), lwd = legend.lwd, xpd = TRUE, horiz = TRUE, cex = legend.cex, seg.len = legend.seg.len, bty = 'n')         
+  }
 } 
   
 
@@ -851,9 +864,12 @@ netChangeBarplot <- function(optList, prop, intervals, settings,
       mtext(paste0("\u394", " Median ", str_to_title(settings$this.rank)," Richness"), line = 2.5, side = 2)
     }
   }
-  par(fig = c(0, 1, 0, 1), oma = c(1, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
-  plot(0, 0, type = 'l', bty = 'n', xaxt = 'n', yaxt = 'n')
-  legend('bottom', y = 1, legend = colnames(prop), title = "Body Mass (kg)", col = rainbow(ncol(prop)), lwd = legend.lwd, xpd = TRUE, horiz = TRUE, cex = legend.cex, seg.len = legend.seg.len, bty = 'n')         
+  if(plot.legend)
+  {
+    par(fig = c(0, 1, 0, 1), oma = c(1, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+    plot(0, 0, type = 'l', bty = 'n', xaxt = 'n', yaxt = 'n')
+    legend('bottom', y = 1, legend = colnames(prop), title = "Body Mass (kg)", col = rainbow(ncol(prop)), lwd = legend.lwd, xpd = TRUE, horiz = TRUE, cex = legend.cex, seg.len = legend.seg.len, bty = 'n')         
+  }
 }
 
 getRegimeList <- function(optList, intervals)
@@ -894,9 +910,9 @@ comparePBDB_NOW_collectionDurations <- function(occs)
   
   #NOW_loc_dates[NOW_loc_dates$MAX_AGE < NOW_loc_dates$MIN_AGE & is.finite(NOW_loc_dates$MAX_AGE) & is.finite(NOW_loc_dates$MIN_AGE), "MAX_AGE"]  <- temp.min
   #NOW_loc_dates[NOW_loc_dates$MAX_AGE < NOW_loc_dates$MIN_AGE & is.finite(NOW_loc_dates$MAX_AGE) & is.finite(NOW_loc_dates$MIN_AGE), "MIN_AGE"] <- temp.max
-  
-  NOW_loc_dates$MAX_AGE[NOW_loc_dates$MAX_AGE==64.81] <- 63.81	### fixes erroneous date of Pu3/To1 boundary in NOW databasae
-  NOW_loc_dates$MIN_AGE[NOW_loc_dates$MIN_AGE==64.81] <- 63.81	### fixes erroneous date of Pu3/To1 boundary in NOW databasae
+
+  NOW_loc_dates$MAX_AGE[NOW_loc_dates$MAX_AGE==64.1] <- 65.83	### makes any collection from Pu3 from combined Pu2/Pu3. as of 1/12/2024 the bound is set to 65.84 
+  NOW_loc_dates$MIN_AGE[NOW_loc_dates$MIN_AGE==64.1] <- 64.81	### makes any collection from Pu2 from combined Pu2/Pu3. as of 1/12/2024 the bound is set to 64.75 
 
   NOW_loc_dates$diffNOW <- NOW_loc_dates$MAX_AGE - NOW_loc_dates$MIN_AGE
 
@@ -975,5 +991,34 @@ generatePyratePlotCode <- function(filepathname, python.version = 3,
   return(pythonscript)
 }
   
+
+test_func <- function(num_plots = 4, plot_id_start = 1, ncol = 11, plot_alignment = c("left"), widen_multiplier = 1)
+{
+  layout_seq <- seq(plot_id_start, plot_id_start + (num_plots-1),1)
+  if(widen_multiplier > 1) 
+  {
+    temp_seq <- integer()
+    for(xx in layout_seq)
+    {
+      temp_seq <- c(temp_seq, rep(xx, widen_multiplier))
+    }
+    layout_seq <- unlist(temp_seq)
+  }
+  if(length(layout_seq) > ncol) {print(paste("There are more plots than columns.  Please increase the number of columns"))
+  } else if(length(layout_seq) < ncol){
+      seq_diff <- ncol - length(layout_seq)
+      if(plot_alignment == "left")   {layout_seq_out <- c(layout_seq, rep(0, seq_diff))}
+      if(plot_alignment == "right")  {layout_seq_out <- c(rep(0, seq_diff), layout_seq)}
+      if(plot_alignment == "middle") {
+        if((seq_diff %% 2) == 0) {layout_seq_out <- c(rep(0, seq_diff/2), layout_seq, rep(0, seq_diff/2))}
+        if((seq_diff %% 2) != 0) {
+          seq_front <- floor(seq_diff/2)
+          seq_back  <- ceiling(seq_diff/2)
+          if(seq_diff != seq_front + seq_back) {print(paste("The function is having trouble aligning the plots.  Please use left or right"))}
+          layout_seq_out <- c(rep(0, floor(seq_diff/2)), layout_seq, rep(0, ceiling(seq_diff/2)))
+        }
+      } 
+    } else {layout_seq_out <- layout_seq}
   
-  
+  return(layout_seq_out)
+}  
