@@ -741,8 +741,9 @@ shoulderPlot <- function(measure.mat, plot.y, intervals, occs, bigList, repIntTa
 
 
 plotRegimeBoxplot <- function(optList, prop, intervals, settings,
-                              use_par = TRUE,
-                              ylab = "Species Richness", ylim = NULL, yaxt = "n", axis.at = NULL,
+                              use_par = TRUE, regime.lab.cex = 1,
+                              ylab = "Species Richness", ylab.line = 2.5, ylab.cex = 1,
+                              ylim = NULL, yaxt = "n", axis.at = NULL,
                               plot.legend = TRUE, legend.lwd = 5, legend.cex = 1, legend.seg.len = 1)
 {
   require(stringr)
@@ -759,26 +760,26 @@ plotRegimeBoxplot <- function(optList, prop, intervals, settings,
   for(xx in seq_len(length(regime.list)))
   {
       boxplot(prop[regime.list[[xx]],], 
-              ylab = ylab, ylim = ylim, xaxt = "n", yaxt = yaxt,
+              ylab = NULL, ylim = ylim, xaxt = "n", yaxt = yaxt,
               col = rainbow(ncol(prop)))
      if(yaxt == "n" & xx == 1) axis(side = 2, at = axis.at, labels = TRUE)
      if(yaxt == "n" & xx != 1) axis(side = 2, at = axis.at, labels = FALSE)
     
     if(xx == 1) 
     {
-      mtext(paste0(">", intervals[optList[[length(optList)-1]]$optBreaks[xx],2], " Ma"), line = 0.75)
+      mtext(paste0(">", intervals[optList[[length(optList)-1]]$optBreaks[xx],2], " Ma"), line = 0.75, cex = regime.lab.cex)
     } else if(xx == max(seq_len(length(regime.list))))
     {
-      mtext(paste0("<", intervals[optList[[length(optList)-1]]$optBreaks[xx-1],2], " Ma"), line = 0.75)
+      mtext(paste0("<", intervals[optList[[length(optList)-1]]$optBreaks[xx-1],2], " Ma"), line = 0.75, cex = regime.lab.cex)
     } else {
       mtext(paste0(intervals[optList[[length(optList)-1]]$optBreaks[xx-1],2],
                    " to ",
                    intervals[optList[[length(optList)-1]]$optBreaks[xx],2],
-                   " Ma"), line = 0.75)
+                   " Ma"), line = 0.75, cex = regime.lab.cex)
     }
     if(xx == 1 & !is.null(ylab)) 
     {
-      mtext(paste0(" Median ", str_to_title(settings$this.rank)," Richness"), line = 2.5, side = 2)
+      mtext(text = ylab, line = ylab.line, cex = ylab.cex, side = 2)
     }
   }
   if(plot.legend)
@@ -923,9 +924,21 @@ comparePBDB_NOW_collectionDurations <- function(occs)
   #compareDates <- compareDates[rowSums(is.na(compareDates)) != ncol(compareDates),]
   #compareDates <- compareDates[is.na(compareDates$MAX_AGE) | is.na(compareDates$MIN_AGE),] 
 
-  par(mfrow = c(2,2))
-  hist(compareDates$diff, breaks = c(seq(0,25,1)), main = "PBDB Collections and Dates", ylim = c(0, 3500), xlim = c(0,25), xlab = "Collection Duration (Ma)")
-  hist(compareDates$diffNOW, breaks = c(seq(0,25,1)), main = "PBDB Collections and NOW Dates", ylim = c(0,3500), xlim = c(0,25), xlab = "Collection Duration (Ma)")
+  png(paste0(save.folder, "PBDB versus NOW durations histograms ", settings$this.rank,".png"),
+      width = 8, height = 4, units = "in", res = 200)
+  par(mfrow = c(1,2), mar = c(2,2,1,2), oma = c(1,1,1,1))
+#  hist(compareDates$diff, breaks = c(seq(0,25,1)), main = "PBDB Collections and Dates", ylim = c(0, 3500), xlim = c(0,25), xlab = "Collection Duration (Ma)")
+  hist(compareDates$diff, breaks = c(seq(0,25,1)), main = "", ylim = c(0, 3500), xlim = c(0,25), xlab = "Collection Duration (Ma)")
+  
+  mtext("Duration (Myr)", side = 1, line = 2, cex = 1)
+  mtext("Frequency", side = 2, line = 2, cex = 1)
+  mtext(text= "A", side = 3, line = 0.2, cex = 2, adj = 0)
+#  hist(compareDates$diffNOW, breaks = c(seq(0,25,1)), main = "PBDB Collections and NOW Dates", ylim = c(0,3500), xlim = c(0,25), xlab = "Collection Duration (Ma)")
+  hist(compareDates$diffNOW, breaks = c(seq(0,25,1)), main = "", ylim = c(0,3500), xlim = c(0,25), xlab = "Collection Duration (Ma)")
+  mtext("Duration (Myr)", side = 1, line = 2, cex = 1)
+  mtext(text= "B", side = 3, line = 0.2, cex = 2, adj = 0)
+  
+  dev.off()
   
   # how do occurrences change
   #par(mfrow = c(2,2))
