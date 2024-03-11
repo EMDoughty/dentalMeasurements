@@ -1035,3 +1035,83 @@ test_func <- function(num_plots = 4, plot_id_start = 1, ncol = 11, plot_alignmen
   
   return(layout_seq_out)
 }  
+
+
+plotCzEnviroEvents <- function(pch.y.pos = 1.075, pch = 6, pch.cex = 2.5, text.cex = 1, lwd = 1)
+{
+  #climatic event dates taken form Zachos etal 2008 and Westerhold etal 2020
+  #Vegetative transitions taken from Stromberg etal 2011, Stromberg and McInerney 2011, and Townsend et al. 2010. 
+  par(xpd = TRUE)
+  #PETM
+  points(56, pch.y.pos*par()$usr[4], pch = pch, cex = pch.cex, col = "red")
+  text(x = 56, y = pch.y.pos*par()$usr[4], labels = "1", cex = text.cex, col = "red")
+  #EECO
+  points(c(53,49), rep(pch.y.pos*par()$usr[4],2), pch = pch, cex = pch.cex, col = "red")
+  text(c(53,49), rep(pch.y.pos*par()$usr[4],2), labels = c("2","2"), cex = text.cex, col = "red")
+  lines( x =c(52.5,49.5), y = rep(pch.y.pos*par()$usr[4],2), col = "red", lwd = lwd)
+  #Earliest Inferred Open Habitat (Townsend et al. 2010)
+  points(42, pch.y.pos*par()$usr[4], pch = pch, cex = pch.cex)
+  text(x = 42, y = pch.y.pos*par()$usr[4], labels = "3", cex = text.cex)
+  #Middle Eocene Climatic Optimum
+  points(40.25, pch.y.pos*par()$usr[4], pch = pch, cex = pch.cex, col = "red") #average of 40.5-40.1
+  text(x = 40.25, y = pch.y.pos*par()$usr[4], labels = "4", cex = text.cex, col = "red")
+  #E/O Boundary
+  points(33.9, pch.y.pos*par()$usr[4], pch = pch, cex = pch.cex, col = "blue")
+  text(x = 33.9, y = pch.y.pos*par()$usr[4], labels = "5", cex = text.cex, col = "blue")
+  #Onset of Widespread Grass-Dominated Habitats (Stromberg etal 2011)
+  points(26, pch.y.pos*par()$usr[4], pch = pch, cex = pch.cex)
+  text(x = 26, y = pch.y.pos*par()$usr[4], labels = "6", cex = text.cex)
+  #lines( x =c(26,6), y = rep(pch.y.pos*par()$usr[4],2), lwd = lwd)
+ # line.alpha <- rev(seq( 1-(13*0.05),1,0.05))
+  #line.alpha <- alphaColor("black", line.alpha)
+  #segments(x0 = rev(seq(19.5, 25.5, 0.5)), y0 = pch.y.pos*par()$usr[4],
+   #        x1 = rev(seq(19, 25, 0.5)), y1 = pch.y.pos*par()$usr[4],
+    #       col = line.alpha)
+  arrows(x0 = 25.5, y0 = pch.y.pos*par()$usr[4],
+         x1 = 19, y1 = pch.y.pos*par()$usr[4],
+         length = 0.1, angle = 25)
+  #MMCO
+  points(c(17,14), rep(pch.y.pos*par()$usr[4],2), pch = pch, cex = pch.cex, col = "red")
+  text(c(17,14), rep(pch.y.pos*par()$usr[4],2), labels = c("7","7"), cex = text.cex, col = "red")
+  lines( x =c(16.5,14.5), y = rep(pch.y.pos*par()$usr[4],2), col = "red", lwd = lwd)
+  #C3/C4 transition (Stromberg and McInerney 2011)
+  points(c(8,5.5), rep(pch.y.pos*par()$usr[4],2), pch = pch, cex = pch.cex)
+  text(c(8,5.5), rep(pch.y.pos*par()$usr[4],2), labels = c("8","8"), cex = text.cex)
+  lines( x =c(7.5,6), y = rep(pch.y.pos*par()$usr[4],2), lwd = lwd)
+  par(xpd = FALSE)
+}
+
+flatten_occs <- function(strat_uncert, intervals)
+{
+  PBDB_flat <- as.data.frame(matrix(nrow = nrow(strat_uncert), ncol = nrow(intervals)))
+  rownames(PBDB_flat) <- rownames(strat_uncert)
+  colnames(PBDB_flat) <- rownames(intervals)
+  
+  for(yy in rownames(PBDB_flat))
+  {
+    #need to prevent taxa that exist outside our binning interval from causing errors
+    if(!strat_uncert[rownames(strat_uncert) %in% yy,"FO"] <= min(intervals) | strat_uncert[rownames(strat_uncert) %in% yy,"LO"] >= max(intervals))
+    {
+      #need to handle with an FO before our first interval, an LO after our last interval, and normal taxa with range contained by our bins
+      if(strat_uncert[rownames(strat_uncert) %in% yy,"FO"] >= max(intervals))
+      { 
+        taxon_intervals <- rownames(intervals)[intervals$ageBop >= strat_uncert[rownames(strat_uncert) %in% yy,"LO"]]
+      } else if (strat_uncert[rownames(strat_uncert) %in% yy,"LO"] <= min(intervals)) { taxon_intervals <- rownames(intervals)[intervals$ageBop >= strat_uncert[rownames(strat_uncert) %in% yy,"FO"]]
+      } else {taxon_intervals <- rownames(intervals)[intervals$ageBase >= strat_uncert[rownames(strat_uncert) %in% yy,"LO"] & intervals$ageTop <= strat_uncert[rownames(strat_uncert) %in% yy,"FO"]]
+      }
+      
+      PBDB_flat[rownames(PBDB_flat) %in% yy, colnames(PBDB_flat) %in% taxon_intervals] <- yy
+    }
+  }
+  
+  #Make each column a list so that I can use our functions to get the distribution of body mass/families
+  PBDB_flat_list <- list()
+  
+  for(xx in seq_len(ncol(PBDB_flat)))
+  {
+    PBDB_flat_list[[xx]] <- unique(PBDB_flat[,xx])[!is.na(unique(PBDB_flat[,xx]))]
+  }
+  names(PBDB_flat_list) <- colnames(PBDB_flat)
+  
+  return(PBDB_flat_list)
+}
