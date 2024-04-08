@@ -549,7 +549,7 @@ taxHandley <- function(repIntTaxa,
     # bigList <- bigList[bigList$order %in% focal.order,]
     # shortFam <- sort(unique(bigList$family))
     
-#    taxCube <- sapply(repIntTaxa, function(y) sapply(y, function(x) tabulate(match(bigList$family[as.character(bigList$accepted_name) %in% x], shortFam), nbins=length(shortFam)), simplify="array"), simplify="array")
+#   taxCube <- sapply(repIntTaxa, function(y) sapply(y, function(x) tabulate(match(bigList$family[as.character(bigList$accepted_name) %in% x], shortFam), nbins=length(shortFam)), simplify="array"), simplify="array")
     taxCube <- sapply(repIntTaxa, function(y) sapply(y, function(x) tabulate(match(bigList$family[as.character(bigList$accepted_name) %in% x], unique(bigList$family)), nbins=length(unique(bigList$family))), simplify="array"), simplify="array")
     
 #   taxCube <- sapply(repIntTaxa, function(y) sapply(y, function(x) tabulate(bin=as.factor(bigList$family[as.character(bigList$accepted_name) %in% x]), nbins=length(bigList$family)), simplify="array"), simplify="array")
@@ -743,8 +743,12 @@ shoulderPlot <- function(measure.mat, plot.y, intervals, occs, bigList, repIntTa
 plotRegimeBoxplot <- function(optList, prop, intervals, settings,
                               use_par = TRUE, regime.lab.cex = 1,
                               ylab = "Species Richness", ylab.line = 2.5, ylab.cex = 1,
-                              ylim = NULL, yaxt = "n", axis.at = NULL,
-                              plot.legend = TRUE, legend.lwd = 5, legend.cex = 1, legend.seg.len = 1)
+                              ylim = NULL, yaxt = "n", 
+                              axis.at = NULL, cex.axis = 1,
+                              text.col = "black",
+                              axis.col.ticks="black", axis.col.axis = "black",
+                              plot.legend = TRUE, legend.lwd = 5, legend.cex = 1, legend.seg.len = 1,
+                              legend.text.col = "black")
 {
   require(stringr)
  
@@ -760,33 +764,33 @@ plotRegimeBoxplot <- function(optList, prop, intervals, settings,
   for(xx in seq_len(length(regime.list)))
   {
       boxplot(prop[regime.list[[xx]],], 
-              ylab = NULL, ylim = ylim, xaxt = "n", yaxt = yaxt,
+              ylab = ylab, ylim = ylim, xaxt = "n", yaxt = yaxt, cex.axis = cex.axis,
               col = rainbow(ncol(prop)))
-     if(yaxt == "n" & xx == 1) axis(side = 2, at = axis.at, labels = TRUE)
-     if(yaxt == "n" & xx != 1) axis(side = 2, at = axis.at, labels = FALSE)
+     if(yaxt == "n" & xx == 1) axis(side = 2, at = axis.at, labels = TRUE, col.ticks= axis.col.ticks, col.axis = axis.col.axis, cex.axis = cex.axis)
+     if(yaxt == "n" & xx != 1) axis(side = 2, at = axis.at, labels = FALSE, col.ticks= axis.col.ticks, col.axis = axis.col.axis, cex.axis = cex.axis)
     
     if(xx == 1) 
     {
-      mtext(paste0(">", intervals[optList[[length(optList)-1]]$optBreaks[xx],2], " Ma"), line = 0.75, cex = regime.lab.cex)
+      mtext(paste0(">", intervals[optList[[length(optList)-1]]$optBreaks[xx],2], " Ma"), line = 0.75, cex = regime.lab.cex, col = text.col)
     } else if(xx == max(seq_len(length(regime.list))))
     {
-      mtext(paste0("<", intervals[optList[[length(optList)-1]]$optBreaks[xx-1],2], " Ma"), line = 0.75, cex = regime.lab.cex)
+      mtext(paste0("<", intervals[optList[[length(optList)-1]]$optBreaks[xx-1],2], " Ma"), line = 0.75, cex = regime.lab.cex, col = text.col)
     } else {
       mtext(paste0(intervals[optList[[length(optList)-1]]$optBreaks[xx-1],2],
                    " to ",
                    intervals[optList[[length(optList)-1]]$optBreaks[xx],2],
-                   " Ma"), line = 0.75, cex = regime.lab.cex)
+                   " Ma"), line = 0.75, cex = regime.lab.cex, col = text.col)
     }
-    if(xx == 1 & !is.null(ylab)) 
+    if(xx == 1 & !is.null(ylab) & yaxt == "n") 
     {
-      mtext(text = ylab, line = ylab.line, cex = ylab.cex, side = 2)
+      mtext(text = ylab, line = ylab.line, cex = ylab.cex, side = 2, col = text.col)
     }
   }
   if(plot.legend)
   {
     par(fig = c(0, 1, 0, 1), oma = c(1, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
     plot(0, 0, type = 'l', bty = 'n', xaxt = 'n', yaxt = 'n')
-    legend('bottom', y = 1, legend = colnames(prop), title = "Body Mass (kg)", col = rainbow(ncol(prop)), lwd = legend.lwd, xpd = TRUE, horiz = TRUE, cex = legend.cex, seg.len = legend.seg.len, bty = 'n')         
+    legend('bottom', y = 1, legend = colnames(prop), title = "Body Mass (kg)", col = rainbow(ncol(prop)), lwd = legend.lwd, xpd = TRUE, horiz = TRUE, cex = legend.cex, seg.len = legend.seg.len, bty = 'n', text.col = legend.text.col)         
   }
 } 
 
@@ -806,7 +810,8 @@ plotRegimeBarplot <- function(optList, prop, intervals, settings,
   for(xx in seq_len(length(regime.list)))
   {
     barplot(height =  apply(prop[regime.list[[xx]],], c(2), median, na.rm = TRUE),
-            ylab = ylab, ylim = ylim, xaxt = "n", 
+            ylab = ylab, ylim = ylim, xaxt = "n",
+            cex.axis = cex.axis, 
             col = rainbow(ncol(prop)))
     if(xx == 1) 
     {
@@ -1037,29 +1042,29 @@ test_func <- function(num_plots = 4, plot_id_start = 1, ncol = 11, plot_alignmen
 }  
 
 
-plotCzEnviroEvents <- function(pch.y.pos = 1.075, pch = 6, pch.cex = 2.5, text.cex = 1, lwd = 1)
+plotCzEnviroEvents <- function(pch.y.pos = 1.075, pch = 25, pch.cex = 2.5, text.cex = 1, lwd = 1, pch.bg = NA)
 {
   #climatic event dates taken form Zachos etal 2008 and Westerhold etal 2020
   #Vegetative transitions taken from Stromberg etal 2011, Stromberg and McInerney 2011, and Townsend et al. 2010. 
   par(xpd = TRUE)
   #PETM
-  points(56, pch.y.pos*par()$usr[4], pch = pch, cex = pch.cex, col = "red")
+  points(56, pch.y.pos*par()$usr[4], pch = pch, cex = pch.cex, col = "red", bg = pch.bg)
   text(x = 56, y = pch.y.pos*par()$usr[4], labels = "1", cex = text.cex, col = "red")
   #EECO
-  points(c(53,49), rep(pch.y.pos*par()$usr[4],2), pch = pch, cex = pch.cex, col = "red")
+  points(c(53,49), rep(pch.y.pos*par()$usr[4],2), pch = pch, cex = pch.cex, col = "red", bg = pch.bg)
   text(c(53,49), rep(pch.y.pos*par()$usr[4],2), labels = c("2","2"), cex = text.cex, col = "red")
   lines( x =c(52.5,49.5), y = rep(pch.y.pos*par()$usr[4],2), col = "red", lwd = lwd)
   #Earliest Inferred Open Habitat (Townsend et al. 2010)
-  points(42, pch.y.pos*par()$usr[4], pch = pch, cex = pch.cex)
+  points(42, pch.y.pos*par()$usr[4], pch = pch, cex = pch.cex, bg=pch.bg)
   text(x = 42, y = pch.y.pos*par()$usr[4], labels = "3", cex = text.cex)
   #Middle Eocene Climatic Optimum
-  points(40.25, pch.y.pos*par()$usr[4], pch = pch, cex = pch.cex, col = "red") #average of 40.5-40.1
+  points(40.25, pch.y.pos*par()$usr[4], pch = pch, cex = pch.cex, col = "red", bg = pch.bg) #average of 40.5-40.1
   text(x = 40.25, y = pch.y.pos*par()$usr[4], labels = "4", cex = text.cex, col = "red")
   #E/O Boundary
-  points(33.9, pch.y.pos*par()$usr[4], pch = pch, cex = pch.cex, col = "blue")
+  points(33.9, pch.y.pos*par()$usr[4], pch = pch, cex = pch.cex, col = "blue", bg = pch.bg)
   text(x = 33.9, y = pch.y.pos*par()$usr[4], labels = "5", cex = text.cex, col = "blue")
   #Onset of Widespread Grass-Dominated Habitats (Stromberg etal 2011)
-  points(26, pch.y.pos*par()$usr[4], pch = pch, cex = pch.cex)
+  points(26, pch.y.pos*par()$usr[4], pch = pch, cex = pch.cex, bg = pch.bg)
   text(x = 26, y = pch.y.pos*par()$usr[4], labels = "6", cex = text.cex)
   #lines( x =c(26,6), y = rep(pch.y.pos*par()$usr[4],2), lwd = lwd)
  # line.alpha <- rev(seq( 1-(13*0.05),1,0.05))
@@ -1071,11 +1076,11 @@ plotCzEnviroEvents <- function(pch.y.pos = 1.075, pch = 6, pch.cex = 2.5, text.c
          x1 = 19, y1 = pch.y.pos*par()$usr[4],
          length = 0.1, angle = 25)
   #MMCO
-  points(c(17,14), rep(pch.y.pos*par()$usr[4],2), pch = pch, cex = pch.cex, col = "red")
+  points(c(17,14), rep(pch.y.pos*par()$usr[4],2), pch = pch, cex = pch.cex, col = "red", bg = pch.bg)
   text(c(17,14), rep(pch.y.pos*par()$usr[4],2), labels = c("7","7"), cex = text.cex, col = "red")
   lines( x =c(16.5,14.5), y = rep(pch.y.pos*par()$usr[4],2), col = "red", lwd = lwd)
   #C3/C4 transition (Stromberg and McInerney 2011)
-  points(c(8,5.5), rep(pch.y.pos*par()$usr[4],2), pch = pch, cex = pch.cex)
+  points(c(8,5.5), rep(pch.y.pos*par()$usr[4],2), pch = pch, cex = pch.cex, bg = pch.bg)
   text(c(8,5.5), rep(pch.y.pos*par()$usr[4],2), labels = c("8","8"), cex = text.cex)
   lines( x =c(7.5,6), y = rep(pch.y.pos*par()$usr[4],2), lwd = lwd)
   par(xpd = FALSE)
