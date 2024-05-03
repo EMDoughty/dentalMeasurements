@@ -381,9 +381,11 @@ getTaxonomyForOneBaseTaxon_AcceptedName <- function(this.taxon)
 correl.scatter.plot <- function(prop1, prop2, point.labels,
                                 mar = c(2,2,1,1), oma = c(2,4,4,2),
                                 axis.lims = FALSE, xlim = NULL, xlim.nudge = c(0,0), ylim = NULL, ylim.nudge=c(0,0),
+                                round.x = 1, round.y = 1,
+                                xlab = "Predator Richness", ylab = "Herbivore Richness",
                                 col = alphaColor(rev(COL2("RdYlBu", n = length(prop1[,yy]))), alpha = 1),
                                 plot.single.correl = NULL)
-
+  
 {
   if(!is.null(plot.single.correl)){
     par.mfrow.rows <- 1
@@ -399,7 +401,7 @@ correl.scatter.plot <- function(prop1, prop2, point.labels,
     for.yy <- seq_len(ncol(prop1))
   }
   
-  par(mfrow = c(par.mfrow.rows,par.mfrow.cols), mar = mar, oma = oma)
+  par(mfrow = c(par.mfrow.rows,par.mfrow.cols), mar = mar, oma = oma, xpd = FALSE)
   for(xx in for.xx)
   {
     for(yy in for.yy)
@@ -409,23 +411,23 @@ correl.scatter.plot <- function(prop1, prop2, point.labels,
         plot(0, xaxt = 'n', yaxt = 'n', bty = 'n', pch = '', ylab = '', xlab = '')
       } else {
         if(axis.lims & is.null(xlim)) {
-          xlim.this.plot <- c(round_any(min(prop1[complete.cases(cbind(prop1[,yy],prop2[,xx])),yy], na.rm = TRUE),5, f= floor) + xlim.nudge[1],
-                              round_any(max(prop1[complete.cases(cbind(prop1[,yy],prop2[,xx])),yy], na.rm = TRUE),5, f= ceiling)+xlim.nudge[2]) 
+          xlim.this.plot <- c(round_any(min(prop1[complete.cases(cbind(prop1[,yy],prop2[,xx])),yy], na.rm = TRUE),round.x, f= floor) + xlim.nudge[1],
+                              round_any(max(prop1[complete.cases(cbind(prop1[,yy],prop2[,xx])),yy], na.rm = TRUE),round.x, f= ceiling)+xlim.nudge[2]) 
         } else if(axis.lims & !is.null(xlim)) {
-          xlim.this.plot <- xlim
+          xlim.this.plot <- xlim + xlim.nudge
         } else {xlim.this.plot <- NULL}
         
         if(axis.lims & is.null(ylim)) {
-          ylim.this.plot <- c(round_any(min(prop2[complete.cases(cbind(prop1[,yy],prop2[,xx])),xx], na.rm = TRUE),5, f = floor) + ylim.nudge[1],
-                              round_any(max(prop2[complete.cases(cbind(prop1[,yy],prop2[,xx])),xx], na.rm = TRUE),5, f = ceiling) + ylim.nudge[2])
+          ylim.this.plot <- c(round_any(min(prop2[complete.cases(cbind(prop1[,yy],prop2[,xx])),xx], na.rm = TRUE),round.y, f = floor) + ylim.nudge[1],
+                              round_any(max(prop2[complete.cases(cbind(prop1[,yy],prop2[,xx])),xx], na.rm = TRUE),round.y, f = ceiling) + ylim.nudge[2])
         } else if(axis.lims & !is.null(ylim)) {
-          ylim.this.plot <- ylim
+          ylim.this.plot <- ylim + ylim.nudge
         } else {ylim.this.plot <- NULL}
-       
+        
         plot(prop1[,yy],
              prop2[,xx],
              xlim=xlim.this.plot, ylim=ylim.this.plot,
-             ylab = "Predator Richness", xlab = "Herbivores Richness",
+             ylab = ylab, xlab = xlab,
              col = col,
              pch = 16)
         points(prop1[,yy], prop2[,xx], pch = 21, cex = 1)
@@ -434,8 +436,8 @@ correl.scatter.plot <- function(prop1, prop2, point.labels,
         prop.linear <- lm(prop2[,xx] ~ prop1[,yy])
         if(is.finite(prop.linear$coefficients[1]) & is.finite(prop.linear$coefficients[2])) abline(lm(prop2[,xx] ~ prop1[,yy]))
         
-        if(xx == 3 & yy == 1) mtext("Predator Richness", side = 2, line = 4)
-        if(xx == 1 & yy == 3) mtext("Herbivore Richness", side = 3, line = 2.5)
+        if(xx == 3 & yy == 1) mtext(ylab, side = 2, line = 4)
+        if(xx == 1 & yy == 3) mtext(xlab, side = 3, line = 2.5)
         if(yy == 1) mtext(colnames(prop2)[xx], side = 2, line =2)
         if(xx == 1) mtext(colnames(prop1)[yy], side = 3, line =0.5)
       }
