@@ -1122,3 +1122,18 @@ flatten_occs <- function(strat_uncert, intervals)
   
   return(PBDB_flat_list)
 }
+
+testFactorial4OccupancyProb <- function()
+{
+  n <- 100
+  y <- 50
+  p <- 0.58
+  
+  factSeries_n <- seq_len(n)
+  factSeries_y <- seq_len(y)
+  factSeries_diffny <- seq_len(n-y)
+  
+  probFunc <- prod(factSeries_n[!factSeries_n %in% factSeries_diffny])/prod(factSeries_y)
+  probFunc*(p^y)*((1-p)^(n-y))
+  fact(170)
+}
