@@ -1123,6 +1123,35 @@ flatten_occs <- function(strat_uncert, intervals)
   return(PBDB_flat_list)
 }
 
+getBigList <- function(focal.tax = NULL, rank.vec = c("subspecies","species"), OccsCols = c("class","order","family","genus", "accepted_name"), seperateNoFamilyTaxa = FALSE)
+{
+  uniqTax <- lapply(unlist(focal.tax), FUN=getTaxonomyForOneBaseTaxon_AcceptedName)
+  uniqTax <- makeMatrixFromList(uniqTax)
+  uniqTax <- uniqTax[!uniqTax$class %in% "Insecta",] #remove entries for Insecta due to Proboscidea being a synonym for Hemiptera
+  uniqTax <- uniqTax[!uniqTax$family %in% "",] #remove entries with empty family assignments.  generally entries reported at the family level or higher
+  uniqTax$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = uniqTax$accepted_name)
+  uniqTax <- unique(uniqTax[,OccsCols])
+ 
+  uniqTax <- uniqTax[uniqTax$accepted_name %in% occs$accepted_name[occs$accepted_rank %in% rank.vec],] #remove taxa without occurrences
+  
+  bigList_herb <- uniqTax[order(uniqTax$family),] #4 occurrences for Pleistocene Suidae are in occs.  Likely just modern specimens or mistaken Tayassuids.
+  
+  if(seperateNoFamilyTaxa)
+  {
+    no_fam_Taxa <- bigList_herb$accepted_name[bigList_herb$family %in% "NO_FAMILY_SPECIFIED" & !bigList_herb$order %in% "NO_ORDER_SPECIFIED"]
+    bigList_herb$family[bigList_herb$accepted_name %in% no_fam_Taxa] <- paste(bigList_herb$order[bigList_herb$accepted_name %in% no_fam_Taxa], bigList_herb$family[bigList_herb$accepted_name %in% no_fam_Taxa], sep = "_")
+    
+    #some runs may not contain taxa that lack a order designation (e.g., run only Perissodactyls) so need to check to avoid errors
+    if(length(bigList_herb$accepted_name[bigList_herb$family %in% "NO_FAMILY_SPECIFIED" & bigList_herb$order %in% "NO_ORDER_SPECIFIED"])>0)
+    {
+      no_ord_no_fam_Taxa <- bigList_herb$accepted_name[bigList_herb$family %in% "NO_FAMILY_SPECIFIED" & bigList_herb$order %in% "NO_ORDER_SPECIFIED"]
+      bigList_herb$family[bigList_herb$accepted_name %in% no_ord_no_fam_Taxa] <- paste(bigList_herb$class[bigList_herb$accepted_name %in% no_ord_no_fam_Taxa], bigList_herb$family[bigList_herb$accepted_name %in% no_ord_no_fam_Taxa], sep = "_")
+    }
+  }
+  return(bigList_herb)
+}
+
+
 testFactorial4OccupancyProb <- function()
 {
   n <- 100
