@@ -1132,7 +1132,7 @@ getBigList <- function(focal.tax = NULL, rank.vec = c("subspecies","species"), O
   uniqTax$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = uniqTax$accepted_name)
   uniqTax <- unique(uniqTax[,OccsCols])
  
-  uniqTax <- uniqTax[uniqTax$accepted_name %in% occs$accepted_name[occs$accepted_rank %in% rank.vec],] #remove taxa without occurrences
+  #uniqTax <- uniqTax[uniqTax$accepted_name %in% occs$accepted_name[occs$accepted_rank %in% rank.vec],] #remove taxa without occurrences
   
   bigList_herb <- uniqTax[order(uniqTax$family),] #4 occurrences for Pleistocene Suidae are in occs.  Likely just modern specimens or mistaken Tayassuids.
   
@@ -1151,6 +1151,38 @@ getBigList <- function(focal.tax = NULL, rank.vec = c("subspecies","species"), O
   return(bigList_herb)
 }
 
+getIntMeasure.mat <- function(measure.mat, settings, uniqIntTaxa)
+{
+  if(settings$this.rank != "species"){
+    measure.mat_Int <- measure.mat[measure.mat[,settings$this.rank] %in% uniqIntTaxa,] # need to make sure that there is an argument to restrict collection to those in this interval and not all of them
+    
+    intSizeCat <- as.data.frame(matrix(data=NA, nrow = length(unique(measure.mat_Int[,settings$this.rank])), ncol = 2, 
+                                       dimnames = list(unique(measure.mat_Int[,settings$this.rank]), c("bodyMass","SizeCat"))))
+  } else {measure.mat_Int <- measure.mat[measure.mat[,"accepted_name"] %in% uniqIntTaxa,]
+  intSizeCat <- as.data.frame(matrix(data=NA, nrow = length(unique(measure.mat_Int[,"accepted_name"])), ncol = 2, 
+                                     dimnames = list(unique(measure.mat_Int[,"accepted_name"]), c("bodyMass","SizeCat"))))
+  }
+  
+  for(mm in unique(measure.mat_Int[,settings$this.rank]))
+  {
+    intSizeCat[mm,"bodyMass"] <- mean(measure.mat_Int$bodyMass[measure.mat_Int[,settings$this.rank] %in% mm])
+  }
+  
+  ##bin into size categories
+  for(nn in seq(1, length(settings$bmBreaks_herb)-1, 1)){
+    intSizeCat$SizeCat[intSizeCat$bodyMass >= settings$bmBreaks_herb[nn] & intSizeCat$bodyMass < settings$bmBreaks_herb[nn+1]] <- nn
+  } 
+  
+  #set Proboscideans to sizeCat 5 manually since they lack body mass measures
+  for(zz in unique(measure.mat_Int[,settings$this.rank]))
+  {
+    if(zz %in% unique(occs$genus[occs$order %in% "Proboscidea"])) {intSizeCat[zz,"SizeCat"] <- 5 
+    } else {intSizeCat[zz,"bodyMass"] <- mean(measure.mat_Int$bodyMass[measure.mat_Int[,settings$this.rank] %in% zz])}
+  }
+  
+  return(intSizeCat)
+}
+
 
 testFactorial4OccupancyProb <- function()
 {
@@ -1165,4 +1197,23 @@ testFactorial4OccupancyProb <- function()
   probFunc <- prod(factSeries_n[!factSeries_n %in% factSeries_diffny])/prod(factSeries_y)
   probFunc*(p^y)*((1-p)^(n-y))
   fact(170)
+}
+
+checkifGenusNamesValid <- function() #for checking if a genus is valid.  Not all genera have their own entry in accepted_names.  this checks the genus in occs to see if valid species are present
+{
+  genus.vec <- c("Navahoceros", "Ottoceros", "Konobelodon", "Yumaceras", "Heteropliohippus", "Colbertchoerus", "Procranioceras", "Acritohippus",
+                  "Drepanomeryx", "Mediochoerus", "Stirtonhyus", "Tedfordhyus", "Lucashyus", "Mediochoerus", "Nexuotapirus", "Paramerychyus", 
+                  "Problastomeryx", "Pseudoblastomeryx", "Stuckyhyus", "Wrightohyus", "Desmatochoerus", "Floridaceras", "Nexuotapirus", 
+                  "Paramerychyus", "Pseudoblastomeryx")
+  
+  genus.vec[!genus.vec %in% occs$genus] #check to see if all 
+  
+  sp.per.gen <- vector()
+  for(xx in seq_len(length(genus.vec)))
+  {
+    sp.per.gen[xx] <- length(unique(occs$accepted_name[occs$genus %in% genus.vec[xx]]))
+  }
+  
+  cbind(genus.vec, sp.per.gen)
+  
 }
