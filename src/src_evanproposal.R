@@ -507,6 +507,7 @@ transpose.array <- function(countCube)
       for(yy in seq_len(ncol(countCube[,,zz])))
       {
         countCube.flip[yy,xx,zz] <- countCube[xx,yy,zz]
+        #countCube.flip[,,zz] <- as.data.frame(t(countCube[,,zz]))
       }
     }
   }
@@ -1151,14 +1152,14 @@ getBigList <- function(focal.tax = NULL, rank.vec = c("subspecies","species"), O
   return(bigList_herb)
 }
 
-getIntMeasure.mat <- function(measure.mat, settings, uniqIntTaxa)
+getIntMeasure.mat <- function(measure.mat, settings, breaks, uniqIntTaxa)
 {
   if(settings$this.rank != "species"){
     measure.mat_Int <- measure.mat[measure.mat[,settings$this.rank] %in% uniqIntTaxa,] # need to make sure that there is an argument to restrict collection to those in this interval and not all of them
     
     intSizeCat <- as.data.frame(matrix(data=NA, nrow = length(unique(measure.mat_Int[,settings$this.rank])), ncol = 2, 
                                        dimnames = list(unique(measure.mat_Int[,settings$this.rank]), c("bodyMass","SizeCat"))))
-  } else {measure.mat_Int <- measure.mat[measure.mat[,"accepted_name"] %in% uniqIntTaxa,]
+  } else {measure.mat_Int <- measure.mat[measure.mat[,"taxon"] %in% uniqIntTaxa,]
   intSizeCat <- as.data.frame(matrix(data=NA, nrow = length(unique(measure.mat_Int[,"accepted_name"])), ncol = 2, 
                                      dimnames = list(unique(measure.mat_Int[,"accepted_name"]), c("bodyMass","SizeCat"))))
   }
@@ -1170,7 +1171,7 @@ getIntMeasure.mat <- function(measure.mat, settings, uniqIntTaxa)
   
   ##bin into size categories
   for(nn in seq(1, length(settings$bmBreaks_herb)-1, 1)){
-    intSizeCat$SizeCat[intSizeCat$bodyMass >= settings$bmBreaks_herb[nn] & intSizeCat$bodyMass < settings$bmBreaks_herb[nn+1]] <- nn
+    intSizeCat$SizeCat[intSizeCat$bodyMass >= breaks[nn] & intSizeCat$bodyMass < breaks[nn+1]] <- nn
   } 
   
   #set Proboscideans to sizeCat 5 manually since they lack body mass measures
@@ -1217,3 +1218,146 @@ checkifGenusNamesValid <- function() #for checking if a genus is valid.  Not all
   cbind(genus.vec, sp.per.gen)
   
 }
+
+getOccupancyOneInterval <- function(this.intv, settings, intervals)
+{
+  ####################################################################
+  #setup a data.frame to be filled in with presence/absence values
+  if(!nrow(this.intv) == 0)
+  {
+    uniqSiteVec <- unique(this.intv[,settings$occSiteName])
+    if(settings$occSiteName != "collection_no") 
+    {
+      presenceMat <- as.data.frame(matrix(data=NA, nrow = length(uniqSiteVec), ncol = max(table(this.intv[,settings$occSiteName])), dimnames = list(sort(uniqSiteVec),c(paste0("Sample_",seq_len(max(table(this.intv[,settings$occSiteName]))),sep="")))))
+    } else {
+      presenceMat <- as.data.frame(matrix(data=NA, nrow = length(uniqSiteVec), ncol = 1, dimnames = list(sort(uniqSiteVec),c("Sample_1"))))
+    }
+    
+    #make data.frame to hold the occupancy values for individual taxa within interval
+    if(settings$this.rank %in% "species")
+    {
+      uniqIntTaxa <- sort(unique(occs$accepted_name[occs$collection_no %in% this.intv$collection_no]))
+    } else {
+      uniqIntTaxa <- sort(unique(occs[occs$collection_no %in% this.intv$collection_no, settings$this.rank]))
+    } 
+    
+    ####################################################################
+    #restrict occupancy to just herbivore taxa to cut down on run time
+    uniqIntTaxa <- uniqIntTaxa[uniqIntTaxa %in% measure.mat[,settings$this.rank]]
+    occupancyMatTaxa <- as.data.frame(matrix(data = NA, nrow = length(uniqIntTaxa), ncol = 3, 
+                                             dimnames = list(uniqIntTaxa,  c("NaiveOcc","NumSitesDetected", "NumCollsDetected"))))
+    
+    #get measure.mat for this interval and append bodymass and sizeCat to occupancyMatTaxa.  This will require the aggregation of con generics and reassignment of Proboscideans.
+    intSizeCat <- getIntMeasure.mat(measure.mat = measure.mat, settings = settings, breaks = settings$bmBreaks_herb, uniqIntTaxa = uniqIntTaxa)
+    occupancyMatTaxa <- cbind(occupancyMatTaxa, intSizeCat)
+    
+    ####################################################################
+    #make data.frame to hold the occupancy values for body mass categories within interval
+    size.categ <- c("Chevrotain-size (<5 kg)", "Javelina-size (5-25 kg)", "Antelope-size (25-150 kg)", "Horse-size (150-500 kg)", "Rhino-size (>500 kg)")
+    occupancyMatBM <- as.data.frame(matrix(data = NA, nrow = length(size.categ), ncol = 3, 
+                                           dimnames = list(size.categ, c("NaiveOcc","NumSitesDetected", "NumCollsDetected"))))
+    
+    ####################################################################
+    #make data.frame to hold the occupancy values for body mass categories within interval
+    occupancyMatAllHerb <- as.data.frame(matrix(data = NA, nrow = 1, ncol = 3, 
+                                                dimnames = list("AllHerb", c("NaiveOcc","NumSitesDetected", "NumCollsDetected"))))
+    
+    ####################################################################
+    #Get occupancy for individual taxa
+    ####################################################################
+    for(zz in seq_len(nrow(occupancyMatTaxa)))
+    {
+      presenceMat.temp <- presenceMat
+      for(pp in seq_len(nrow(presenceMat.temp)))
+      {
+        #get collection within site
+        collAtSite <- this.intv[this.intv[,settings$occSiteName] %in% rownames(presenceMat.temp)[pp], "collection_no"]
+        
+        for(mm in seq_len(length(collAtSite)))
+        {
+          if(rownames(occupancyMatTaxa)[zz] %in% occs[occs$collection_no %in% collAtSite[mm], settings$this.rank])
+          {
+            presenceMat.temp[pp,mm] <- 1
+          } else {presenceMat.temp[pp,mm] <- 0}
+        }
+      }
+      
+      ###################################################
+      #Naive Occupancy
+      occupancyMatTaxa[zz, "NaiveOcc"] <- sum(apply(presenceMat.temp, 1 , max, na.rm = TRUE))/nrow(presenceMat.temp)
+      
+      occupancyMatTaxa$NaiveOcc[occupancyMatTaxa$NaiveOcc %in% 0] <- NA
+      
+      occupancyMatTaxa[zz,]$NumSitesDetected <- sum(apply(presenceMat.temp, 1 , max, na.rm = TRUE))
+      occupancyMatTaxa[zz,]$NumCollsDetected <- sum(presenceMat.temp, na.rm = TRUE)
+    }
+    
+    ####################################################################
+    #Get occupancy for body mass categories
+    ####################################################################
+    for(zz in seq_len(nrow(occupancyMatBM)))
+    {
+      presenceMat.temp <- presenceMat
+      for(pp in seq_len(nrow(presenceMat.temp)))
+      {
+        #get collection within site
+        collAtSite <- this.intv[this.intv[,settings$occSiteName] %in% rownames(presenceMat.temp)[pp], "collection_no"]
+        
+        for(mm in seq_len(length(collAtSite)))
+        {
+          if(zz %in% measure.mat$SizeCat[measure.mat[,settings$this.rank] %in% occs[occs$collection_no %in% collAtSite[mm], settings$this.rank]])
+          {
+            presenceMat.temp[pp,mm] <- 1
+          } else {presenceMat.temp[pp,mm] <- 0}
+        }
+      }
+      
+      ###################################################
+      #Naive Occupancy
+      occupancyMatBM[zz, "NaiveOcc"] <- sum(apply(presenceMat.temp, 1 , max, na.rm = TRUE))/nrow(presenceMat.temp)
+      
+      occupancyMatBM$NaiveOcc[occupancyMatBM$NaiveOcc %in% 0] <- NA
+      
+      occupancyMatBM[zz,]$NumSitesDetected <- sum(apply(presenceMat.temp, 1 , max, na.rm = TRUE))
+      occupancyMatBM[zz,]$NumCollsDetected <- sum(presenceMat.temp, na.rm = TRUE)
+    }
+    ####################################################################
+    #Get occupancy for herbviores as a whole
+    ####################################################################
+    presenceMat.temp <- presenceMat
+    for(pp in seq_len(nrow(presenceMat.temp)))
+    {
+      #get collection within site
+      collAtSite <- this.intv[this.intv[,settings$occSiteName] %in% rownames(presenceMat.temp)[pp], "collection_no"]
+      
+      for(mm in seq_len(length(collAtSite)))
+      {
+        if(any(rownames(occupancyMatTaxa) %in% occs[occs$collection_no %in% collAtSite[mm], settings$this.rank]))
+        {
+          presenceMat.temp[pp,mm] <- 1
+        } else {presenceMat.temp[pp,mm] <- 0}
+      }
+    }
+    ###################################################
+    #Naive Occupancy
+    occupancyMatAllHerb[1,"NaiveOcc"] <- sum(apply(presenceMat.temp, 1 , max, na.rm = TRUE))/nrow(presenceMat.temp)
+    
+    occupancyMatAllHerb$NaiveOcc[occupancyMatAllHerb$NaiveOcc %in% 0] <- NA
+    
+    occupancyMatAllHerb[1,]$NumSitesDetected <- sum(apply(presenceMat.temp, 1 , max, na.rm = TRUE))
+    occupancyMatAllHerb[1,]$NumCollsDetected <- sum(presenceMat.temp, na.rm = TRUE)
+    
+    ###################################################
+    #output
+    
+    this.intv.OccProb <- list(OccupancyTaxa = occupancyMatTaxa, OccupancyBM = occupancyMatBM, OccupancyAllHerb = occupancyMatAllHerb) #, Sites=repIntColl[[xx]])
+  } else {this.intv.OccProb <- list(OccupancyTaxa = NULL, OccupancyBM = NULL, OccupancyAllHerb = NULL)} #, Sites=NULL)}
+  this.intv.OccProb
+}
+
+getOccupancyOneRep <- function(this.rep, settings, intervals)
+{
+  this.rep.OccProb <- lapply(this.rep, function(y) getOccupancyOneInterval(this.intv = y, settings = settings, intervals = intervals))
+  this.rep.OccProb
+}
+
