@@ -1357,7 +1357,7 @@ getOccupancyOneInterval <- function(this.intv, settings, intervals)
 
 getOccupancyOneRep <- function(this.rep, settings, intervals)
 {
-  this.rep.OccProb <- lapply(this.rep, function(y) getOccupancyOneInterval(this.intv = y, settings = settings, intervals = intervals))
+  this.rep.OccProb <- lapply(this.rep, function(this.intv) getOccupancyOneInterval(this.intv = this.intv, settings = settings, intervals = intervals))
   this.rep.OccProb
 }
 
