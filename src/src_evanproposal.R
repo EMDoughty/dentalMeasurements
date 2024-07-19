@@ -1124,7 +1124,10 @@ flatten_occs <- function(strat_uncert, intervals)
   return(PBDB_flat_list)
 }
 
-getBigList <- function(focal.tax = NULL, rank.vec = c("subspecies","species"), OccsCols = c("class","order","family","genus", "accepted_name"), seperateNoFamilyTaxa = FALSE)
+getBigList <- function(focal.tax = NULL, 
+                       #rank.vec = c("subspecies","species"), 
+                       OccsCols = c("class","order","family","genus", "accepted_name"), 
+                       seperateNoFamilyTaxa = FALSE)
 {
   uniqTax <- lapply(unlist(focal.tax), FUN=getTaxonomyForOneBaseTaxon_AcceptedName)
   uniqTax <- makeMatrixFromList(uniqTax)
@@ -1152,7 +1155,10 @@ getBigList <- function(focal.tax = NULL, rank.vec = c("subspecies","species"), O
   return(bigList_herb)
 }
 
-getIntMeasure.mat <- function(measure.mat, settings, breaks, uniqIntTaxa)
+getIntMeasure.mat <- function(measure.mat, 
+                              #settings, 
+                              breaks, 
+                              uniqIntTaxa)
 {
   if(settings$this.rank != "species"){
     measure.mat_Int <- measure.mat[measure.mat[,settings$this.rank] %in% uniqIntTaxa,] # need to make sure that there is an argument to restrict collection to those in this interval and not all of them
@@ -1171,7 +1177,7 @@ getIntMeasure.mat <- function(measure.mat, settings, breaks, uniqIntTaxa)
   
   ##bin into size categories
   for(nn in seq(1, length(settings$bmBreaks_herb)-1, 1)){
-    intSizeCat$SizeCat[intSizeCat$bodyMass >= breaks[nn] & intSizeCat$bodyMass < breaks[nn+1]] <- nn
+    intSizeCat$SizeCat[intSizeCat$bodyMass >= settings$bmBreaks_herb[nn] & intSizeCat$bodyMass < settings$bmBreaks_herb[nn+1]] <- nn
   } 
   
   #set Proboscideans to sizeCat 5 manually since they lack body mass measures
@@ -1219,7 +1225,7 @@ checkifGenusNamesValid <- function() #for checking if a genus is valid.  Not all
   
 }
 
-getOccupancyOneInterval <- function(this.intv, settings, intervals)
+getOccupancyOneInterval_evan <- function(this.intv, settings, intervals)
 {
   ####################################################################
   #setup a data.frame to be filled in with presence/absence values
@@ -1290,8 +1296,8 @@ getOccupancyOneInterval <- function(this.intv, settings, intervals)
       
       occupancyMatTaxa[zz,]$NumSitesDetected <- sum(apply(presenceMat.temp, 1 , max, na.rm = TRUE))
       occupancyMatTaxa[zz,]$NumCollsDetected <- sum(presenceMat.temp, na.rm = TRUE)
+      occupancyMatTaxa
     }
-    
     ####################################################################
     #Get occupancy for body mass categories
     ####################################################################
@@ -1355,9 +1361,25 @@ getOccupancyOneInterval <- function(this.intv, settings, intervals)
   this.intv.OccProb
 }
 
-getOccupancyOneRep <- function(this.rep, settings, intervals)
+getOccupancyOneRep_evan <- function(this.rep, settings, intervals)
 {
-  this.rep.OccProb <- lapply(this.rep, function(this.intv) getOccupancyOneInterval(this.intv = this.intv, settings = settings, intervals = intervals))
+  this.rep.OccProb <- lapply(this.rep, function(this.intv) getOccupancyOneInterval_evan(this.intv = this.intv, settings = settings, intervals = intervals))
   this.rep.OccProb
 }
 
+getOccList2Mat <- function(Occs.list, col.label)
+{
+  outMat <- matrix(data = NA, nrow = length(Occs.list), ncol = c(nrow(intervals)))
+  colnames(outMat) <- rownames(intervals)
+  
+  this.rep.vec <- vector()
+  for(xx in seq_len(length(Occs.list)))
+  {
+    for(yy in seq_len(length(Occs.list[[xx]])))
+    {
+      this.rep.vec[yy] <- Occs.list[[xx]][[yy]][col.label]
+    }
+    outMat[xx,] <- unlist(this.rep.vec)
+  }
+  outMat
+}
