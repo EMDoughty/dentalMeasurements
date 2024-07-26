@@ -157,17 +157,32 @@ getCorrelationPlot <- function(prop1, prop2, correlation.type = "spearman",mar =
   return(list(correl.coef = corr.results.both, p_value = cor.p))
 }
 
-getCountCube <- function(repIntTaxa, measure.mat, target.column = "bodyMass", bmBreaks, sizecateg, intervals)
+getCountCube <- function(repIntTaxa, 
+                         measure.mat, 
+                         target.column = "bodyMass", 
+                         bmBreaks, 
+                         #sizeCatBreaks, 
+                         sizecateg, 
+                         intervals)
 {
-  countCube <- sapply(repIntTaxa, function(this.rep) {
-    sapply(this.rep, function(this.intv, this.rep) {
-      hist(measure.mat[,target.column][match(this.intv, measure.mat$taxon)], 
-           breaks= bmBreaks, plot=FALSE)$counts
-    }, this.rep=this.rep)
-  }, simplify = "array")
+  #if(!settings$this.rank == "species") {
+  #  countCube <- sapply(repIntTaxa, function(this.rep) {
+  #    sapply(this.rep, function(this.intv, this.rep) {
+  #      int.measure.mat <- getIntMeasure.mat(measure.mat = measure.mat, breaks = bmBreaks, uniqIntTaxa = this.intv)
+  #      hist(int.measure.mat[,target.column][match(this.intv, int.measure.mat$taxon)], 
+  #           breaks= sizeCatBreaks, plot=FALSE)$counts
+  #    }, this.rep=this.rep)
+  #  }, simplify = "array")
+  #} else {
+    countCube <- sapply(repIntTaxa, function(this.rep) {
+      sapply(this.rep, function(this.intv, this.rep) {
+        hist(measure.mat[,target.column][match(this.intv, measure.mat$taxon)], 
+             breaks= bmBreaks, plot=FALSE)$counts
+      }, this.rep=this.rep)
+    }, simplify = "array")
+  #}
   
   dimnames(countCube) <- list(sizecateg, rownames(intervals), NULL)
-  
   return(countCube)
 }
 
@@ -1124,14 +1139,24 @@ flatten_occs <- function(strat_uncert, intervals)
   return(PBDB_flat_list)
 }
 
-getBigList <- function(focal.tax = NULL, 
+getBigList <- function(focal.tax = NULL,
+                       restrict.tax = NULL,
                        #rank.vec = c("subspecies","species"), 
                        OccsCols = c("class","order","family","genus", "accepted_name"), 
                        seperateNoFamilyTaxa = FALSE)
 {
+  
   uniqTax <- lapply(unlist(focal.tax), FUN=getTaxonomyForOneBaseTaxon_AcceptedName)
-  uniqTax <- makeMatrixFromList(uniqTax)
+  if(length(uniqTax) == 1) {uniqTax <- uniqTax[[1]]} else {uniqTax <- makeMatrixFromList(uniqTax)}
   uniqTax <- uniqTax[!uniqTax$class %in% "Insecta",] #remove entries for Insecta due to Proboscidea being a synonym for Hemiptera
+  if("Proboscidea" %in% focal.tax)
+  {
+    uniqProbo <- lapply(unlist("Mammalia"), FUN=getTaxonomyForOneBaseTaxon_AcceptedName)
+    uniqProbo <- uniqProbo[[1]]
+    
+    uniqTax <- rbind(uniqTax, uniqProbo)
+  }
+  
   uniqTax <- uniqTax[!uniqTax$family %in% "",] #remove entries with empty family assignments.  generally entries reported at the family level or higher
   uniqTax$accepted_name <- gsub(pattern = "[[:space:]]", replacement = "_", x = uniqTax$accepted_name)
   uniqTax <- unique(uniqTax[,OccsCols])
@@ -1158,10 +1183,11 @@ getBigList <- function(focal.tax = NULL,
 getIntMeasure.mat <- function(measure.mat, 
                               #settings, 
                               breaks, 
-                              uniqIntTaxa)
+                              uniqIntTaxa,
+                              outRank)
 {
-  if(settings$this.rank != "species"){
-    measure.mat_Int <- measure.mat[measure.mat[,settings$this.rank] %in% uniqIntTaxa,] # need to make sure that there is an argument to restrict collection to those in this interval and not all of them
+  if(outRank != "species"){
+    measure.mat_Int <- measure.mat[measure.mat[,"taxon"] %in% uniqIntTaxa,] # need to make sure that there is an argument to restrict collection to those in this interval and not all of them
     
     intSizeCat <- as.data.frame(matrix(data=NA, nrow = length(unique(measure.mat_Int[,settings$this.rank])), ncol = 2, 
                                        dimnames = list(unique(measure.mat_Int[,settings$this.rank]), c("bodyMass","SizeCat"))))
