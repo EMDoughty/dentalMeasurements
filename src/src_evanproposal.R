@@ -1153,6 +1153,7 @@ getBigList <- function(focal.tax = NULL,
   {
     uniqProbo <- lapply(unlist("Mammalia"), FUN=getTaxonomyForOneBaseTaxon_AcceptedName)
     uniqProbo <- uniqProbo[[1]]
+    uniqProbo <- uniqProbo[uniqProbo$order %in% "Proboscidea",]
     
     uniqTax <- rbind(uniqTax, uniqProbo)
   }
